@@ -7,8 +7,7 @@
   "plugins": [
     {
       "name": "unity-coding-skills",
-      "source": "./",
-      "description": "Skills and agents for developing Unity projects with Claude Code — maintainable test design and implementation, test-first workflow, coding guidelines, scene editing, and more."
+      "source": "./"
     }
   ]
 }
