@@ -131,26 +131,34 @@ Paste the **Template** below verbatim as the body of the `## Development Workflo
 ```markdown
 ### Step 1: Skeleton (Compilable)
 
-- [ ] Create types and method signatures only — must compile, need not work yet. **New methods: empty body only** (no logic, no exceptions; value-returning methods must return a literal default: `0`, `false`, or `null`); **modify: signature only, body unchanged**; **delete: remove the entire method** — test code may fail to compile after modify or delete; fix in Step 2
+1. Create types and method signatures only — must compile, need not work yet. **New methods: empty body only** (no logic, no exceptions; value-returning methods must return a literal default: `0`, `false`, or `null`); **modify: signature only, body unchanged**; **delete: remove the entire method** — test code may fail to compile after modify or delete; fix in Step 2
 
 ### Step 2: Test First
 
-- [ ] Launch `failing-test-writer` agent with: path to this plan file
-- [ ] Check `STATUS:` line in the `failing-test-writer` output — if `STATUS: NG`, **STOP: do not proceed to Step 3**, report unexpected passes to user
-- [ ] Commit test code to git (skeleton is not committed yet — do not include it) — if test code is modified in Step 3 or later, the integrity of Test First is compromised; commit here without fail so the diff remains verifiable
+1. Launch `failing-test-writer` agent with: path to this plan file
+2. Check `STATUS:` line in the `failing-test-writer` output — if `STATUS: NG`, **STOP: do not proceed to Step 3**, report unexpected passes to user
+3. Commit test code to git (skeleton is not committed yet — do not include it) — if test code is modified in Step 3 or later, the integrity of Test First is compromised; commit here without fail so the diff remains verifiable
 
 ### Step 3: Implementation
 
-- [ ] Implement product code
-- [ ] Run tests with `/run-tests` and confirm **all pass**
-- [ ] Commit product code to git (includes skeleton from Step 1, and any unavoidable test code changes)
+1. Implement product code
+2. Run tests with `/run-tests` and confirm **all pass**
+3. Commit product code to git (includes skeleton from Step 1, and any unavoidable test code changes)
 
 ### Step 4: Refactoring
 
-- [ ] Launch `test-deduplicator` agent with: list of test files added or modified in Step 2
-- [ ] Resolve diagnostics at warning or higher for each modified file (`mcp__jetbrains__open_file_in_editor` → `mcp__ide__getDiagnostics` → fix, one file at a time; use `mcp__ide__getDiagnostics` because the Unity editor compiler does not reflect `.editorconfig` severity settings)
-- [ ] Run tests with `/run-tests` and confirm **all pass**
-- [ ] Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
-- [ ] Run tests with `/run-tests` and confirm **all pass**
-- [ ] Commit all remaining changes to git
+1. Launch `test-deduplicator` agent with: list of test files added or modified in Step 2
+2. Resolve diagnostics at the `warning` or higher severity level using the following procedure,
+   **one file at a time** — `mcp__ide__getDiagnostics` only returns results for files currently open
+   in editor tabs, and opening all files at once exceeds the tab limit:
+   1. `mcp__jetbrains__open_file_in_editor` — open the file in the editor
+   2. `mcp__ide__getDiagnostics` — collect all diagnostics for that file
+   3. Fix all reported issues as a single set before moving to the next file
+
+   Use `mcp__ide__getDiagnostics` instead of `mcp__jetbrains__get_file_problems` (unstable) or
+   the Unity compiler output (does not reflect `.editorconfig` severity settings).
+3. Run tests with `/run-tests` and confirm **all pass**
+4. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
+5. Run tests with `/run-tests` and confirm **all pass**
+6. Commit all remaining changes to git
 ```
