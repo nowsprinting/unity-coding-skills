@@ -66,8 +66,10 @@ When an equivalence partition includes multiple test cases — such as argument 
 
 **Specifying parameter name and values in the Test Method column** — write values after the method name:
 
-- **Bool or enum, all values used**: `(direction: all values of Direction)`, `(flag: all bool values)`
-- **Subset or specific combinations**: list concrete values — `(a: 0, 1, -1; b: 0, 1)`
+- **Bool parameter, all values**: `(flag: (bool))`
+- **Enum parameter, all values**: `(direction: (Direction))`
+- **Multiple parameters, all combinations (exhaustive)**: `(param1: {0, 1, 2}, param2: {3, 4, 5})` — when a param is `bool` or enum covering all its values, use the shorthand in place of the braces: `(flag: (bool), count: {0, 1, 5})`
+- **Multiple parameters, limited to specific combinations**: `({param1: 0, param2: 3}, {param1: 1, param2: 4})`
 - **Three or more parameters each with many values**: write `(use pairwise)` — the test-writing phase applies the pairwise (all-pairs) method to select a covering combination set
 
 Do NOT over-consolidate: keep separate rows for tests that belong to **different** equivalence partitions or produce **different** expected outcomes.
@@ -135,7 +137,7 @@ For each technique, derive coverage-aware test cases:
   - Rationale or intent text — why the test exists, what it proves about the design, or what the current (buggy) behavior is. Observable behavior only.
   - Any other implementation/mechanism detail — those decisions belong to the test-writing phase
 - **Parameterized tests** — consolidate same-partition test cases into a single table row per [Parameterized tests](#parameterized-tests) in Section 3. Do NOT specify the framework mechanism (`TestCase`, `Values`, etc.) in the Test Method column — that's a test-writing decision.
-  - Example: `Add_TwoIntegers_ReturnsSum` (a: 0, 1, -1; b: 0, 1, 1) | `加算結果が引数の和になる`
+  - Example: `FizzBuzz_MultipleOfThree_ReturnsFizz` (n: 3, 6, 9) | `Returns "Fizz"`
 - If a test case uses a **spy** to verify interactions, note it in the Verification column: e.g., `(uses spy: <TargetDependency>)`. Do NOT note stubs or fakes — those are arrange/action concerns. xUTP definitions for reference:
   - **Stub** — returns canned responses to isolate the SUT from a dependency. Arrange/action concern; do NOT mention in Verification.
   - **Spy** — records interactions (calls, arguments) for later verification. Note it in Verification.
@@ -150,18 +152,18 @@ For each technique, derive coverage-aware test cases:
 
 ### Example: Verification — Bad vs. Good
 
-| Style               | Test Method                                              | Verification                                                                                         |
-|---------------------|----------------------------------------------------------|------------------------------------------------------------------------------------------------------|
-| Bad (mechanism)     | `OnBeginDrag_WhenDragStarts_BlocksRaycastsIsDisabled`    | Call `OnBeginDrag` synchronously with `[Test]` and Assert that `CanvasGroup.blocksRaycasts == false` |
-| Good                | `OnBeginDrag_WhenDragStarts_BlocksRaycastsIsDisabled`    | `CanvasGroup.blocksRaycasts` is disabled when drag starts                                            |
-| Bad (rationale)     | `StartRun_SameSeed_ProducesSameMap`                      | 同一シードで 2 回ランを開始したときマップ構造が再現されること。RNG が holder に格納されない現状では失敗する（BUG 1 の再現テスト）                          |
-| Good                | `StartRun_SameSeed_ProducesSameMap` (reproduction test)  | 同一シードで 2 回ランを開始したときマップ構造が一致する                                                                        |
-| Bad (parameterized) | `Sync_GivenPhase_PanelVisible`                           | Defeat フェーズのときのみパネルが表示される（複数の引数パターンを検証）                                                              |
-| Good                | `Sync_GivenPhase_PanelVisible` (phase: HeroTurn, Defeat) | Defeat フェーズのときのみパネルが表示される                                                                            |
+| Style               | Test Method                                                | Verification                                                                                                                                                                        |
+|---------------------|------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Bad (mechanism)     | `OnBeginDrag_WhenDragStarts_BlocksRaycastsIsDisabled`      | Call `OnBeginDrag` synchronously with `[Test]` and Assert that `CanvasGroup.blocksRaycasts == false`                                                                                |
+| Good                | `OnBeginDrag_WhenDragStarts_BlocksRaycastsIsDisabled`      | `CanvasGroup.blocksRaycasts` is disabled when drag starts                                                                                                                           |
+| Bad (rationale)     | `StartRun_SameSeed_ProducesSameMap`                        | The map structure is reproduced when a run is started twice with the same seed. Fails in the current implementation where RNG is not stored in the holder (BUG 1 reproduction test) |
+| Good                | `StartRun_SameSeed_ProducesSameMap` (reproduction test)    | The map structure matches when a run is started twice with the same seed                                                                                                            |
+| Bad (parameterized) | `Sync_GivenPhase_PanelVisible`                             | The panel is visible only during the Defeat phase (verifies multiple argument patterns)                                                                                             |
+| Good                | `Sync_GivenPhase_PanelVisible` (phase: {HeroTurn, Defeat}) | The panel is visible only during the Defeat phase                                                                                                                                   |
 
 The Bad (mechanism) row leaks the test-writing mechanism (attribute choice, sync invocation, exact assertion form).
 The Bad (rationale) row leaks why the test exists and what the current behavior is — none of that belongs in Verification; `(reproduction test)` goes in the Test Method column instead.
-The Bad (parameterized) row hides the concrete argument values in a vague phrase in Verification; they belong in the Test Method column as named parameters (`param: val1, val2`).
+The Bad (parameterized) row hides the concrete argument values in a vague phrase in Verification; they belong in the Test Method column as named parameters, e.g. `(phase: {HeroTurn, Defeat})`.
 The Good rows state the observable behavior only; all other concerns go in the Test Method column or the test-writing phase.
 
 ## 5. Requirements Coverage Check
@@ -216,11 +218,11 @@ Structure by layer:
 
 ##### <MethodName>
 
-| Test Method                                      | Verification                               |
-|--------------------------------------------------|--------------------------------------------|
-| `Method_Condition_Expected`                      | What is verified by this test              |
-| `Method_Condition_Expected` (reproduction test)  | What is verified by this reproduction test |
-| `Method_Condition_Expected` (param: val1, val2)  | What is verified across these param values |
+| Test Method                                      | Verification                                                        |
+|--------------------------------------------------|---------------------------------------------------------------------|
+| `Method_Condition_Expected`                      | `<property>` is `<expected value or state>`                         |
+| `Method_Condition_Expected` (reproduction test)  | `<property>` is `<expected value or state>`                         |
+| `Method_Condition_Expected` (n: 3, 6, 9)         | `<property>` is `<expected value or state>`                         |
 
 ### Unit tests
 
@@ -228,32 +230,32 @@ Structure by layer:
 
 ##### <MethodName>
 
-| Test Method                                      | Verification                             |
-|--------------------------------------------------|------------------------------------------|
-| `Method_Condition_Expected`                      | What is verified by this test            |
-| `Method_Condition_Expected`                      | What is verified (uses spy: IDependency) |
+| Test Method                                      | Verification                                                        |
+|--------------------------------------------------|---------------------------------------------------------------------|
+| `Method_Condition_Expected`                      | `<property>` is `<expected value or state>`                         |
+| `Method_Condition_Expected`                      | `<property>` is `<expected value or state>` (uses spy: IDependency) |
 
 ### Integration tests
 
 #### <ClassName>
 
-| Test Method          | Verification                        |
-|----------------------|-------------------------------------|
-| `Condition_Expected` | What is verified by this test       |
+| Test Method                                      | Verification                                                        |
+|--------------------------------------------------|---------------------------------------------------------------------|
+| `Condition_Expected`                             | `<property>` is `<expected value or state>`                         |
 
 ### Visual verification tests
 
 #### <ClassName>
 
-| Test Method          | Verification                                                                                                    |
-|----------------------|-----------------------------------------------------------------------------------------------------------------|
-| `Condition_Expected` | What is verified (saves screenshot for image analysis: element positions, no overlap, text/background contrast) |
+| Test Method           | Image analysis by saved screenshot                                                             |
+|-----------------------|------------------------------------------------------------------------------------------------|
+| `Condition_Expected`  | <element positions, no overlap, text/background contrast>                                      |
 
 ### Manual tests
 
-| Test Case                   | Test perspectives / Verification method    |
-|-----------------------------|--------------------------------------------|
-| Brief description of item   | Testing angle and how to verify            |
+| Test Case                   | Test perspectives / Verification method           |
+|-----------------------------|---------------------------------------------------|
+| Brief description of item   | <behavioral aspects to verify and how to confirm> |
 ```
 
 ## 7. Testability Assessment

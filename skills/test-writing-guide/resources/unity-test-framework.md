@@ -242,10 +242,12 @@ Use `[ParametrizedIgnore]` to exclude specific combinations.
 
 ### TestCase / TestCaseSource
 
+Use `[TestCase]` when the design specifies `({defence: Fire, attack: Water}, {defence: Water, attack: Wood})` — limited to specific combinations. Each tuple becomes one `[TestCase]` attribute:
+
 ```csharp
 [TestCase(Element.Fire, Element.Water)]
 [TestCase(Element.Water, Element.Wood)]
-public void Damage_WeaknessAttribute_Returns2x(Element defence, Element attack) { ... }
+public void GetDamageFactor_WeaknessAttribute_Returns2x(Element defence, Element attack) { ... }
 ```
 
 Use `TestCaseData` with `.SetName(...)` to give test cases readable names when using `[TestCaseSource]`:
@@ -263,9 +265,18 @@ public void Damage_WeaknessAttribute_Returns2x(Element defence, Element attack) 
 
 ### Values / ValueSource
 
-- `[Values(3, 6, 9)]` — explicit values
-- `[Values] Element param` — all enum values (argument omitted)
-- `[Values] bool param` — `true` and `false`
+The following maps the test-designing-guide notation to NUnit attributes:
+
+| Design notation                                            | NUnit                                                      |
+|------------------------------------------------------------|------------------------------------------------------------|
+| `(flag: (bool))` — bool param, all values                  | `[Values] bool flag`                                       |
+| `(direction: (Direction))` — enum param, all values        | `[Values] Direction direction`                             |
+| `(n: 3, 6, 9)` — explicit values, single param             | `[Values(3, 6, 9)] int n`                                  |
+| `(a: {0, 1, -1}, b: {0, 1})` — multiple params, exhaustive | `[Values(0, 1, -1)] int a, [Values(0, 1)] int b`           |
+| `(flag: (bool), count: {0, 1, 5})` — mixed                 | `[Values] bool flag, [Values(0, 1, 5)] int count`          |
+| `(use pairwise)`                                           | `[Pairwise]` on the method + `[Values(...)]` on each param |
+
+- `[Values]` with no argument on a `bool` parameter generates `true` and `false`; on an enum parameter, it generates all defined values
 - Multiple `[Values]` parameters produce the **full Cartesian product** by default
 - `[Pairwise]` on the method → pairwise coverage instead of full Cartesian; use when the test cases specify `(use pairwise)`
 - `[Sequential]` on the method → match parameters by index (not combinatorial); do NOT use in principle — use `[TestCase]` / `[TestCaseSource]` instead to make each combination explicit
