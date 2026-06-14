@@ -28,6 +28,8 @@ Result: use `.GameObject` on the returned value.
 
 ### Matchers
 
+Matcher is an implementation class of `TestHelper.UI.GameObjectMatchers.IGameObjectMatcher`. Use to determine whether a `GameObject` matches a specific condition.
+
 **Built-in matchers**: `ComponentMatcher`, `ButtonMatcher` (by name/path/text/texture), `ToggleMatcher` (by name/path/text)
 
 **ButtonMatcher examples** — use when `FindByNameAsync` is not specific enough (e.g. multiple buttons exist, or you want to match by label text):
@@ -48,15 +50,23 @@ var btn = await finder.FindByMatcherAsync(new ButtonMatcher(path: "**/Dialog/**/
 var btn = await finder.FindByMatcherAsync(new ButtonMatcher(texture: "icon_close"));
 ```
 
+**Tip**: When the target `GameObject` has no unique `name` or hierarchy path (e.g., multiple objects share the same name in the scene), use the following approaches in order:
+
+1. **Use a built-in matcher with distinguishing properties**: For example, if the target is a button, use `TestHelper.UI.GameObjectMatchers.ButtonMatcher` with a `text` or `texture` argument to identify it by its visible label or icon.
+2. **Implement a custom matcher**: If no built-in matcher covers the distinguishing property, implement `IGameObjectMatcher` to match on any component value or hierarchy condition.
+3. **Modify production code** (last resort): Modify production code to add a distinguishing index or suffix to the `name` property of the `GameObject`.
+
 ### Paginators
+
+Paginator is an implementation class of `TestHelper.UI.Paginators.IPaginator`. Use to find `GameObject` on pageable or scrollable UI components (e.g., `ScrollRect`, Carousel, Paged dialog).
 
 **Built-in paginators**: `UguiScrollbarPaginator(scrollbar)`, `UguiScrollRectPaginator(scrollRect)`
 
 **UguiScrollRectPaginator example** — pass a paginator when the target is inside a `ScrollRect`; the finder scrolls to reveal the target before the reachability check:
 
 ```csharp
-var scrollViewGo = await finder.FindByNameAsync("ScrollView");
-var paginator = new UguiScrollRectPaginator(scrollViewGo.GameObject.GetComponent<ScrollRect>());
+var scrollView = await finder.FindByNameAsync("ScrollView");
+var paginator = new UguiScrollRectPaginator(scrollView.GameObject.GetComponent<ScrollRect>());
 var item = await finder.FindByNameAsync("ItemName", interactable: true, paginator: paginator);
 await new UguiClickOperator().OperateAsync(item.GameObject);
 ```
@@ -67,10 +77,11 @@ await new UguiClickOperator().OperateAsync(item.GameObject);
 
 ## Operate a GameObject
 
+Use an implementation class of `TestHelper.UI.Operators.IOperator` instead of directly calling button events or setting field values.
+
 ```csharp
 var result = await finder.FindByNameAsync("SubmitButton", interactable: true);
-var op = new UguiClickOperator();
-await op.OperateAsync(result.GameObject);
+await new UguiClickOperator().OperateAsync(result.GameObject);
 ```
 
 | Goal                      | Operator                                                                                       |
@@ -121,6 +132,21 @@ await new UguiTextInputOperator().OperateAsync(field.GameObject, "Hello");
 var toggle = await finder.FindByNameAsync("MyToggle", interactable: true);
 await new UguiToggleOperator().OperateAsync(toggle.GameObject);
 ```
+
+**Tip**: Encapsulate find + operate in a private helper
+
+When operating a `GameObject` (clicking, typing, etc.), write a private helper method that combines the `GameObjectFinder` lookup and the operator call:
+
+```csharp
+private async UniTask Click(string name)
+{
+    var finder = new GameObjectFinder();
+    var result = await finder.FindByNameAsync(name, interactable: true);
+    await new UguiClickOperator().OperateAsync(result.GameObject);
+}
+```
+
+Grouping the search and operation together keeps test methods concise and avoids repeating the finder/operator pair across every test in the class.
 
 ---
 

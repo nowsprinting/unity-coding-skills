@@ -302,13 +302,6 @@ Guidelines:
 - Avoid over-centralizing setup; values that affect assertion validity should stay visible inside the test method itself — a reader must understand the test without scrolling to `[SetUp]`; burying assertion-relevant values there makes correctness harder to judge.
 - `[LoadScene]` and `[CreateScene]` (Test Helper) run after `[OneTimeSetUp]` and before `[SetUp]`.
 
-## Unity-Specific Rules
-
-- When a test creates a `GameObject`, add `[CreateScene]` to the test method (not required if `[LoadScene]` is already present)
-- Do NOT use `LogAssert` to verify log output emitted by the production code under test; create a Spy logger that the production code writes through. This keeps tests independent of Unity's global log handler.
-- `LogAssert` is acceptable only when a Spy cannot be injected — i.e., the log is emitted by `UnityEngine` itself or a third-party library outside our control. Typical uses: asserting an expected `Debug.LogError` / `LogException` from such a source, or `LogAssert.NoUnexpectedReceived()` to ensure no unexpected engine/library errors during a test.
-- For tests that expect a timeout, add `[Timeout(milliseconds)]` so the test fails within a few seconds — this applies even in the RED phase
-
 ## Test Selection Attributes
 
 | Attribute                                                          | Purpose                                                                       |
@@ -340,9 +333,10 @@ using NUnit.Framework;
 
 ## Async Tests
 
-- Use `async` method with `[Test]`, NOT `[UnityTest]`
+- Use `[Test]` attribute with `async` keyword instead of `[UnityTest]` attribute
 - `[TestCase]` and `[TestCaseSource]` work with async test methods
 - Do not use `Task.Delay` or arbitrary wait; use `await Awaitable.NextFrameAsync()` when only one frame is needed
+- For tests that await a state transition or other condition where a timeout may occur, add `[Timeout(milliseconds)]` so the test fails within a few seconds — this applies even in the RED phase
 - To assert that an async method throws, use try-catch — NOT the `Throws` constraint (Unity Test Framework limitation):
 
 ```csharp
@@ -394,12 +388,12 @@ Assert.That((bool)cube, Is.False);   // passes when destroyed
 
 ## Log Handling
 
-By default, `Debug.LogError`, `LogException`, and `LogAssertion` cause a test failure. Prefer Spy loggers over `LogAssert` — see [Unity-Specific Rules](#unity-specific-rules). Use the following APIs only when a Spy cannot be injected (e.g., logs from `UnityEngine` or third-party code):
+By default, `Debug.LogError`, `LogException`, and `LogAssertion` cause a test failure. When production code is expected to emit these, use the following APIs to prevent unintended test failures:
 
 ```csharp
 // Allow specific log output (string or Regex)
 LogAssert.Expect(LogType.Error, "error message");
-LogAssert.Expect(LogType.Log, new Regex(@"Se.+? Paratus"));
+LogAssert.Expect(LogType.Error, new Regex(@"Se.+? Paratus"));
 
 // Assert no unexpected logs occurred — place at the very end of the test
 LogAssert.NoUnexpectedReceived();
@@ -412,11 +406,14 @@ LogAssert.ignoreFailingMessages = true;
 
 **Async caveat**: in async tests, log failure is evaluated at each `yield` point — call `LogAssert.Expect` before yielding.
 
+- Do NOT use `LogAssert` to verify log messages emitted by the production code under test; create a Spy logger that the production code writes through. This keeps tests independent of Unity's global log handler.
+- `LogAssert` is acceptable only when a Spy cannot be injected — i.e., the log is emitted by `UnityEngine` itself or a third-party library outside our control. Typical uses: asserting an expected `Debug.LogError` / `LogException` from such a source, or `LogAssert.NoUnexpectedReceived()` to ensure no unexpected engine/library errors during a test.
+
 ## Spy MonoBehaviour Conventions
 
 When creating a Spy `MonoBehaviour` (placed under `Tests/Runtime/TestDoubles/`) to capture events such as `IPointerClickHandler.OnPointerClick`:
 
-- Add `[AddComponentMenu("/")]` so it does not appear in the editor's Add Component picker.
+- Add `[AddComponentMenu("/")]` (Unity 2021+) or `[AddComponentMenu("")]` (older Unity) so it does not appear in the editor's **Add Component** picker.
 - Record invocations into public properties (call count, last arguments, etc.) and let the test read them directly. Do NOT log to `Debug.Log` and assert with `LogAssert` — that couples the test to Unity's global log handler and is harder to inspect than typed state.
 
 ```csharp

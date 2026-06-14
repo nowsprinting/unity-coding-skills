@@ -20,12 +20,19 @@ Guide for writing test code for Unity projects.
 - When implementing a test for an `internal` visibility method, add `[Category("Internal")]` to the test method.
 - When implementing tests designed as integration tests, add `[Category("Integration")]` to the test method.
 - When implementing tests designed as acceptance tests (marked `(acceptance test)` in the test case design), add `[Category("Acceptance")]` to the test method.
+- When a test creates a `GameObject`, add `[CreateScene]` to the test method (not required if `[LoadScene]` is already present).
+- When adding a test seam to production code (e.g., an `internal` accessor or a virtual override point to support injection), always wrap it with `#if UNITY_INCLUDE_TESTS` … `#endif` so it is excluded from non-test builds:
+    ```csharp
+    #if UNITY_INCLUDE_TESTS
+    internal void SetStateForTest(State state) => _state = state;
+    #endif
+    ```
 
 ### UI Tests
 
 #### Use GameObjectFinder instead of GameObject.Find
 
-When finding a GameObject that the user interacts with, always use `GameObjectFinder` instead of `UnityEngine.GameObject.Find` or `Object.FindFirstObjectByType`.
+When finding a GameObject that the user interacts with, always use `TestHelper.UI.GameObjectFinder` instead of `UnityEngine.GameObject.Find`, `Object.FindFirstObjectByType`, `Object.FindAnyObjectByType`, and `Object.FindObjectOfType`.
 Reasons:
 
 - **Timing safety**: polls until the object appears, so tests pass even when GameObjects are instantiated asynchronously or on the next frame
@@ -35,7 +42,7 @@ Reasons:
 
 #### Use Operators instead of direct event invocation
 
-When reproducing user actions, always use uGUI operators (e.g., `UguiClickOperator`, `UguiTextInputOperator`) instead of directly calling button events or setting field values.
+When reproducing user actions, always use uGUI operators (e.g., `UguiClickOperator`, `UguiTextInputOperator` in `TestHelper.UI.Operators` namespace) instead of directly calling button events or setting field values.
 Reasons:
 
 - **Correct event simulation**: operators go through Unity's `EventSystem` and input pipeline, exercising the same code path as a real user interaction
@@ -44,13 +51,13 @@ Reasons:
 
 ```csharp
 // NG — bypasses Unity's event pipeline
-button.onClick.Invoke();
-inputField.text = "12345";
+button.GetComponent<Button>().onClick.Invoke();
+inputField.GetComponent<InputField>().text = "12345";
 scene.OnConfirmClicked();
 
 // OK — goes through the proper UI event path
-await new UguiClickOperator().OperateAsync(buttonGo);
-await new UguiTextInputOperator().OperateAsync(inputFieldGo, "12345");
+await new UguiClickOperator().OperateAsync(button);
+await new UguiTextInputOperator().OperateAsync(inputField, "12345");
 ```
 
 ### Visual verification tests
@@ -68,4 +75,4 @@ Read the appropriate resource file based on the situation:
 
 - Before writing or modifying any test code file: Read `${CLAUDE_SKILL_DIR}/resources/unity-test-framework.md`
 - Before writing or modifying any test code file: Read `${CLAUDE_SKILL_DIR}/resources/test-helper.md`
-- Before writing or modifying UI tests (e.g., using `GameObjectFinder`, `Monkey`, or uGUI operators): Read `${CLAUDE_SKILL_DIR}/resources/test-helper-ui.md`
+- Before writing or modifying UI tests with `TestHelper.UI` namespace API (e.g., `GameObjectFinder`, `Monkey`): Read `${CLAUDE_SKILL_DIR}/resources/test-helper-ui.md`
