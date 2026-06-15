@@ -60,6 +60,35 @@ For each test target, select appropriate techniques:
 - **Decision table testing** — if multiple conditions combine to produce different outcomes
 - **Error guessing** — experience-based; derive cases from failure patterns common in game development. Examples to consider: rapid button mashing, simultaneous button press, input during scene transition / loading, collision tunneling, random distribution bias or PRNG sequence looping, numeric overflow, network failure. Use this to surface implementation concerns that spec-based techniques don't reach.
 
+### Deriving test methods from equivalence partitions
+
+The most common derivation error is merging partitions with **different** expected outcomes into one (parameterized) method, encoding the difference as a condition in the name/Verification (e.g. `..._InteractableMatchesNonEmpty`, "interactable is true *only when* non-empty"). One rule prevents it:
+
+**One test method = one equivalence partition = one definite expected outcome.** Never parameterize the expected outcome. If the expected value changes with the input, the inputs belong to **different** partitions → **separate** test methods, each named after its own outcome.
+
+For each input variable:
+1. Partition the input domain into classes the spec says produce the **same** outcome.
+2. Emit **one method per partition**, named `..._<Partition>_<ThatPartitionsOutcome>`. The `<ExpectedResult>` segment is a concrete state/value (`IsInteractable`, `IsNotInteractable`), never a condition word (`Matches…`, `…WhenNonEmpty`, `DependingOn…`).
+3. Within one partition, consolidate multiple representatives (and that partition's boundary values) into **one parameterized** method — they share the outcome (see [Parameterized tests](#parameterized-tests)).
+
+**Worked example** — `drawPileButton.interactable` driven by the draw pile count:
+
+| Partition               | Representative values | Expected outcome          |
+|-------------------------|-----------------------|---------------------------|
+| Empty (`count == 0`)    | `0`                   | `interactable` is `false` |
+| Non-empty (`count ≥ 1`) | `1` (boundary), `5`   | `interactable` is `true`  |
+
+Two partitions, two outcomes → **two** methods (NOT one parameterized method over `{0, 1, 5}`):
+
+| Test Method                                                         | Verification                             |
+|---------------------------------------------------------------------|------------------------------------------|
+| `Sync_DrawPileIsEmpty_DrawPileButtonIsNotInteractable`              | `drawPileButton.interactable` is `false` |
+| `Sync_DrawPileIsExist_DrawPileButtonIsInteractable` (count: {1, 5}) | `drawPileButton.interactable` is `true`  |
+
+The non-empty method keeps both `1` and `5` because they share the outcome `true`; `1` is the partition's boundary value, `5` an interior representative.
+
+**Boundary value analysis** locates where partitions meet. For a field valid in `1–99`: partitions `<1` / `1–99` / `>99`; boundaries `0, 1` and `99, 100`. Fold each partition's boundary representatives into that partition's parameterized method (e.g., valid partition over `{1, 99}`) — never one method per boundary. When the spec does not differentiate behavior near an edge, one representative per partition suffices and boundaries can be skipped entirely (per the Boundary value analysis technique above).
+
 ### Parameterized tests
 
 When an equivalence partition includes multiple test cases — such as argument variations within the same partition or boundary values at the partition's edges — consolidate them into a single parameterized test. All cases must belong to the **same equivalence partition** and share the same expected outcome.
@@ -125,6 +154,7 @@ For each technique, derive coverage-aware test cases:
   - **Editor tests / Unit tests**: `MethodName_Condition_ExpectedResult` — the test target is a method, so include the method name.
   - **Integration tests / Visual verification tests**: `Condition_ExpectedResult` — the test target is NOT a single method (it is a multi-component interaction or an on-screen rendering), so do NOT include a method name.
   - For **parameterized tests**, the `<Condition>` segment is the **equivalence partition name**, not an enumeration of individual argument values.
+  - The `<ExpectedResult>` segment names the **concrete resulting state or value** of that one partition (e.g. `IsNotInteractable`, `ReturnsFizz`), never a condition or comparison. Words like `Matches…`, `OnlyWhen…`, `DependingOn…`, `BasedOn…` in the name — or "only when / only if / depending on" in the Verification — signal that the outcome varies with input, meaning two partitions were merged into one method — split into one method per outcome (see [Deriving test methods from equivalence partitions](#deriving-test-methods-from-equivalence-partitions) in Section 3).
 - Do NOT create sequential IDs in test case names
 - Describe the verification clearly
   - Verify one condition per test. **Exception**: when multiple properties of the state resulting from a transition must all be correct simultaneously, a single test may assert all of them together. In that case, list each property being verified in the Verification column.
@@ -159,12 +189,22 @@ For each technique, derive coverage-aware test cases:
 | Bad (rationale)     | `StartRun_SameSeed_ProducesSameMap`                        | The map structure is reproduced when a run is started twice with the same seed. Fails in the current implementation where RNG is not stored in the holder (BUG 1 reproduction test) |
 | Good                | `StartRun_SameSeed_ProducesSameMap` (reproduction test)    | The map structure matches when a run is started twice with the same seed                                                                                                            |
 | Bad (parameterized) | `Sync_GivenPhase_PanelVisible`                             | The panel is visible only during the Defeat phase (verifies multiple argument patterns)                                                                                             |
-| Good                | `Sync_GivenPhase_PanelVisible` (phase: {HeroTurn, Defeat}) | The panel is visible only during the Defeat phase                                                                                                                                   |
+| Good                | `Sync_GivenPhase_PanelVisible` (phase: {Defeat, Victory})  | The panel is visible                                                                                                                                                                |
 
 The Bad (mechanism) row leaks the test-writing mechanism (attribute choice, sync invocation, exact assertion form).
 The Bad (rationale) row leaks why the test exists and what the current behavior is — none of that belongs in Verification; `(reproduction test)` goes in the Test Method column instead.
-The Bad (parameterized) row hides the concrete argument values in a vague phrase in Verification; they belong in the Test Method column as named parameters, e.g. `(phase: {HeroTurn, Defeat})`.
+The Bad (parameterized) row hides the concrete argument values in a vague phrase in Verification; they belong in the Test Method column as named parameters, e.g. `(phase: {Defeat, Victory})`.
 The Good rows state the observable behavior only; all other concerns go in the Test Method column or the test-writing phase.
+
+The **merged-partitions** error — encoding two different expected outcomes into one method — deserves a dedicated example (see [Deriving test methods from equivalence partitions](#deriving-test-methods-from-equivalence-partitions) in Section 3 for the full worked example with partition tables):
+
+| Style                   | Test Method                                                                            | Verification                                                               |
+|-------------------------|----------------------------------------------------------------------------------------|----------------------------------------------------------------------------|
+| Bad (merged partitions) | `Sync_GivenDrawPileCount_DrawPileButtonInteractableMatchesNonEmpty` (count: {0, 1, 5}) | `drawPileButton.interactable` is true only when the draw pile is non-empty |
+| Good                    | `Sync_DrawPileIsEmpty_DrawPileButtonIsNotInteractable`                                 | `drawPileButton.interactable` is `false`                                   |
+| Good                    | `Sync_DrawPileIsExist_DrawPileButtonIsInteractable` (count: {1, 5})                    | `drawPileButton.interactable` is `true`                                    |
+
+The Bad (merged partitions) row collapses two partitions — empty (→ not interactable) and non-empty (→ interactable) — into one method, betrayed by `Matches…` in the name and "only when" in the Verification. Split into one method per partition with a single definite outcome; parameterize only the same-outcome representatives (`1`, `5`).
 
 ## 5. Requirements Coverage Check
 
@@ -183,6 +223,8 @@ Output a **coverage summary table** only when gaps were found or a requirement w
 |---------------------------|-------------------------------|----------------------------------------------------|
 | XXX should do Y           | `MethodName_ConditionA_DoesY` | —                                                  |
 | ZZZ must not allow W      | (none)                        | Waived: prevented at a lower layer, not this class |
+
+Finally, run a **partition-split self-check** on every test row that has parameter values in the Test Method column: for each listed parameter value, ask "does the expected outcome change when I substitute this value?" If any substitution produces a different expected outcome, those values belong to different partitions — split into one method per outcome, each with a single definite expected value, before producing final output. Reliable symptoms of a merged partition: `Matches…`, `OnlyWhen…`, `DependingOn…` in the `<ExpectedResult>` segment; "only when", "only if", or "depending on" in the Verification cell. (A plain temporal phrase such as "when drag starts" in Verification describes the test condition, not a varying outcome — it is not a symptom.)
 
 ## 6. Test Case Format
 
