@@ -68,7 +68,7 @@ The most common derivation error is merging partitions with **different** expect
 
 For each input variable:
 1. Partition the input domain into classes the spec says produce the **same** outcome.
-2. Emit **one method per partition**, named `..._<Partition>_<ThatPartitionsOutcome>`. The `<ExpectedResult>` segment is a concrete state/value (`IsInteractable`, `IsNotInteractable`), never a condition word (`Matches…`, `…WhenNonEmpty`, `DependingOn…`).
+2. Emit **one method per partition**, named `..._<Partition>_<ThatPartitionsOutcome>`. The `<Expected>` segment is a concrete state/value (`IsInteractable`, `IsNotInteractable`), never a condition word (`Matches…`, `…WhenNonEmpty`, `DependingOn…`).
 3. Within one partition, consolidate multiple representatives (and that partition's boundary values) into **one parameterized** method — they share the outcome (see [Parameterized tests](#parameterized-tests)).
 
 **Worked example** — `drawPileButton.interactable` driven by the draw pile count:
@@ -131,9 +131,8 @@ When the test target is a prefab, scene, or a GameObject composed of multiple co
 - **Scene transitions** — behaviors that span or depend on scene loading and unloading
 - **UI blocking** — verify that UI elements behind a modal dialog or overlay are unreachable (blocked from interaction); conversely, verify those elements are reachable when no overlay is present
 - **UI layout** — verify element bounds, overlap, and text overflow using rect-comparison assertions:
-  - Any layout bug expressible as a geometric predicate warrants a deterministic integration test assertion — e.g., "is element within screen bounds?", "do two elements overlap?", "does text overflow its container?"
+  - Any layout bug expressible as a geometric predicate warrants a deterministic integration test assertion — e.g., "is element within screen bounds?", "do two elements overlap?", "does text overflow its container?" Design these as **integration tests only**; do NOT additionally design a visual verification test for the same geometric property.
   - Do NOT verify positional relationships between elements or on-screen positions (e.g., "A is displayed to the right of B") — approximate positions have no meaningful pass/fail criterion, and precise coordinate checks are brittle. Use visual verification tests for these instead.
-  - Visual verification tests are still valuable for initial implementation review, but do not rely on them **alone** for regression — image analysis is not run on every CI pass, so regression coverage requires explicit assertions.
 
 ### Reproduction tests (bug-fix tasks only)
 
@@ -151,10 +150,10 @@ For refactoring work, apply **cover and modify**: design regression coverage bef
 For each technique, derive coverage-aware test cases:
 
 - Use the naming convention based on the layer:
-  - **Editor tests / Unit tests**: `MethodName_Condition_ExpectedResult` — the test target is a method, so include the method name.
-  - **Integration tests / Visual verification tests**: `Condition_ExpectedResult` — the test target is NOT a single method (it is a multi-component interaction or an on-screen rendering), so do NOT include a method name.
+  - **Editor tests / Unit tests**: `<MethodName>_<Condition>_<Expected>` — the test target is a method, so include the method name.
+  - **Integration tests / Visual verification tests**: `<Condition>_<Expected>` — the test target is NOT a single method (it is a multi-component interaction or an on-screen rendering), so do NOT include a method name. Do NOT add a feature-area or category prefix before `<Condition>` — the name starts directly with the condition (e.g., `OnVictoryForced_AllCardViewsAreWithinScreen`, not `Reward_OnVictoryForced_AllCardViewsAreWithinScreen`).
   - For **parameterized tests**, the `<Condition>` segment is the **equivalence partition name**, not an enumeration of individual argument values.
-  - The `<ExpectedResult>` segment names the **concrete resulting state or value** of that one partition (e.g. `IsNotInteractable`, `ReturnsFizz`), never a condition or comparison. Words like `Matches…`, `OnlyWhen…`, `DependingOn…`, `BasedOn…` in the name — or "only when / only if / depending on" in the Verification — signal that the outcome varies with input, meaning two partitions were merged into one method — split into one method per outcome (see [Deriving test methods from equivalence partitions](#deriving-test-methods-from-equivalence-partitions) in Section 3).
+  - The `<Expected>` segment names the **concrete resulting state or value** of that one partition (e.g. `IsNotInteractable`, `ReturnsFizz`), never a condition or comparison. Words like `Matches…`, `OnlyWhen…`, `DependingOn…`, `BasedOn…` in the name — or "only when / only if / depending on" in the Verification — signal that the outcome varies with input, meaning two partitions were merged into one method — split into one method per outcome (see [Deriving test methods from equivalence partitions](#deriving-test-methods-from-equivalence-partitions) in Section 3).
 - Do NOT create sequential IDs in test case names
 - Describe the verification clearly
   - Verify one condition per test. **Exception**: when multiple properties of the state resulting from a transition must all be correct simultaneously, a single test may assert all of them together. In that case, list each property being verified in the Verification column.
@@ -175,7 +174,7 @@ For each technique, derive coverage-aware test cases:
 - For visual verifications (e.g., on-screen rendering, UI layout), save a screenshot during test execution and verify it via image analysis. Note this in the Verification column along with the specific visual aspects to verify — e.g., `(saves screenshot for image analysis: element positions within screen, no overlap between elements, correct visibility state, text/background contrast)`.
   - **NEVER create a dedicated visual verification test class** — add visual verification test methods to the *same test class* as the functional tests.
   - **Screenshot resolution**: By default, do not fix a specific resolution for screenshot tests — let them run at whatever resolution the test environment provides. Only fix a resolution when the test condition explicitly depends on it (e.g., verifying element positions at a stated viewport size).
-  - **Resolution as test condition**: When a screenshot test targets a specific resolution as part of its verification (e.g., layout at 960×540), include the resolution in the `<Condition>` segment of the test method name — e.g., `At960x540_RendersVersionLabelAtBottomRight` (visual verification tests use `Condition_ExpectedResult`, with no method name). This makes each resolution a distinct, independently runnable test case.
+  - **Resolution as test condition**: When a screenshot test targets a specific resolution as part of its verification (e.g., layout at 960×540), include the resolution in the `<Condition>` segment of the target method name — e.g., `At960x540_RendersVersionLabelAtBottomRight` (visual verification tests use `<Condition>_<Expected>`, with no method name). This makes each resolution a distinct, independently runnable test case.
   - **Visual aspects to verify in screenshots** — always include the following in the `(saves screenshot for image analysis: ...)` list when applicable:
     - Element positions within screen, no overlap between elements, correct visibility state
     - **Text/background contrast** — verify that text color has sufficient contrast against its background so text is clearly legible
@@ -224,7 +223,7 @@ Output a **coverage summary table** only when gaps were found or a requirement w
 | XXX should do Y           | `MethodName_ConditionA_DoesY` | —                                                  |
 | ZZZ must not allow W      | (none)                        | Waived: prevented at a lower layer, not this class |
 
-Finally, run a **partition-split self-check** on every test row that has parameter values in the Test Method column: for each listed parameter value, ask "does the expected outcome change when I substitute this value?" If any substitution produces a different expected outcome, those values belong to different partitions — split into one method per outcome, each with a single definite expected value, before producing final output. Reliable symptoms of a merged partition: `Matches…`, `OnlyWhen…`, `DependingOn…` in the `<ExpectedResult>` segment; "only when", "only if", or "depending on" in the Verification cell. (A plain temporal phrase such as "when drag starts" in Verification describes the test condition, not a varying outcome — it is not a symptom.)
+Finally, run a **partition-split self-check** on every test row that has parameter values in the Test Method column: for each listed parameter value, ask "does the expected outcome change when I substitute this value?" If any substitution produces a different expected outcome, those values belong to different partitions — split into one method per outcome, each with a single definite expected value, before producing final output. Reliable symptoms of a merged partition: `Matches…`, `OnlyWhen…`, `DependingOn…` in the `<Expected>` segment; "only when", "only if", or "depending on" in the Verification cell. (A plain temporal phrase such as "when drag starts" in Verification describes the test condition, not a varying outcome — it is not a symptom.)
 
 ## 6. Test Case Format
 
