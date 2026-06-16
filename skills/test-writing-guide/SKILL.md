@@ -65,7 +65,7 @@ await new UguiTextInputOperator().OperateAsync(inputField, "12345");
 When implementing a visual verification test (a test designed to verify on-screen rendering via screenshot and image analysis):
 
 1. Take a screenshot using `[TakeScreenshot]` or `ScreenshotHelper.TakeScreenshotAsync()` (see `test-helper.md`).
-2. Add `[Description("Verify the screenshots from the following perspectives: <verification aspects>")]` to the test method. The verification aspects are taken directly from the `(saves screenshot for image analysis: ...)` note in the test case design.
+2. Add `[Description("After running this test, verify the screenshots from the following perspectives: <verification aspects>")]` to the test method. The verification aspects are taken directly from the **Image analysis by saved screenshot** column in the test case design.
 3. Add `[Category("VisualVerification")]` to the test method.
 4. You can omit writing `Assert` statements.
 
