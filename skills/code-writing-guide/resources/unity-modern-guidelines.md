@@ -106,7 +106,6 @@ var slice = items[1..4];
 - Use `Object.FindObjectsByType` / `Object.FindObjectsByType<T>` instead of `FindObjectsOfType`
 - Use `Object.FindAnyObjectByType` / `Object.FindAnyObjectByType<T>` when any matching instance suffices (faster than `FindFirst`)
 - Use `Object.FindFirstObjectByType` / `Object.FindFirstObjectByType<T>` when only the first match is needed
-- These APIs are also backported to Unity 2020.3.4, 2021.3.18, and 2022.2.5
 - For code under `Packages/` whose minimum supported version is below 2022.3, guard with `UNITY_2022_3_OR_NEWER`
     ```csharp
     #if UNITY_2022_3_OR_NEWER
@@ -115,6 +114,8 @@ var slice = items[1..4];
     return Object.FindObjectsOfType<Button>();
     #endif
     ```
+- Note: These APIs are also backported to Unity 2020.3.4, 2021.3.18, and 2022.2.5
+- Note: On Unity 6000.4+ the `FindObjectsSortMode` argument shown above is obsolete — drop it (see **Object Find APIs** under Unity 6000.4+)
 
 ### Unity 2023.1+
 
@@ -171,7 +172,7 @@ _ = SpawnAsync(destroyCancellationToken);
 ### Unity 6000.3+
 
 **Testing:**
-- Use UI Test Framework (`com.unity.test-framework.ui`) v1.0 for runtime UI interaction tests
+- Use UI Test Framework (`com.unity.test-framework.ui`) v1.0 for UI Toolkit (UIElements) interaction tests
 
 ### Unity 6000.4+
 
@@ -184,3 +185,27 @@ _ = SpawnAsync(destroyCancellationToken);
 - Do NOT rely on hash codes, string serialisation, or creation-order sorting of `EntityId`
 - `GetInstanceID()` and related methods are deprecated; prefer `EntityId`-based APIs
 - `InstanceID` will be removed in a future release
+- For code under `Packages/` whose minimum supported version is below 6000.4, guard with `UNITY_6000_4_OR_NEWER`
+    ```csharp
+    #if UNITY_6000_4_OR_NEWER
+    EntityId id = gameObject.GetEntityId();
+    #else
+    int id = gameObject.GetInstanceID();
+    #endif
+    ```
+
+**Object Find APIs:**
+- `UnityEngine.Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)` and `Object.FindObjectsByType<T>(FindObjectsSortMode)` are obsolete (`FindObjectsSortMode` parameter is dropped)
+- Use `Object.FindObjectsByType<T>(FindObjectsInactive)` instead of `FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)`
+- Use `Object.FindObjectsByType<T>()` instead of `FindObjectsByType<T>(FindObjectsSortMode)`
+- `FindObjectsSortMode` is dropped because `InstanceID`-order sorting can no longer be guaranteed after the `InstanceID` → `EntityId` migration above
+- For code under `Packages/` whose minimum supported version is below 6000.4, guard with `UNITY_6000_4_OR_NEWER`
+    ```csharp
+    #if UNITY_6000_4_OR_NEWER
+    return Object.FindObjectsByType<Button>();
+    #elif UNITY_2022_3_OR_NEWER
+    return Object.FindObjectsByType<Button>(FindObjectsSortMode.None);
+    #else
+    return Object.FindObjectsOfType<Button>();
+    #endif
+    ```
