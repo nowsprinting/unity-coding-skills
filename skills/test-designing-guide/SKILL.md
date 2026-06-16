@@ -82,8 +82,8 @@ Two partitions, two outcomes → **two** methods (NOT one parameterized method o
 
 | Test Method                                                         | Verification                             |
 |---------------------------------------------------------------------|------------------------------------------|
-| `Sync_DrawPileIsEmpty_DrawPileButtonIsNotInteractable`              | `drawPileButton.interactable` is `false` |
-| `Sync_DrawPileIsExist_DrawPileButtonIsInteractable` (count: {1, 5}) | `drawPileButton.interactable` is `true`  |
+| `Sync_DrawPileIsEmpty_DrawPileButtonIsNotInteractable`              | the draw pile button is not interactable |
+| `Sync_DrawPileIsExist_DrawPileButtonIsInteractable` (count: {1, 5}) | the draw pile button is interactable     |
 
 The non-empty method keeps both `1` and `5` because they share the outcome `true`; `1` is the partition's boundary value, `5` an interior representative.
 
@@ -158,11 +158,12 @@ For each technique, derive coverage-aware test cases:
 - Describe the verification clearly
   - Verify one condition per test. **Exception**: when multiple properties of the state resulting from a transition must all be correct simultaneously, a single test may assert all of them together. In that case, list each property being verified in the Verification column.
   - Test concerns separately
-- In the **Verification** column, state exactly **which observable property** is checked and **what its expected value or state** is — this corresponds to the `Expected` segment of the test method name. Describe observable behavior only; do NOT include any of the following **anywhere in the test case output** — this prohibition applies to the Verification column, class header descriptions (text after `#### ClassName`), and any other field:
+- In the **Verification** column, state **which observable property or behavior** is checked and **what its expected value or state** is — this corresponds to the `Expected` segment of the test method name. Write from the information already available in the prompt (requirements and design inputs); abstract descriptions are acceptable — reading source to obtain more concrete identifiers is not required. Describe observable behavior only; do NOT include any of the following **anywhere in the test case output** — this prohibition applies to the Verification column, class header descriptions (text after `#### ClassName`), and any other field:
   - Test framework attributes (`[Test]`, `[UnityTest]`, `[LoadScene]`, `[Category(...)]`, `[TakeScreenshot]`, etc.)
   - Sync vs async / coroutine choice
   - Construction details of test inputs (e.g., how to build `PointerEventData`, how to instantiate fixtures)
   - Assertion helper class names (e.g., `LayoutAssert`, `GameObjectFinder`)
+  - Exact private or serialized field names, or field-qualified member access (e.g., `drawPileButton.interactable`) whose owner is not present in the implementation design inputs — name the element descriptively instead (e.g., "the draw pile button is not interactable"). Exact identifiers are not required at design time; resolving the precise field name is a test-writing concern. You MAY name exactly: public framework API members (e.g., `CanvasGroup.blocksRaycasts`) and identifiers that appear in the design inputs.
   - Rationale or intent text — why the test exists, what it proves about the design, or what the current (buggy) behavior is. Observable behavior only.
   - Any other implementation/mechanism detail — those decisions belong to the test-writing phase
 - **Parameterized tests** — consolidate same-partition test cases into a single table row per [Parameterized tests](#parameterized-tests) in Section 3. Do NOT specify the framework mechanism (`TestCase`, `Values`, etc.) in the Test Method column — that's a test-writing decision.
@@ -199,9 +200,9 @@ The **merged-partitions** error — encoding two different expected outcomes int
 
 | Style                   | Test Method                                                                            | Verification                                                               |
 |-------------------------|----------------------------------------------------------------------------------------|----------------------------------------------------------------------------|
-| Bad (merged partitions) | `Sync_GivenDrawPileCount_DrawPileButtonInteractableMatchesNonEmpty` (count: {0, 1, 5}) | `drawPileButton.interactable` is true only when the draw pile is non-empty |
-| Good                    | `Sync_DrawPileIsEmpty_DrawPileButtonIsNotInteractable`                                 | `drawPileButton.interactable` is `false`                                   |
-| Good                    | `Sync_DrawPileIsExist_DrawPileButtonIsInteractable` (count: {1, 5})                    | `drawPileButton.interactable` is `true`                                    |
+| Bad (merged partitions) | `Sync_GivenDrawPileCount_DrawPileButtonInteractableMatchesNonEmpty` (count: {0, 1, 5}) | the draw pile button is interactable only when the draw pile is non-empty  |
+| Good                    | `Sync_DrawPileIsEmpty_DrawPileButtonIsNotInteractable`                                 | the draw pile button is not interactable                                   |
+| Good                    | `Sync_DrawPileIsExist_DrawPileButtonIsInteractable` (count: {1, 5})                    | the draw pile button is interactable                                       |
 
 The Bad (merged partitions) row collapses two partitions — empty (→ not interactable) and non-empty (→ interactable) — into one method, betrayed by `Matches…` in the name and "only when" in the Verification. Split into one method per partition with a single definite outcome; parameterize only the same-outcome representatives (`1`, `5`).
 
@@ -250,7 +251,6 @@ Structure by layer:
 - `(reproduction test)` — append to the **Test Method column** when the test reproduces a reported bug (see Section 3, Reproduction tests)
 - `(acceptance test)` — append to the **Test Method column** when the test is the **same-layer witness** (see Section 5) for a requirement stated in the prompt: it must directly exercise the behavior the requirement describes — not a component that contributes to satisfying it. A requirement about on-screen display or user interaction requires an integration or visual verification test; a requirement about method-level behavior may be witnessed by a unit test.
 - `(spec change)` — append to the **Test Method column** ONLY when updating an existing test whose **Verification (observable expected outcome) changes**. A change to the SUT signature/type that requires only arrange/action construction updates (e.g., wrapping `Foo`→`FooRef`) while the expected observable behavior stays identical is NOT a spec change — leave such tests **unmarked** (construction details are a test-writing concern per Section 4, not a design concern). Litmus test: **if the Verification column wording is unchanged, do NOT append `(spec change)`.**
-- `(internal)` — append to the **`##### <MethodName>` section heading** when the test target is an `internal` method
 
 ```markdown
 ### Editor tests
@@ -307,7 +307,7 @@ Use one of the following labels:
 
 | Label               | Meaning                                                                                                |
 |---------------------|--------------------------------------------------------------------------------------------------------|
-| `TESTABILITY: PASS` | All public and internal methods are independently testable; test case count is realistic               |
+| `TESTABILITY: PASS` | All public methods are independently testable; test case count is realistic                            |
 | `TESTABILITY: WARN` | Localized concerns (e.g., too many test doubles, large integration tests, high FSM state combinations) |
 | `TESTABILITY: FAIL` | Fundamental testability issues that require design revision                                            |
 
