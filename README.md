@@ -1,6 +1,9 @@
 # unity-coding-skills
 
-A [Claude Code](https://claude.ai/code) plugin providing skills and agents for developing Unity projects — maintainable test design and implementation, test-first workflow, coding guidelines, scene editing, and more.
+A [Claude Code](https://claude.ai/code) plugin for Unity development that enables coding agents to work autonomously through a test-first workflow — writing reliable, maintainable tests before production code, then iterating to completion without constant oversight.
+
+Reliable tests give the agent a clear signal: green means done.
+This plugin provides the methodology, conventions, and tools to make that signal trustworthy.
 
 ## Included Skills
 
@@ -46,7 +49,7 @@ Add the marketplace and install the plugin with `--scope project`:
 
 Commit the resulting `.claude/settings.json` to your repository.
 
-> [!NOTE]  
+> [!NOTE]\
 > When team members trust the project folder, Claude Code prompts them to install the marketplace and plugin automatically.
 
 ## Recommended Project Settings
@@ -70,10 +73,10 @@ The `run-tests` and `edit-scene` skills require JetBrains built-in MCP server an
 }
 ```
 
-> [!IMPORTANT]  
+> [!IMPORTANT]\
 > Do not change the MCP server name `jetbrains`.
 
-> [!TIP]  
+> [!TIP]\
 > The JetBrains MCP server also provides tools useful for Coding Agents, such as `search_symbol` and `search_in_files_by_regex`.
 
 ### 2. Enforcing coding rules via `.editorconfig`
@@ -122,7 +125,12 @@ Type out of plan mode:
 /fix-bug <INCIDENT>
 ```
 
+Specify a problem description or a failing test as `INCIDENT`.
+
 First, create, run, and verify a test that reproduces the bug, and then fix the bug.
+
+> [!NOTE]\
+> Depending on the incident, the root cause may be identified before writing a reproduction test. Under adjustment.
 
 ### Refine existing test code for conformance to the test design and writing guides
 
