@@ -99,6 +99,23 @@ var slice = items[1..4];
 **Unity APIs:**
 - UI Toolkit (`UnityEngine.UIElements`) is now available for runtime UI — whether to adopt it depends on the project's UI system choice; follow the existing convention if the project already uses uGUI
 
+### Unity 2022.3+
+
+**Object Find APIs:**
+- `UnityEngine.Object.FindObjectOfType`, `Object.FindObjectOfType<T>`, `Object.FindObjectsOfType`, `Object.FindObjectsOfType<T>`, `Object.FindObjectsOfTypeAll`, `Object.FindObjectsOfTypeIncludingAssets`, `Object.FindSceneObjectsOfType` are obsolete
+- Use `Object.FindObjectsByType` / `Object.FindObjectsByType<T>` instead of `FindObjectsOfType`
+- Use `Object.FindAnyObjectByType` / `Object.FindAnyObjectByType<T>` when any matching instance suffices (faster than `FindFirst`)
+- Use `Object.FindFirstObjectByType` / `Object.FindFirstObjectByType<T>` when only the first match is needed
+- These APIs are also backported to Unity 2020.3.4, 2021.3.18, and 2022.2.5
+- For code under `Packages/` whose minimum supported version is below 2022.3, guard with `UNITY_2022_3_OR_NEWER`
+    ```csharp
+    #if UNITY_2022_3_OR_NEWER
+    return Object.FindObjectsByType<Button>(FindObjectsSortMode.None);
+    #else
+    return Object.FindObjectsOfType<Button>();
+    #endif
+    ```
+
 ### Unity 2023.1+
 
 **MonoBehaviour initialization state properties:**
