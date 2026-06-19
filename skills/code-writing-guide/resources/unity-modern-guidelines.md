@@ -11,7 +11,8 @@ Based on the detected Unity version, apply all features up to that version when 
 
 ## Detected Unity Version
 
-!grep "m_EditorVersion:" ProjectSettings/ProjectVersion.txt 2>/dev/null | sed 's/m_EditorVersion: //' | grep . || echo unknown
+Project Unity version:
+!`grep "m_EditorVersion:" ProjectSettings/ProjectVersion.txt 2>/dev/null | sed 's/m_EditorVersion: //' | grep . || echo unknown`
 
 **If version detected (not "unknown"):**
 - Say: "This project is using Unity X.Y, so I'll use modern Unity APIs and C# features up to this version."
@@ -27,30 +28,29 @@ Based on the detected Unity version, apply all features up to that version when 
 
 **C# 8.0:**
 - Switch expressions: `state switch { State.Active => true, _ => false }` instead of switch statements
+    ```csharp
+    // Instead of:
+    string Describe(State state)
+    {
+        switch (state)
+        {
+            case State.Active: return "Active";
+            case State.Dead:   return "Dead";
+            default:           return "Unknown";
+        }
+    }
+  
+    // Use:
+    string Describe(State state) => state switch
+    {
+        State.Active => "Active",
+        State.Dead   => "Dead",
+        _            => "Unknown",
+    };
+    ```
 - Property patterns: `obj is Enemy { IsDead: true }` instead of casting and field checks
 - Tuple patterns: `(a, b) switch { (0, 0) => "origin", _ => "other" }`
-- Nullable reference types: Add `#nullable enable` (or enable in project settings) to catch null dereferences at compile time
-
-```csharp
-// Instead of:
-string Describe(State state)
-{
-    switch (state)
-    {
-        case State.Active: return "Active";
-        case State.Dead:   return "Dead";
-        default:           return "Unknown";
-    }
-}
-
-// Use:
-string Describe(State state) => state switch
-{
-    State.Active => "Active",
-    State.Dead   => "Dead",
-    _            => "Unknown",
-};
-```
+- Nullable reference types (to catch null dereferences at compile time): Add `-nullable:enable` to the csc.rsp file located directly under the `Assets/` or in the same directory as the assembly definition file.
 
 **Unity APIs:**
 - Add `[NonReorderable]` to serialized `List<T>` or array fields when Inspector reordering should be disabled
@@ -60,36 +60,38 @@ string Describe(State state) => state switch
 
 **Object Pooling:**
 - Use `ObjectPool<T>`, `ListPool<T>`, `HashSetPool<T>`, `DictionaryPool<TKey, TValue>` from `UnityEngine.Pool` instead of custom pool implementations
-
-```csharp
-// Instead of:
-private readonly Queue<Bullet> _pool = new();
-private Bullet Get()            => _pool.Count > 0 ? _pool.Dequeue() : Instantiate(_prefab);
-private void   Return(Bullet b) => _pool.Enqueue(b);
-
-// Use:
-private readonly ObjectPool<Bullet> _pool = new(
-    createFunc:      () => Instantiate(_prefab),
-    actionOnGet:     b  => b.gameObject.SetActive(true),
-    actionOnRelease: b  => b.gameObject.SetActive(false)
-);
-```
+    ```csharp
+    // Instead of:
+    private readonly Queue<Bullet> _pool = new();
+    private Bullet Get()            => _pool.Count > 0 ? _pool.Dequeue() : Instantiate(_prefab);
+    private void   Return(Bullet b) => _pool.Enqueue(b);
+    
+    // Use:
+    private readonly ObjectPool<Bullet> _pool = new(
+        createFunc:      () => Instantiate(_prefab),
+        actionOnGet:     b  => b.gameObject.SetActive(true),
+        actionOnRelease: b  => b.gameObject.SetActive(false)
+    );
+    ```
 
 ### Unity 2021.2+
 
 **.NET Standard 2.1:**
 - Use `Span<T>` for zero-allocation temporary buffers instead of `new T[]`
 - Use index-from-end `array[^1]` instead of `array[array.Length - 1]`
+    ```csharp
+    // Instead of:
+    var last  = items[items.Length - 1];
+    // Use:
+    var last  = items[^1];
+    ```
 - Use range slices `array[1..4]` instead of `Array.Copy` or LINQ `Skip`/`Take`
-
-```csharp
-// Instead of:
-var last  = items[items.Length - 1];
-var slice = items.Skip(1).Take(3).ToArray();
-// Use:
-var last  = items[^1];
-var slice = items[1..4];
-```
+    ```csharp
+    // Instead of:
+    var slice = items.Skip(1).Take(3).ToArray();
+    // Use:
+    var slice = items[1..4];
+    ```
 
 **C# 9.0:**
 - Target-typed `new()`: `List<Enemy> enemies = new();` instead of `new List<Enemy>()`

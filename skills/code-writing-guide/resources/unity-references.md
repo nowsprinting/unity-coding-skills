@@ -6,8 +6,8 @@ Always verify facts against primary sources before implementing.
 
 ### Detected Unity Version
 
-Run this to get the Unity version:  
-`!grep "m_EditorVersion:" ProjectSettings/ProjectVersion.txt 2>/dev/null | sed 's/m_EditorVersion: //' | grep . || echo unknown`
+Project Unity version:
+!`grep "m_EditorVersion:" ProjectSettings/ProjectVersion.txt 2>/dev/null | sed 's/m_EditorVersion: //' | grep . || echo unknown`
 
 This returns a string like `6000.3.7f1`. Call it `<FULL_VERSION>`.  
 For web URLs, truncate to `MAJOR.MINOR` (e.g., `6000.3`). Call it `<SHORT_VERSION>`.
@@ -24,14 +24,20 @@ For web URLs, truncate to `MAJOR.MINOR` (e.g., `6000.3`). Call it `<SHORT_VERSIO
 
 Check documentation in this order:
 
-1. **Local** – `/Applications/Unity/Hub/Editor/<FULL_VERSION>/Documentation/`
+1. **Local**
+    – macOS: `/Applications/Unity/Hub/Editor/<FULL_VERSION>/Documentation/`
+    - Windows: `C:\Program Files\Unity\Hub\Editor\<FULL_VERSION>\Documentation\`
 2. **Web**
     - `https://docs.unity3d.com/<SHORT_VERSION>/Documentation/Manual/UnityManual.html`
     - `https://docs.unity3d.com/<SHORT_VERSION>/Documentation/ScriptReference/index.html`
 
 ### Unity C# Reference
 
-**DeepWiki** – `https://github.com/Unity-Technologies/UnityCsReference`
+To access the C# portion of the Unity engine and editor source code, use the following repository:
+
+`https://github.com/Unity-Technologies/UnityCsReference`
+
+To match the project version, refer to the branch corresponding to `<SHORT_VERSION>` or the tag corresponding to `<FULL_VERSION>`.
 
 ### Unity Discussions
 
@@ -42,8 +48,8 @@ e.g., `https://discussions.unity.com/t/render-pipelines-strategy-for-2026/171000
 
 ## UPM Packages
 
-Cached under `./Library/PackageCache/`. Start with `README.md`; refer to source files as needed.
+Installed packages are cached under `Library/PackageCache/`. Start with `README.md`; refer to source files as needed.
 
 ## NuGet Packages
 
-Packages are listed in `./Assets/packages.config`. Use DeepWiki as the primary reference.
+Installed packages are listed in `Assets/packages.config`. Find the source repository on nuget.org and reference it.
