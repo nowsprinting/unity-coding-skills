@@ -40,7 +40,8 @@ Launch a Plan agent to design the class/method structure. Include the following 
 
 > Design the class/method seams with **testability** in mind:
 > - Prefer small, focused public interfaces
-> - For methods that require testing but do not need to be accessible outside the assembly, use `internal` visibility instead of `public`
+> - **Test through the same seam production code uses.** Tests should exercise the same `public`/`internal` API that production callers go through. Do not promote a `private` method or widen visibility merely to reach it from a test — by default, private stays private.
+> - **Sanctioned exception (reduce combinatorial coverage):** When a method takes **3 or more parameters** — a heuristic for the real trigger, which is that several *independent* conditions combine so exhaustive coverage cost explodes (this can also happen with fewer parameters that each take many values, and may not apply when the extra parameters don't drive branching) — extract the cohesive sub-logic (a pure computation or decision that depends on only 1–2 of those inputs) into its own unit. Prefer a standalone class or pure function when the logic stands on its own; fall back to an `internal` method on the same class only when it cannot be cleanly separated from instance state. Give the extracted unit `internal` (not `public`) visibility when it need not be reachable outside the assembly — the narrowed visibility is a *consequence* of the extraction, not the goal.
 > - Inject dependencies via interfaces so they can be replaced with test doubles
 > - Avoid hidden static/global state and `new` calls inside constructors for external dependencies
 >
@@ -54,7 +55,7 @@ The Plan agent output should include **only**:
 - Dependency interfaces (if any)
 - Brief rationale for design decisions
 
-**Do NOT include** test cases, manual tests, or any test design — those are the sole responsibility of the `test-designer` agent in Step 3.
+**Do NOT include** test cases, manual tests, or any test design and verification instructions — those are the sole responsibility of the `test-designer` agent in Step 3.
 
 ### Step 3: Test Case Design (test-designer Agent)
 
