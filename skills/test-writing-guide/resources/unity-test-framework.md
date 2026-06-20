@@ -18,20 +18,20 @@ Examples:
 
 ## Naming
 
-| Target               | Convention                                                                                                                  |
-|----------------------|-----------------------------------------------------------------------------------------------------------------------------|
-| Test assembly        | `<ProductionAssembly>.Tests`                                                                                                |
-| Test namespace       | Same as the production class under test                                                                                     |
-| Test class           | `<ClassName>Test` — e.g., `CharacterControllerTest`                                                                         |
-| Test method          | `<MethodName>_<Condition>_<ExpectedResult>` — e.g., `TakeDamage_WhenHealthIsZero_ReturnsZero` or `TakeDamage_HPが0のとき_ゼロを返す` |
-| System under test    | `sut`                                                                                                                       |
-| Measured value       | `actual`                                                                                                                    |
-| Expected value       | `expected`                                                                                                                  |
-| Test double variable | Prefix with role: `stub`, `spy`, `mock`, `fake`, `dummy`                                                                    |
+| Target               | Convention                                                                                                            |
+|----------------------|-----------------------------------------------------------------------------------------------------------------------|
+| Test assembly        | `<ProductionAssembly>.Tests`                                                                                          |
+| Test namespace       | Same as the production class under test                                                                               |
+| Test class           | `<ClassName>Test` — e.g., `CharacterControllerTest`                                                                   |
+| Test method          | `<MethodName>_<Condition>_<Expected>` — e.g., `TakeDamage_WhenHealthIsZero_ReturnsZero` or `TakeDamage_HPが0のとき_ゼロを返す` |
+| System under test    | `sut`                                                                                                                 |
+| Measured value       | `actual`                                                                                                              |
+| Expected value       | `expected`                                                                                                            |
+| Test double variable | Prefix with role: `stub`, `spy`, `mock`, `fake`, `dummy`                                                              |
 
-- `<MethodName>` must always match the production method name exactly — never translate it. For integration tests and visual verification tests the test target is not a single method, so `<MethodName>` is omitted and the convention becomes `<Condition>_<ExpectedResult>`.
-- `<Condition>` and `<ExpectedResult>` follow the project language specified in `CLAUDE.md`. If no language is specified, confirm with the user via `AskUserQuestion` before writing tests.
-- Write `<ExpectedResult>` in active voice: `ReturnsTrue`, `ThrowsArgumentException`, `ReducesHpBy3`, etc. For exceptions, include the exception type: `ThrowsArgumentException`, not just `ThrowsException`.
+- `<MethodName>` must always match the production method name exactly — never translate it. For integration tests and visual verification tests the test target is not a single method, so `<MethodName>` is omitted and the convention becomes `<Condition>_<Expected>`.
+- `<Condition>` and `<Expected>` follow the project language specified in `CLAUDE.md`. If no language is specified, default to English.
+- Write `<Expected>` in active voice: `ReturnsTrue`, `ThrowsArgumentException`, `ReducesHpBy3`, etc. For exceptions, include the exception type: `ThrowsArgumentException`, not just `ThrowsException`.
 
 ## Modernize Test Code
 

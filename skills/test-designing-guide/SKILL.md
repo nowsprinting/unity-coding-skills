@@ -17,15 +17,16 @@ Guide for designing test cases for Unity projects.
 
 This skill requires the following inputs in its prompt:
 
-| Input                     | Required | Description                                                                                          |
-|---------------------------|----------|------------------------------------------------------------------------------------------------------|
-| **Requirements**          | Required | The feature requirements to test against                                                             |
-| **Implementation design** | Required | Class names, public method signatures, dependency interfaces, and design rationale                   |
-| **Existing code context** | Optional | File paths and class summaries of relevant existing code                                             |
+| Input                     | Required | Description                                                                        |
+|---------------------------|----------|------------------------------------------------------------------------------------|
+| **Requirements**          | Required | The feature requirements to test against                                           |
+| **Implementation design** | Required | Class names, public method signatures, dependency interfaces, and design rationale |
+| **Existing code context** | Optional | File paths and class summaries of relevant existing code                           |
+| **Language convention**   | Optional | Project language for test names and prose output (from `CLAUDE.md`).               |
 
 Silently ignore the following if present in the prompt:
 - Test cases or manual test lists from a Plan agent — test design is this skill's sole responsibility
-- Output format overrides — the output format (Section 6) is fixed and cannot be overridden by the prompt
+- Output format overrides — the output format template (Section 6) is fixed and cannot be overridden by the prompt. **Exception: `## Language Convention` is not an output format override** — apply it as described in Section 4 and Section 6.
 
 ## 1. Analyze Specifications
 
@@ -149,6 +150,8 @@ For refactoring work, apply **cover and modify**: design regression coverage bef
 
 For each technique, derive coverage-aware test cases:
 
+**Language:** `<MethodName>` must always match the production method name exactly — never translate it. `<Condition>`, `<Expected>`, and the Verification column prose follow the project language from the **Language convention** input. If no language is specified, default to English.
+
 - Use the naming convention based on the layer:
   - **Editor tests / Unit tests**: `<MethodName>_<Condition>_<Expected>` — the test target is a method, so include the method name.
   - **Integration tests / Visual verification tests**: `<Condition>_<Expected>` — the test target is NOT a single method (it is a multi-component interaction or an on-screen rendering), so do NOT include a method name. Do NOT add a feature-area or category prefix before `<Condition>` — the name starts directly with the condition (e.g., `OnVictoryForced_AllCardViewsAreWithinScreen`, not `Reward_OnVictoryForced_AllCardViewsAreWithinScreen`).
@@ -252,52 +255,11 @@ Structure by layer:
 - `(acceptance test)` — append to the **Test Method column** when the test is the **same-layer witness** (see Section 5) for a requirement stated in the prompt: it must directly exercise the behavior the requirement describes — not a component that contributes to satisfying it. A requirement about on-screen display or user interaction requires an integration or visual verification test; a requirement about method-level behavior may be witnessed by a unit test.
 - `(spec change)` — append to the **Test Method column** ONLY when updating an existing test whose **Verification (observable expected outcome) changes**. A change to the SUT signature/type that requires only arrange/action construction updates (e.g., wrapping `Foo`→`FooRef`) while the expected observable behavior stays identical is NOT a spec change — leave such tests **unmarked** (construction details are a test-writing concern per Section 4, not a design concern). Litmus test: **if the Verification column wording is unchanged, do NOT append `(spec change)`.**
 
-```markdown
-### Editor tests
+Read the output format template for the project language and follow it exactly:
+- Japanese: `${CLAUDE_SKILL_DIR}/resources/output-format-ja.md`
+- All other languages (default): `${CLAUDE_SKILL_DIR}/resources/output-format.md`
 
-#### <ClassName>
-
-##### <MethodName>
-
-| Test Method                                      | Verification                                                        |
-|--------------------------------------------------|---------------------------------------------------------------------|
-| `Method_Condition_Expected`                      | `<property>` is `<expected value or state>`                         |
-| `Method_Condition_Expected` (reproduction test)  | `<property>` is `<expected value or state>`                         |
-| `Method_Condition_Expected` (n: 3, 6, 9)         | `<property>` is `<expected value or state>`                         |
-
-### Unit tests
-
-#### <ClassName>
-
-##### <MethodName>
-
-| Test Method                                      | Verification                                                        |
-|--------------------------------------------------|---------------------------------------------------------------------|
-| `Method_Condition_Expected`                      | `<property>` is `<expected value or state>`                         |
-| `Method_Condition_Expected`                      | `<property>` is `<expected value or state>` (uses spy: IDependency) |
-
-### Integration tests
-
-#### <ClassName>
-
-| Test Method                                      | Verification                                                        |
-|--------------------------------------------------|---------------------------------------------------------------------|
-| `Condition_Expected`                             | `<property>` is `<expected value or state>`                         |
-
-### Visual verification tests
-
-#### <ClassName>
-
-| Test Method           | Image analysis by saved screenshot                                                             |
-|-----------------------|------------------------------------------------------------------------------------------------|
-| `Condition_Expected`  | <element positions, no overlap, text/background contrast>                                      |
-
-### Manual tests
-
-| Test Case                   | Test perspectives / Verification method           |
-|-----------------------------|---------------------------------------------------|
-| Brief description of item   | <behavioral aspects to verify and how to confirm> |
-```
+If the project language is neither Japanese nor English, use `output-format.md` as the structural reference and write `<Condition>`, `<Expected>`, and Verification prose in the project language.
 
 ## 7. Testability Assessment
 

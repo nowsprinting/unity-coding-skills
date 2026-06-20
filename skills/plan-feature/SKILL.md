@@ -69,11 +69,15 @@ After Step 2, launch the `test-designer` agent using the following prompt struct
 
 ## Existing Code Context
 [relevant existing code structure from Step 1 Explore]
+
+## Language Convention
+[project language for test names and prose, e.g., Japanese]
 ```
 
 **Rules for assembling the prompt:**
 - Under `Implementation Design`, include only the design output — **do NOT include any test cases or manual tests** the Plan agent may have produced. Test design is the `test-designer` agent's sole responsibility.
 - **Do NOT add output format specifications.** The `test-designer` agent's output format is self-contained; caller-supplied format overrides produce non-standard output.
+- **Always include `## Language Convention`.** Resolve the project language from `CLAUDE.md` (look for the language specified for test method names / code comments). If `CLAUDE.md` does not specify a language, default to English. The `## Language Convention` block is a recognized input, not an output format override.
 
 The `test-designer` agent returns:
 - **Test Cases** across all layers (Editor tests, Unit tests, Integration tests, Visual verification tests, Manual tests) — ready to paste into the plan file as one block
@@ -81,8 +85,8 @@ The `test-designer` agent returns:
 
 #### Handling the Testability Assessment
 
-| Result              | Action                                                                                          |
-|---------------------|-------------------------------------------------------------------------------------------------|
+| Result              | Action                                                                                         |
+|---------------------|------------------------------------------------------------------------------------------------|
 | `TESTABILITY: PASS` | Proceed to Step 4 (Review)                                                                     |
 | `TESTABILITY: WARN` | Proceed to Step 4; record the Testability Issues in the plan file's "Known Trade-offs" section |
 | `TESTABILITY: FAIL` | Loop back to Step 2 (see below); maximum **1 retry**                                           |
