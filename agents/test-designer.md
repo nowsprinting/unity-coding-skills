@@ -22,7 +22,7 @@ metadata:
 1. Read and understand:
    - The requirements / feature specification passed in the prompt
    - The class/method design produced by the Plan agent (signatures, dependencies, seams)
-   - Any relevant existing code context from Phase 1 Explore
+   - Any relevant existing code context from Step 1 Explore
 2. Apply the test design methodology from the `test-designing-guide` skill to produce test cases.
 3. Output the result in the exact format specified by the skill.
 

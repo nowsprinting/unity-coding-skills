@@ -28,13 +28,13 @@ If the user's request is to investigate or fix a bug rather than implement a new
 
 ## Plan Mode Workflow
 
-### Phase 1: Initial Understanding
+### Step 1: Initial Understanding
 
 Launch Explore agents to understand the codebase relevant to the task.
 
 **TBD items:** If the requirements or specifications explicitly contain the text "TBD" for any item, treat that item as non-existent — do not design or implement it. Only ask the user via `AskUserQuestion` if the TBD item is a prerequisite that cannot be deferred without blocking the overall design.
 
-### Phase 2: Implementation Design (Plan Agent)
+### Step 2: Implementation Design (Plan Agent)
 
 Launch a Plan agent to design the class/method structure. Include the following instruction in the Plan agent prompt:
 
@@ -54,21 +54,21 @@ The Plan agent output should include **only**:
 - Dependency interfaces (if any)
 - Brief rationale for design decisions
 
-**Do NOT include** test cases, manual tests, or any test design — those are the sole responsibility of the `test-designer` agent in Phase 3.
+**Do NOT include** test cases, manual tests, or any test design — those are the sole responsibility of the `test-designer` agent in Step 3.
 
-### Phase 3: Test Case Design (test-designer Agent)
+### Step 3: Test Case Design (test-designer Agent)
 
-After Phase 2, launch the `test-designer` agent using the following prompt structure:
+After Step 2, launch the `test-designer` agent using the following prompt structure:
 
 ```
 ## Requirements
 [feature requirements]
 
 ## Implementation Design
-[class names, public and internal method signatures, dependency interfaces, and design rationale from the Phase 2 Plan agent]
+[class names, public and internal method signatures, dependency interfaces, and design rationale from the Step 2 Plan agent]
 
 ## Existing Code Context
-[relevant existing code structure from Phase 1 Explore]
+[relevant existing code structure from Step 1 Explore]
 ```
 
 **Rules for assembling the prompt:**
@@ -83,18 +83,18 @@ The `test-designer` agent returns:
 
 | Result              | Action                                                                                          |
 |---------------------|-------------------------------------------------------------------------------------------------|
-| `TESTABILITY: PASS` | Proceed to Phase 4 (Review)                                                                     |
-| `TESTABILITY: WARN` | Proceed to Phase 4; record the Testability Issues in the plan file's "Known Trade-offs" section |
-| `TESTABILITY: FAIL` | Loop back to Phase 2 (see below); maximum **1 retry**                                           |
+| `TESTABILITY: PASS` | Proceed to Step 4 (Review)                                                                     |
+| `TESTABILITY: WARN` | Proceed to Step 4; record the Testability Issues in the plan file's "Known Trade-offs" section |
+| `TESTABILITY: FAIL` | Loop back to Step 2 (see below); maximum **1 retry**                                           |
 
-#### Loopback to Phase 2 (on FAIL)
+#### Loopback to Step 2 (on FAIL)
 
 1. Extract the "Testability Issues" table from the `test-designer` agent output
 2. Re-launch the Plan agent with:
    - The previous design output
    - The Testability Issues
    - Instruction: "Revise the design to address the Testability Issues listed below"
-3. Re-run Phase 3 with the revised design
+3. Re-run Step 3 with the revised design
 4. If still `FAIL` after one retry → **Abort** (see below)
 
 #### Abort (second consecutive FAIL)
@@ -102,63 +102,20 @@ The `test-designer` agent returns:
 Use `AskUserQuestion` to present the user with three options:
 - Proceed with the current design despite testability concerns
 - Exit plan mode to revise the requirements
-- Provide explicit design hints and re-run Phase 2
+- Provide explicit design hints and re-run Step 2
 
-### Phase 4: Review
+### Step 4: Review
 
 Read the critical files identified in the plan. Verify that the Plan agent's design and the `test-designer` agent's test cases are consistent with each other and with the user's intent.
 
-### Phase 5: Write the Plan File
+### Step 5: Write the Plan File
 
 Assemble the plan file with the following sections:
 
 1. **Context** — why this change is needed
-2. **Implementation Design** — from Phase 2 Plan agent output
+2. **Implementation Design** — from Step 2 Plan agent output
 3. **Test Cases** — pasted verbatim as one block from the `test-designer` agent output (all 5 layers: Editor tests, Unit tests, Integration tests, Visual verification tests, Manual tests). Do NOT rewrite, translate, or clean up the output — the `test-designer` agent already enforces the content restrictions defined in `test-designing-guide` (no framework attributes, no async/coroutine patterns, no rationale text, etc.).
 4. **Known Trade-offs** — from `TESTABILITY: WARN` issues (if any)
-5. **Development Workflow** — paste the **Template** from `## Development Workflow` verbatim as the body of this section in the plan file, then add any project-specific steps per `CLAUDE.md`
+5. **Development Workflow** — Read `${CLAUDE_SKILL_DIR}/resources/development-workflow-template.md` and paste its full contents verbatim as the body of this section in the plan file, then add any project-specific steps per `CLAUDE.md`
 
-### Phase 6: Call ExitPlanMode
-
----
-
-## Development Workflow
-
-Paste the **Template** below verbatim as the body of the `## Development Workflow` section in the plan file.
-
-### Template
-
-```markdown
-### Step 1: Skeleton (Compilable)
-
-1. Create types and method signatures only — must compile, need not work yet. **New methods: empty body only** (no logic, no exceptions; value-returning methods must return a literal default: `0`, `false`, or `null`); **modify: signature only, body unchanged**; **delete: remove the entire method** — test code may fail to compile after modify or delete; fix in Step 2
-
-### Step 2: Test First
-
-1. Launch `failing-test-writer` agent with: path to this plan file
-2. Check `STATUS:` line in the `failing-test-writer` output — if `STATUS: NG`, **STOP: do not proceed to Step 3**, report unexpected passes to user
-3. Commit test code to git (skeleton is not committed yet — do not include it) — if test code is modified in Step 3 or later, the integrity of Test First is compromised; commit here without fail so the diff remains verifiable
-
-### Step 3: Implementation
-
-1. Implement product code
-2. Run tests with `/run-tests` and confirm **all pass**
-3. Commit product code to git (includes skeleton from Step 1, and any unavoidable test code changes)
-
-### Step 4: Refactoring
-
-1. Launch `test-deduplicator` agent with: list of test files added or modified in Step 2
-2. Resolve diagnostics at the `warning` or higher severity level using the following procedure,
-   **one file at a time** — `mcp__ide__getDiagnostics` only returns results for files currently open
-   in editor tabs, and opening all files at once exceeds the tab limit:
-   1. `mcp__jetbrains__open_file_in_editor` — open the file in the editor
-   2. `mcp__ide__getDiagnostics` — collect all diagnostics for that file
-   3. Fix all reported issues as a single set before moving to the next file
-
-   Use `mcp__ide__getDiagnostics` instead of `mcp__jetbrains__get_file_problems` (unstable) or
-   the Unity compiler output (does not reflect `.editorconfig` severity settings).
-3. Run tests with `/run-tests` and confirm **all pass**
-4. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
-5. Run tests with `/run-tests` and confirm **all pass**
-6. Commit all remaining changes to git
-```
+### Step 6: Call ExitPlanMode
