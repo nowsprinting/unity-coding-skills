@@ -2,8 +2,6 @@
 
 #### <ClassName>
 
-##### <MethodName>
-
 | Test Method                                     | Verification                                                        |
 |-------------------------------------------------|---------------------------------------------------------------------|
 | `Method_Condition_Expected`                     | `<property>` is `<expected value or state>`                         |
@@ -13,8 +11,6 @@
 ### Unit tests
 
 #### <ClassName>
-
-##### <MethodName>
 
 | Test Method                                      | Verification                                                        |
 |--------------------------------------------------|---------------------------------------------------------------------|

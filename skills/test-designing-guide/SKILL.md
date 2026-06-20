@@ -57,7 +57,7 @@ For each test target, select appropriate techniques:
 
 - **Equivalence partitioning** — group inputs into valid/invalid partitions; one representative per partition. When an **invalid** equivalence partition exists but the spec does not define its behavior (e.g., what happens for negative input, out-of-range values, null), use the `AskUserQuestion` tool to confirm the expected behavior before deriving test cases. Do not guess or invent the behavior.
 - **Boundary value analysis** — test at the edges of each equivalence partition. Over-testing boundaries inflates the number of test cases and increases maintenance cost on every spec change. Mitigate this with parameterized tests that consolidate boundary cases into a single test method. When the spec doesn't differentiate behavior near edges (e.g., display color mapping), a representative per equivalence partition is sufficient and boundary testing can be skipped entirely.
-- **State transition testing** — if the target has a finite-state-machine (FSM); one test case covers only 0-switch coverage (a direct transition from state A to state B with no intermediate states in between)
+- **State transition testing** — if the target has a finite-state-machine (FSM); one test case covers only 0-switch coverage (covering every direct transition from state A to state B, with no intermediate states in between)
 - **Decision table testing** — if multiple conditions combine to produce different outcomes
 - **Error guessing** — experience-based; derive cases from failure patterns common in game development. Examples to consider: rapid button mashing, simultaneous button press, input during scene transition / loading, collision tunneling, random distribution bias or PRNG sequence looping, numeric overflow, network failure. Use this to surface implementation concerns that spec-based techniques don't reach.
 
@@ -127,11 +127,11 @@ Verify from the user's perspective — assert on-screen display and UI interacti
 
 When the test target is a prefab, scene, or a GameObject composed of multiple components, consider the following test perspectives:
 
-- **UI operation sequences** — click, drag, and other player operations that advance game mechanics over one or more frames
 - **Multi-frame event system interactions** — behaviors triggered by Unity's event system that unfold across multiple frames
 - **Scene transitions** — behaviors that span or depend on scene loading and unloading
+- **UI operation sequences** — click, drag, and other player operations that advance game mechanics over one or more frames
 - **UI blocking** — verify that UI elements behind a modal dialog or overlay are unreachable (blocked from interaction); conversely, verify those elements are reachable when no overlay is present
-- **UI layout** — verify element bounds, overlap, and text overflow using rect-comparison assertions:
+- **UI layout** — verify that buttons, toggles, and other interactive elements and text components do not overlap each other or overflow their parent containers, and that text does not overflow, using rect-comparison assertions:
   - Any layout bug expressible as a geometric predicate warrants a deterministic integration test assertion — e.g., "is element within screen bounds?", "do two elements overlap?", "does text overflow its container?" Design these as **integration tests only**; do NOT additionally design a visual verification test for the same geometric property.
   - Do NOT verify positional relationships between elements or on-screen positions (e.g., "A is displayed to the right of B") — approximate positions have no meaningful pass/fail criterion, and precise coordinate checks are brittle. Use visual verification tests for these instead.
 
@@ -152,9 +152,9 @@ For each technique, derive coverage-aware test cases:
 
 **Language:** `<MethodName>` must always match the production method name exactly — never translate it. `<Condition>`, `<Expected>`, and the Verification column prose follow the project language from the **Language convention** input. If no language is specified, default to English.
 
-- Use the naming convention based on the layer:
-  - **Editor tests / Unit tests**: `<MethodName>_<Condition>_<Expected>` — the test target is a method, so include the method name.
-  - **Integration tests / Visual verification tests**: `<Condition>_<Expected>` — the test target is NOT a single method (it is a multi-component interaction or an on-screen rendering), so do NOT include a method name. Do NOT add a feature-area or category prefix before `<Condition>` — the name starts directly with the condition (e.g., `OnVictoryForced_AllCardViewsAreWithinScreen`, not `Reward_OnVictoryForced_AllCardViewsAreWithinScreen`).
+- Use the naming convention based on whether the test target is a method:
+  - **Method target** — `<MethodName>_<Condition>_<Expected>`: all **Unit tests**, and **Editor tests whose target is a method** (Editor extension code under `/Editor/`).
+  - **Non-method target** — `<Condition>_<Expected>`: all **Integration tests** and **Visual verification tests** (multi-component interaction or on-screen rendering), and **Editor tests whose target is not a method** (asset file validation, cross-asset consistency checks — the SUT is an asset or set of assets). Do NOT include a method name. Do NOT add a feature-area or category prefix before `<Condition>` — the name starts directly with the condition (e.g., `OnVictoryForced_AllCardViewsAreWithinScreen`, not `Reward_OnVictoryForced_AllCardViewsAreWithinScreen`).
   - For **parameterized tests**, the `<Condition>` segment is the **equivalence partition name**, not an enumeration of individual argument values.
   - The `<Expected>` segment names the **concrete resulting state or value** of that one partition (e.g. `IsNotInteractable`, `ReturnsFizz`), never a condition or comparison. Words like `Matches…`, `OnlyWhen…`, `DependingOn…`, `BasedOn…` in the name — or "only when / only if / depending on" in the Verification — signal that the outcome varies with input, meaning two partitions were merged into one method — split into one method per outcome (see [Deriving test methods from equivalence partitions](#deriving-test-methods-from-equivalence-partitions) in Section 3).
 - Do NOT create sequential IDs in test case names
@@ -248,8 +248,7 @@ Output must contain the following blocks **in this order**:
 > Do NOT write "Edit Mode" or "Play Mode" in test case output — that is a test-writing concern, not a design concern.
 
 Structure by layer:
-- **Editor tests / Unit tests**: `#### <ClassName>` → `##### <MethodName>` → table
-- **Integration tests / Visual verification tests**: `#### <ClassName>` → table
+- **Editor tests / Unit tests / Integration tests / Visual verification tests**: `#### <ClassName>` → table
 - **Manual tests**: no class/method section; uses a table of test cases with "Test perspectives / Verification method" column instead of "Verification"
   - Test perspectives — *what* behavioral aspects, conditions, or interactions are verified for this target. NOT a test technique name
 
