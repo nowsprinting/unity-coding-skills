@@ -40,10 +40,11 @@ For each test target, determine which layer it belongs to based on its nature an
 
 1. **Editor tests** — for Editor extension code (paths containing `/Editor/`), asset file validation, and cross-asset consistency checks.
 2. **Unit tests** — test runtime code whose execution is **initiated by a direct method call**. This includes tests that verify behavior driven by Unity's lifecycle (Awake, Start, Update, etc.) or UI events. Prioritize **least integrated** targets, testing them comprehensively; for highly integrated targets (where the SUT collaborates with dependent objects), keep test density low and focus on interactions between objects.
-3. **Integration tests** — test targets that are a **GameObject with multiple components added via `AddComponent<T>()`**, a **prefab**, or a **scene**. Unit tests cover targets whose execution is initiated by a direct method call; integration tests cover behavior that only emerges from Unity's component wiring.
+3. **Integration tests** — test targets that are a **scene or prefab** (or an equivalent GameObject hierarchy assembled in test code), together with the interplay among its placed components (MonoBehaviour subclasses) and the assets they reference. Unit tests cover targets whose execution is initiated by a direct method call; integration tests cover behavior that only emerges from Unity's component wiring and asset linkage.
    - Add the integration test method to the test class of the **primary class** involved; OR
    - Create a new dedicated test class if there is no clear primary class (e.g., when the subject is a prefab or scene).
    - Explicitly design integration tests **before** falling back to visual verification tests or manual tests; only drop to those layers when the behavior cannot be expressed as a functional assertion.
+   - When the **asset itself** is the SUT (file validation, cross-asset consistency), classify it as an **Editor test**, not an integration test; integration tests assert the runtime behavior that emerges from a scene/prefab's linkage to its assets.
 4. **Visual verification tests** — verify that actual on-screen rendering is correct. Take screenshots in the test code, and image analysis (see Section 4). Design these **before** falling back to manual tests.
 5. **Manual tests** — reserved for items that **neither automated tests nor image analysis can verify** — i.e., items requiring human sensory judgment with no objective pass/fail criterion (e.g., game feel, animation polish, audio balance). Do NOT add manual tests for scenarios already covered by integration tests or visual verification tests, even if they seem "worth confirming by eye."
 
@@ -125,10 +126,11 @@ When the SUT consumes a pseudo-random number generator (`UnityEngine.Random`, `S
 
 Verify from the user's perspective — assert on-screen display and UI interactions as much as possible. Avoid relying on internal state or property checks when user-visible behavior can be asserted instead.
 
-When the test target is a prefab, scene, or a GameObject composed of multiple components, consider the following test perspectives:
+When the test target is a scene or prefab (or an equivalent GameObject hierarchy assembled in test code) with interplaying components and assets, consider the following test perspectives:
 
 - **Multi-frame event system interactions** — behaviors triggered by Unity's event system that unfold across multiple frames
 - **Scene transitions** — behaviors that span or depend on scene loading and unloading
+- **Asset linkage** — runtime behaviors that emerge when placed components load or reference assets (e.g., ScriptableObject data, referenced prefabs)
 - **UI operation sequences** — click, drag, and other player operations that advance game mechanics over one or more frames
 - **UI blocking** — verify that UI elements behind a modal dialog or overlay are unreachable (blocked from interaction); conversely, verify those elements are reachable when no overlay is present
 - **UI layout** — verify that buttons, toggles, and other interactive elements and text components do not overlap each other or overflow their parent containers, and that text does not overflow, using rect-comparison assertions:
