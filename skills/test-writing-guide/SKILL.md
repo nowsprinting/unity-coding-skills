@@ -17,9 +17,6 @@ Guide for writing test code for Unity projects.
 
 - Before modifying any test file, check if the editor is in Play Mode. If it is, stop it using the `mcp__jetbrains__unity_play_control` tool first.
 - Never create `.meta` files. Unity editor creates them automatically.
-- When implementing a test for an `internal` visibility method, add `[Category("Internal")]` to the test method.
-- When implementing tests designed as integration tests, add `[Category("Integration")]` to the test method.
-- When implementing tests designed as acceptance tests (marked `(acceptance test)` in the test case design), add `[Category("Acceptance")]` to the test method.
 - When a test creates a `GameObject`, add `[CreateScene]` to the test method (not required if `[LoadScene]` is already present).
 - When adding a test seam to production code (e.g., an `internal` accessor or a virtual override point to support injection), always wrap it with `#if UNITY_INCLUDE_TESTS` … `#endif` so it is excluded from non-test builds:
     ```csharp
@@ -28,7 +25,48 @@ Guide for writing test code for Unity projects.
     #endif
     ```
 
+### Categories
+
+- When implementing tests designed as integration tests, add `[Category("Integration")]` to the test method.
+- When implementing tests designed as visual verification tests, add `[Category("VisualVerification")]` to the test method.
+- When implementing tests designed as acceptance tests (marked `(acceptance test)` in the test case design), add `[Category("Acceptance")]` to the test method.
+- For test methods that test the `internal` visibility method, add `[Category("Internal")]`.
+- For test methods that depend on animation timing or other timing-sensitive conditions that may cause instability on slow CPUs, add `[Category("IgnoreCI")]`.
+- For test methods that specify the `GameViewResolution` attribute, add `[Category("IgnoreCI")]`.
+
+### Multi-frame tests
+
+When a game mechanic across frames (e.g., playing a card and waiting for its resolution), wait for the step to finish before asserting — not at a fixed frame count.
+
+```csharp
+await DragCard(Cards[1], Enemies[0]);
+while (battleDirector.IsPlaying) // wait until the played action fully resolves
+    await Awaitable.NextFrameAsync();
+Assert.That(battleState.Enemies[0].Hp, Is.LessThan(hpBefore));
+```
+
+- To confirm step completion, use a production-side state machine or a "busy" signal (`IsPlaying`, coroutine flag, etc.). Do not use a fixed number of frames or `WaitForSeconds`.
+- When UniTask is available, `UniTask.WaitUntil` and `UniTask.WaitUntilValueChanged` are alternatives to the `while` loop:
+  ```csharp
+  await UniTask.WaitUntil(() => isActive == false);
+  await UniTask.WaitUntilValueChanged(this, x => x.isActive);
+  ```
+- When an operation triggers a deferred `Destroy` or UI rebuild, advance one extra `await Awaitable.NextFrameAsync()` before asserting on the new hierarchy.
+
 ### UI Tests
+
+#### Verify UI layout with rect-comparison assertions
+
+When a layout requirement is a geometric predicate — *is this element within the screen? do two elements overlap? does text overflow its container?* — write it as an integration test with rect assertions, not a visual verification test.
+Reasons:
+
+- **Deterministic pass/fail**: boolean assertions run unattended in CI without a human reading screenshots.
+- **Pins the specific bug**: an overlap assertion names the two elements; a screenshot cannot.
+- **Do NOT add a visual verification test for the same geometric property** — use visual verification only for what a rect cannot express (legibility, color, positional relationships like "A is to the right of B").
+
+Before asserting, settle layout with `Canvas.ForceUpdateCanvases()` then `await Awaitable.NextFrameAsync()`. Add `[FocusGameView]` to the fixture; add `[GameViewResolution]` (and `[Category("IgnoreCI")]`) only when the assertion depends on a fixed resolution.
+
+See `unity-test-framework.md` → **UI Layout Testing** for rect helper recipes (within-screen, overlap, container overflow, text overflow).
 
 #### Use GameObjectFinder instead of GameObject.Find
 
@@ -59,6 +97,15 @@ scene.OnConfirmClicked();
 await new UguiClickOperator().OperateAsync(button);
 await new UguiTextInputOperator().OperateAsync(inputField, "12345");
 ```
+
+#### Verify modal/overlay blocking
+
+A modal or overlay must block interaction with elements behind it. Test from two angles:
+
+- **Behavioural (preferred)**: attempt to reach a background element via `GameObjectFinder` with `reachable: true` (default) while the overlay is open — the finder throws `TimeoutException`, confirming blockage. Repeat with the overlay dismissed to confirm reachability restores.
+- **Structural**: assert the backdrop intercepts raycasts: `Assert.That(background.GetComponent<Image>().raycastTarget, Is.True)` (or `canvasGroup.blocksRaycasts`).
+
+When a decorative full-screen element should not block (e.g., a background image), annotate it with `NonBlockingAnnotation` so `GameObjectFinder` skips it (see `test-helper-ui.md`).
 
 ### Visual verification tests
 

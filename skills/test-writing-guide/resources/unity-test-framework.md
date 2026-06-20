@@ -5,7 +5,8 @@
 - Tests targeting `Editor/` code → `Tests/Editor/` (Edit Mode tests)
 - Tests targeting `Runtime/` code → `Tests/Runtime/` (Play Mode tests)
 - Mirror the production code's directory structure within the test directory
-- Test doubles (Stub, Spy, Mock, Fake, Dummy) → `Tests/Runtime/TestDoubles/` (even for Edit Mode tests)
+- Test doubles (stub, spy, mock, fake, and dummy) → `Tests/Runtime/TestDoubles/` (also usable from Edit Mode tests)
+- Test assistance utilities (creation method, custom assertion, etc.) → `Tests/Runtime/TestUtils/` (also usable from Edit Mode tests)
 - Test scenes → `Tests/Scenes/`
 
 ### Creating a Test Assembly
@@ -527,6 +528,36 @@ private static bool IsWithin(Rect inner, Rect outer) =>
 |---------------------------|----------------------------------------------------------------------------------------------------------------|
 | Element outside container | `Assert.That(IsWithin(GetLocalRect(elementRt, containerRt), GetLocalRect(containerRt, containerRt)), Is.True)` |
 | Two elements overlapping  | `Assert.That(GetLocalRect(rt1, rootRt).Overlaps(GetLocalRect(rt2, rootRt)), Is.False)`                         |
+
+### Element within screen bounds
+
+For **Screen Space – Overlay** canvases, world position equals screen position, so `GetWorldCorners` returns screen-space coordinates directly. Use these helpers:
+
+```csharp
+private static Rect GetScreenRect(RectTransform rt)
+{
+    var corners = new Vector3[4];
+    rt.GetWorldCorners(corners); // [0]=bottom-left, [2]=top-right
+    return new Rect(corners[0].x, corners[0].y, corners[2].x - corners[0].x, corners[2].y - corners[0].y);
+}
+
+// why not Rect.Contains: Contains treats xMax/yMax as EXCLUSIVE (point.x < xMax),
+// so an element flush to the screen edge — or rounded there by GetWorldCorners's
+// sub-pixel floats — would falsely fail.
+private static bool IsWithinScreen(Rect r) =>
+    r.xMin >= -0.5f && r.yMin >= -0.5f &&
+    r.xMax <= Screen.width + 0.5f && r.yMax <= Screen.height + 0.5f;
+```
+
+| What to detect                              | Assertion                                                        |
+|---------------------------------------------|------------------------------------------------------------------|
+| Element off-screen / clipped by screen edge | `Assert.That(IsWithinScreen(GetScreenRect(elementRt)), Is.True)` |
+
+> **Canvas render mode**: `GetScreenRect` assumes **Screen Space – Overlay** (world position == screen position). For Screen Space – Camera or World Space, project each corner with `RectTransformUtility.WorldToScreenPoint(canvas.worldCamera, corner)` instead.
+>
+> **Screen-size dependence**: `Screen.width`/`Screen.height` track the current Game View resolution. Add `[GameViewResolution]` (and `[Category("IgnoreCI")]`) when the result must hold at a specific resolution.
+
+For multi-element assertions: to verify no element in a set overlaps any other, loop pairwise with `Rect.Overlaps`; for horizontal-only containment in a scroll viewport, compare `xMin`/`xMax` against the viewport rect with the same ±0.5f tolerance.
 
 ### `RectMask2D` precondition
 
