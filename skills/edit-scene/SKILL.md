@@ -28,6 +28,7 @@ Guide for creating and editing Unity scene files in Unity projects.
 - **Prefer the `mcp__jetbrains__run_method_in_unity` tool (MCP Server Extension for Unity) for execution.** Define a `public static` method in the script (adding `[MenuItem("Tools/...")]` is optional) and invoke it directly via `mcp__jetbrains__run_method_in_unity`. Only fall back to `execute_run_configuration` or other alternatives when `mcp__jetbrains__run_method_in_unity` is unavailable.
 - For uGUI buttons and text, use the **legacy variants** (`UnityEngine.UI.Button` / `UnityEngine.UI.Text`). Do not use TextMeshPro unless the user explicitly requests it.
 - Apply context-menu-equivalent defaults when creating uGUI components (see Resources below).
+- Give every GameObject the user operates (buttons, toggles, input fields, etc.) a name that makes its hierarchy path unique within the scene/prefab. Otherwise, automated tests cannot identify the GameObject.
 
 ## Gotchas
 

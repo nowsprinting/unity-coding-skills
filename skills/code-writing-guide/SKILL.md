@@ -18,6 +18,7 @@ Guide for writing code in Unity projects.
 - Before modifying any code file, check if the editor is in Play Mode. If it is, stop it using the `mcp__jetbrains__unity_play_control` tool first — Play Mode may skip recompilation, leaving stale code active.
 - Never create `.meta` files. Unity editor creates them automatically.
 - When editing (creating or modifying) scene (`.unity`) or prefab (`.prefab`) files, use the `edit-scene` skill.
+- When instantiating a prefab multiple times, give each instance a unique `GameObject.name`; otherwise, automated tests cannot identify a specific instance. Use a concrete name (e.g., `"<PrefabName>(Hero)"`) or append an index (e.g., `"<PrefabName>(0)"`).
 
 ## Resources
 
