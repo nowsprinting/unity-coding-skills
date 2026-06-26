@@ -6,6 +6,7 @@ description: >-
   mode when the user wants to review or refine existing test code (a single
   test file or a directory of tests) so it follows the project's test design
   and writing conventions. Typically invoked as `/refine-tests <path>`.
+argument-hint: "[path]"
 license: Unlicense
 metadata:
   author: Koji Hasegawa

@@ -7,6 +7,7 @@ description: >-
   existing specification. Even if the user only says "plan this" or "how should
   we implement this", load this skill to ensure the full test-first planning
   workflow is followed.
+argument-hint: "[spec]"
 license: Unlicense
 metadata:
   author: Koji Hasegawa

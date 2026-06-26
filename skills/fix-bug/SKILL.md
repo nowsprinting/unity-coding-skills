@@ -6,6 +6,7 @@ description: >-
   investigate or fix a defect. Even if the user says "something's broken", "this isn't working",
   "fix this bug", or "why does X happen", load this skill to guide the full
   reproduce → diagnose → fix cycle.
+argument-hint: "[incident or failing-test-name]"
 license: Unlicense
 metadata:
   author: Koji Hasegawa
