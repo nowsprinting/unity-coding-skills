@@ -121,6 +121,6 @@ Assemble the plan file with the following sections:
 2. **Implementation Design** — from Step 2 Plan agent output
 3. **Test Cases** — pasted verbatim as one block from the `test-designer` agent output (all 5 layers: Editor tests, Unit tests, Integration tests, Visual verification tests, Manual tests). Do NOT rewrite, translate, or clean up the output — the `test-designer` agent already enforces the content restrictions defined in `test-designing-guide` (no framework attributes, no async/coroutine patterns, no rationale text, etc.).
 4. **Known Trade-offs** — from `TESTABILITY: WARN` issues (if any)
-5. **Development Workflow** — Read `${CLAUDE_SKILL_DIR}/resources/development-workflow-template.md` and paste its full contents verbatim as the body of this section in the plan file, then add any project-specific steps per `CLAUDE.md`
+5. **Development Workflow** — Read `${CLAUDE_SKILL_DIR}/assets/development-workflow-template.md` and paste its full contents verbatim as the body of this section in the plan file, then add any project-specific steps per `CLAUDE.md`
 
 ### Step 6: Call ExitPlanMode

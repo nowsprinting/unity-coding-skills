@@ -100,6 +100,6 @@ Assemble the plan file with these sections:
 
 1. **Context** — what is being refined and why
 2. **Findings** — the Findings list from Steps 2–4 (location / rule / proposed change; may include production visibility changes)
-3. **Refine Workflow** — Read `${CLAUDE_SKILL_DIR}/resources/refine-workflow-template.md` and paste its full contents verbatim as the body of this section
+3. **Refine Workflow** — Read `${CLAUDE_SKILL_DIR}/assets/refine-workflow-template.md` and paste its full contents verbatim as the body of this section
 
 ### Step 7: Call ExitPlanMode

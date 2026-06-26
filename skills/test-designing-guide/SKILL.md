@@ -261,8 +261,8 @@ Structure by layer:
 - `(spec change)` — append to the **Test Method column** ONLY when updating an existing test whose **Verification (observable expected outcome) changes**. A change to the SUT signature/type that requires only arrange/action construction updates (e.g., wrapping `Foo`→`FooRef`) while the expected observable behavior stays identical is NOT a spec change — leave such tests **unmarked** (construction details are a test-writing concern per Section 4, not a design concern). Litmus test: **if the Verification column wording is unchanged, do NOT append `(spec change)`.**
 
 Read the output format template for the project language and follow it exactly:
-- Japanese: `${CLAUDE_SKILL_DIR}/resources/output-format-ja.md`
-- All other languages (default): `${CLAUDE_SKILL_DIR}/resources/output-format.md`
+- Japanese: `${CLAUDE_SKILL_DIR}/assets/output-format-ja.md`
+- All other languages (default): `${CLAUDE_SKILL_DIR}/assets/output-format.md`
 
 If the project language is neither Japanese nor English, use `output-format.md` as the structural reference and write `<Condition>`, `<Expected>`, and Verification prose in the project language.
 
