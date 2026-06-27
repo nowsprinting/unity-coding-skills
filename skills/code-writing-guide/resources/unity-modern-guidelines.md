@@ -106,8 +106,8 @@ Project Unity version:
 **Object Find APIs:**
 - `UnityEngine.Object.FindObjectOfType`, `Object.FindObjectOfType<T>`, `Object.FindObjectsOfType`, `Object.FindObjectsOfType<T>`, `Object.FindObjectsOfTypeAll`, `Object.FindObjectsOfTypeIncludingAssets`, `Object.FindSceneObjectsOfType` are obsolete
 - Use `Object.FindObjectsByType` / `Object.FindObjectsByType<T>` instead of `FindObjectsOfType`
-- Use `Object.FindAnyObjectByType` / `Object.FindAnyObjectByType<T>` when any matching instance suffices (faster than `FindFirst`)
-- Use `Object.FindFirstObjectByType` / `Object.FindFirstObjectByType<T>` when only the first match is needed
+- Use `Object.FindAnyObjectByType` / `Object.FindAnyObjectByType<T>` when a single matching instance is needed (faster than `FindFirst`; unlike `FindFirst`, not deprecated in 6000.4+)
+- `Object.FindFirstObjectByType` / `Object.FindFirstObjectByType<T>` is available but deprecated in Unity 6000.4+ — prefer `FindAnyObjectByType` (see **Object Find APIs** under Unity 6000.4+)
 - For code under `Packages/` whose minimum supported version is below 2022.3, guard with `UNITY_2022_3_OR_NEWER`
     ```csharp
     #if UNITY_2022_3_OR_NEWER
@@ -209,5 +209,17 @@ _ = SpawnAsync(destroyCancellationToken);
     return Object.FindObjectsByType<Button>(FindObjectsSortMode.None);
     #else
     return Object.FindObjectsOfType<Button>();
+    #endif
+    ```
+
+**Singular Object Find APIs:**
+- `Object.FindFirstObjectByType<T>` is obsolete — it relied on InstanceID ordering, which can no longer be guaranteed after the InstanceID → EntityId migration
+- Use `Object.FindAnyObjectByType<T>` instead; it is already available since Unity 2022.3+ so no additional 6000.4 version gate is needed
+- For code under `Packages/` whose minimum supported version is below 2022.3, use a two-branch guard:
+    ```csharp
+    #if UNITY_2022_3_OR_NEWER
+    var obj = Object.FindAnyObjectByType<MyComponent>();
+    #else
+    var obj = Object.FindObjectOfType<MyComponent>();
     #endif
     ```
