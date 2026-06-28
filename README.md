@@ -7,19 +7,19 @@ This plugin provides the methodology, conventions, and tools to make that signal
 
 ## Included Skills
 
-| Skill                      | Description                                                                                                    | Required                                                                                                                                                                                            |
-|----------------------------|----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `code-writing-guide`       | Coding conventions and guidelines for Unity C# projects                                                        |                                                                                                                                                                                                     |
-| `edit-scene`               | Creates and modifies `.unity` and `.prefab` files                                                              | JetBrains [MCP server](https://www.jetbrains.com/help/rider/mcp-server.html) and [MCP Server Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |
-| `fix-bug`                  | Diagnoses and fixes bugs using a test-first workflow (reproduce, diagnose, fix)                                |                                                                                                                                                                                                     |
-| `plan-feature`             | Orchestrates the test-first planning workflow for feature implementation in plan mode                          |                                                                                                                                                                                                     |
-| `refine-tests`             | Reviews existing test code for conformance to the test design and writing guides, then plans the refinement    |                                                                                                                                                                                                     |
-| `run-tests`                | Running Unity tests via the `run_unity_tests` tool                                                             | JetBrains [MCP server](https://www.jetbrains.com/help/rider/mcp-server.html) and [MCP Server Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |
-| `test-designing-guide`     | Design maintainable test cases; reduce redundant tests, tests without assertions, and unnecessary test doubles |                                                                                                                                                                                                     |
-| `test-writing-guide`       | Conventions for writing Unity Test Framework test code                                                         | [Test Helper](https://github.com/nowsprinting/test-helper) and [UI Test Helper](https://github.com/nowsprinting/test-helper.ui) package                                                             |
-| `unity-yaml-editing-guide` | Guidelines for directly hand-editing Unity YAML asset files                                                    |                                                                                                                                                                                                     |
+| Skill                      | Description                                                                                                    | Required                                                                                                                                                                                  |
+|----------------------------|----------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `code-writing-guide`       | Coding conventions and guidelines for Unity C# projects                                                        |                                                                                                                                                                                           |
+| `edit-scene`               | Creates and modifies `.unity` and `.prefab` files                                                              | [MCP server](https://www.jetbrains.com/help/rider/mcp-server.html) and [MCP Server Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |
+| `fix-bug`                  | Diagnoses and fixes bugs using a test-first workflow (reproduce, diagnose, fix)                                |                                                                                                                                                                                           |
+| `plan-feature`             | Orchestrates the test-first planning workflow for feature implementation in plan mode                          |                                                                                                                                                                                           |
+| `refine-tests`             | Reviews existing test code for conformance to the test design and writing guides, then plans the refinement    |                                                                                                                                                                                           |
+| `run-tests`                | Running Unity tests via the `run_unity_tests` tool                                                             | [MCP server](https://www.jetbrains.com/help/rider/mcp-server.html) and [MCP Server Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |
+| `test-designing-guide`     | Design maintainable test cases; reduce redundant tests, tests without assertions, and unnecessary test doubles |                                                                                                                                                                                           |
+| `test-writing-guide`       | Conventions for writing Unity Test Framework test code                                                         | [Test Helper](https://github.com/nowsprinting/test-helper) and [UI Test Helper](https://github.com/nowsprinting/test-helper.ui) package                                                   |
+| `unity-yaml-editing-guide` | Guidelines for directly hand-editing Unity YAML asset files                                                    |                                                                                                                                                                                           |
 
-## Included Agents
+## Included Subagents
 
 | Agent                 | Description                                                                                                             |
 |-----------------------|-------------------------------------------------------------------------------------------------------------------------|
@@ -56,28 +56,31 @@ Commit the resulting `.claude/settings.json` to your repository.
 
 ### 1. MCP Server Configuration
 
-The `run-tests` and `edit-scene` skills require JetBrains built-in MCP server and extension.
+The `run-tests` and `edit-scene` skills require the JetBrains Rider built-in MCP server and extension.
 
-1. Enable JetBrains built-in [MCP server](https://www.jetbrains.com/help/rider/mcp-server.html)
-2. Install [MCP Server Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity)
-3. Add the following to your project `.mcp.json` or user MCP settings:
-
-```json
-{
-  "mcpServers": {
-    "jetbrains": {
-      "type": "http",
-      "url": "http://localhost:64342/stream"
+1. Enable built-in [MCP server](https://www.jetbrains.com/help/rider/mcp-server.html)
+2. Add the following to your project `.mcp.json` or user MCP settings:
+    ```json
+    {
+      "mcpServers": {
+        "jetbrains": {
+          "type": "http",
+          "url": "http://localhost:64342/stream"
+        }
+      }
     }
-  }
-}
-```
+    ```
+3. Install [MCP Server Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin
 
 > [!IMPORTANT]\
 > Do not change the MCP server name `jetbrains`.
 
+> [!IMPORTANT]\
+> When using other JetBrains IDEs simultaneously with Rider, port numbers are assigned in the order they are launched.
+> For example, if you launch Rider after IDEA, the port number for Rider will be `64343`.
+
 > [!TIP]\
-> The JetBrains MCP server also provides tools useful for Coding Agents, such as `search_symbol` and `search_in_files_by_regex`.
+> The JetBrains MCP server also provides tools useful for the coding agents, e.g., `search_symbol`, `find_files_by_glob`.
 
 ### 2. Enforcing coding rules via `.editorconfig`
 
@@ -92,8 +95,10 @@ resharper_unused_member_global_highlighting = warning
 resharper_unused_member_local_highlighting = warning
 ```
 
-The Rider plugin for measuring complexity is also useful.
-e.g., [CognitiveComplexity](https://plugins.jetbrains.com/plugin/12024-cognitivecomplexity), [CyclomaticComplexity](https://plugins.jetbrains.com/plugin/10395-cyclomaticcomplexity)
+The Rider plugins for measuring complexity are also useful:
+
+- [CognitiveComplexity](https://plugins.jetbrains.com/plugin/12024-cognitivecomplexity)
+- [CyclomaticComplexity](https://plugins.jetbrains.com/plugin/10395-cyclomaticcomplexity)
 
 ## Usage
 
@@ -109,13 +114,15 @@ The created plan file includes the following:
 
 - Layered-designed test cases
   - Reduce redundant tests, tests without assertions, and unnecessary test doubles
-  - Editor tests
-  - Unit tests (Play Mode tests)
+  - Editor tests (Edit Mode tests for editor extensions and validate assets)
+  - Unit tests (Play Mode tests for runtime code)
   - Integrated tests including UI operation
   - Visual verification tests using image analysis
 - Test-first development workflow
   - Effective (failable) test code
   - Definition of Done
+- Run static analysis to improve internal quality
+- Run the Claude Code built-in `/simplify` skill
 
 ### Bug fixes through reproduction testing
 
@@ -125,9 +132,10 @@ Type out of plan mode:
 /fix-bug <INCIDENT>
 ```
 
-Specify a problem description or a failing test as `INCIDENT`.
+Create, run, and verify tests to reproduce the bug, then fix it.
 
-First, create, run, and verify a test that reproduces the bug, and then fix the bug.
+> [!TIP]\
+> The `INCIDENT` can specify an issue description or the failed test name.
 
 > [!NOTE]\
 > Depending on the incident, the root cause may be identified before writing a reproduction test. Under adjustment.
