@@ -1,16 +1,16 @@
-# Troubleshooting the `mcp__jetbrains__run_unity_tests` Tool
+# Troubleshooting the `run_unity_tests` Tool
 
 ## Tool Not Found
 
-If the `mcp__jetbrains__run_unity_tests` tool is not available, consider the following causes:
+If the `run_unity_tests` tool is not available, consider the following causes:
 
 1. [MCP Server Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin is not installed: Install it from **Settings > Plugins**.
 2. Built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html) is not enabled: Open **Settings > Tools > MCP Server** and turn on **Enable MCP Server**.
-3. The tool is disabled: Open **Settings > Tools > MCP Server > Exposed Tools** and turn on **UnityEditorToolset** and **mcp__jetbrains__run_unity_tests**.
+3. The tool is disabled: Open **Settings > Tools > MCP Server > Exposed Tools** and turn on **UnityEditorToolset** and **run_unity_tests**.
 
 ## When Tool Response Does Not Return
 
-`mcp__jetbrains__run_unity_tests` does not return until the test run completes or times out (default: 300 seconds).
+`run_unity_tests` does not return until the test run completes or times out (default: 300 seconds).
 **Do not call the tool again while waiting — duplicate calls launch a second test run on top of the first.**
 
 If the response takes longer than expected, check:
@@ -40,7 +40,7 @@ Fix the tool call and retry immediately. No log investigation needed.
 
 Rider cannot see the Unity Editor. Possible causes:
 
-- **Compilation errors**: Play Mode tests cannot run if there are compilation errors. Check with `mcp__jetbrains__get_unity_compilation_result` and fix errors before retrying.
+- **Compilation errors**: Play Mode tests cannot run if there are compilation errors. Check with `get_unity_compilation_result` and fix errors before retrying.
 - **Editor not running**: Use the `execute_run_configuration` tool to launch the `Start Unity` configuration, then retry.
 - **Wrong project open**: Verify the Editor has the correct project loaded.
 
@@ -90,7 +90,7 @@ Paths are from Unity's [Log Files](https://docs.unity3d.com/Manual/log-files.htm
 
 ### JetBrains Rider log (primary)
 
-Every `mcp__jetbrains__run_unity_tests` invocation writes here. Grep keywords: `UnityTestMcpHandler`, `RunUnityTestsTool`.
+Every `run_unity_tests` invocation writes here. Grep keywords: `UnityTestMcpHandler`, `RunUnityTestsTool`.
 
 | OS      | Path                                              |
 |---------|---------------------------------------------------|

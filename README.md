@@ -58,26 +58,16 @@ Commit the resulting `.claude/settings.json` to your repository.
 
 The `run-tests` and `edit-scene` skills require the JetBrains Rider built-in MCP server and extension.
 
-1. Enable built-in [MCP server](https://www.jetbrains.com/help/rider/mcp-server.html)
-2. Add the following to your project `.mcp.json` or user MCP settings:
-    ```json
-    {
-      "mcpServers": {
-        "jetbrains": {
-          "type": "http",
-          "url": "http://localhost:64342/stream"
-        }
-      }
-    }
-    ```
+1. Enable built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html)
+2. Click the "Auto-Configure" button
 3. Install [MCP Server Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin
 
 > [!IMPORTANT]\
-> Do not change the MCP server name `jetbrains`.
-
-> [!IMPORTANT]\
-> When using other JetBrains IDEs simultaneously with Rider, port numbers are assigned in the order they are launched.
+> When Rider is earlier than 2026.2 and you are using other JetBrains IDEs simultaneously with Rider, port numbers are assigned in the order they are launched.
 > For example, if you launch Rider after IDEA, the port number for Rider will be `64343`.
+
+> [!TIP]\
+> The MCP server is registered under different names depending on your Rider version: `rider` on Rider 2026.2 or later, `jetbrains` on versions earlier than 2026.2.
 
 > [!TIP]\
 > The JetBrains MCP server also provides tools useful for the coding agents, e.g., `search_symbol`, `find_files_by_glob`.

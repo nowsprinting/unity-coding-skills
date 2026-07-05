@@ -1,16 +1,16 @@
-# Troubleshooting the `mcp__jetbrains__run_method_in_unity` Tool
+# Troubleshooting the `run_method_in_unity` Tool
 
 ## Tool Not Found
 
-If the `mcp__jetbrains__run_method_in_unity` tool is not available, consider the following causes:
+If the `run_method_in_unity` tool is not available, consider the following causes:
 
 1. [MCP Server Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin is not installed: Install it from **Settings > Plugins**.
 2. Built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html) is not enabled: Open **Settings > Tools > MCP Server** and turn on **Enable MCP Server**.
-3. The tool is disabled: Open **Settings > Tools > MCP Server > Exposed Tools** and turn on **UnityEditorToolset** and **mcp__jetbrains__run_method_in_unity**.
+3. The tool is disabled: Open **Settings > Tools > MCP Server > Exposed Tools** and turn on **UnityEditorToolset** and **run_method_in_unity**.
 
 ## When Tool Response Does Not Return
 
-`mcp__jetbrains__run_method_in_unity` blocks until the method returns. Unlike `mcp__jetbrains__run_unity_tests`, it is **not** governed by `MCP_TOOL_TIMEOUT` — there is no configurable timeout, no domain-reload reconnection, and no re-launch logic. The only Kotlin-side wait is the initial 30-second Unity Editor connection check.
+`run_method_in_unity` blocks until the method returns. Unlike `run_unity_tests`, it is **not** governed by `MCP_TOOL_TIMEOUT` — there is no configurable timeout, no domain-reload reconnection, and no re-launch logic. The only Kotlin-side wait is the initial 30-second Unity Editor connection check.
 
 **Do not call the tool again while waiting — concurrent calls are unsupported and may interleave console-log collection.**
 
@@ -40,7 +40,7 @@ Fix the tool call and retry immediately. No log investigation needed.
 
 Rider cannot see the Unity Editor. Possible causes:
 
-- **Compilation errors**: The Editor may have disconnected due to compile errors. Check with `mcp__jetbrains__get_unity_compilation_result` and fix errors before retrying.
+- **Compilation errors**: The Editor may have disconnected due to compile errors. Check with `get_unity_compilation_result` and fix errors before retrying.
 - **Editor not running**: Use the `execute_run_configuration` tool to launch the `Start Unity` configuration, then retry.
 - **Wrong project open**: Verify the Editor has the correct project loaded.
 
@@ -61,7 +61,7 @@ Common categories:
 - **Method not found** — the method name is misspelled or the method does not exist on the type.
 - **Signature mismatch** — the method is not static or has parameters; the reflection constraint requires a static parameterless method.
 
-Before retrying: call `mcp__jetbrains__get_unity_compilation_result` to confirm the assembly is compiled and loaded, then double-check the spelling and access modifiers in the source file.
+Before retrying: call `get_unity_compilation_result` to confirm the assembly is compiled and loaded, then double-check the spelling and access modifiers in the source file.
 
 ### `success: false` — Unexpected exception
 
@@ -89,13 +89,13 @@ A Kotlin-side exception was caught unexpectedly. Capture the message verbatim an
 
 4. **Concurrent calls are unsupported** — there is no backend serialization. Calling the tool a second time while the first is still in progress may interleave console-log collection or cause unexpected behavior in resharper-unity's Rd RPC layer.
 
-5. **Domain reload during the call is undefined** — unlike `mcp__jetbrains__run_unity_tests`, there is no reconnection or re-launch logic for domain reloads triggered mid-call. If the method causes script recompilation, the call will fail in an undefined way. Run `mcp__jetbrains__get_unity_compilation_result` separately to trigger a refresh and confirm compilation succeeds before calling this tool.
+5. **Domain reload during the call is undefined** — unlike `run_unity_tests`, there is no reconnection or re-launch logic for domain reloads triggered mid-call. If the method causes script recompilation, the call will fail in an undefined way. Run `get_unity_compilation_result` separately to trigger a refresh and confirm compilation succeeds before calling this tool.
 
 6. **Console logs after method return may be missed** — `UnityConsoleLogCollector` waits 500 ms after the RPC returns for trailing logs to arrive (`LOG_FLUSH_DELAY_MS`). Logs that flush after a frame boundary or arrive more than 500 ms later will not appear in the response.
 
 7. **`logs` is absent on `success: false`** — the error response shape is `{"success": false, "errorMessage": "..."}` with no `logs` field. Do not assume `logs` is always present.
 
-8. **C# source changes require a compilation refresh first** — the tool description explicitly states: if you have modified any C# source files, call `mcp__jetbrains__get_unity_compilation_result` first to trigger a refresh and verify compilation succeeds before invoking this tool.
+8. **C# source changes require a compilation refresh first** — the tool description explicitly states: if you have modified any C# source files, call `get_unity_compilation_result` first to trigger a refresh and verify compilation succeeds before invoking this tool.
 
 ## Log Files to Investigate
 
@@ -103,7 +103,7 @@ Paths are from Unity's [Log Files](https://docs.unity3d.com/Manual/log-files.htm
 
 ### JetBrains Rider log (primary)
 
-`mcp__jetbrains__run_method_in_unity` only writes to this log when a Kotlin-side exception is caught — i.e., when the tool returns `success: false` with `errorMessage: "<ExceptionClassName>: <message>"`. For that scenario, grep for `RunMethodInUnityTool`. Successful calls, validation errors, the 30-second connection timeout, "No protocol available", and resharper-unity reflection failures are **not** written to `idea.log` from this plugin's code path.
+`run_method_in_unity` only writes to this log when a Kotlin-side exception is caught — i.e., when the tool returns `success: false` with `errorMessage: "<ExceptionClassName>: <message>"`. For that scenario, grep for `RunMethodInUnityTool`. Successful calls, validation errors, the 30-second connection timeout, "No protocol available", and resharper-unity reflection failures are **not** written to `idea.log` from this plugin's code path.
 
 > There is no custom C# handler for this tool — it calls resharper-unity's `frontendBackendModel.runMethodInUnity` Rd RPC directly. No C# handler keyword exists to grep for.
 
@@ -130,5 +130,5 @@ Editor-side crashes, compilation errors, and `Debug.Log` output from the invoked
 1. Check `errorMessage` first — validation and connection failures need no log investigation.
 2. For `success: true`, always inspect `logs` for `"type": "Error"` entries before concluding the method succeeded.
 3. If the response is delayed and the Editor is running and connected, the Unity-side method is most likely stuck in a long-running operation, infinite loop, or waiting on something that never completes — no log line is written on dispatch. Force-quit and restart the Editor, then retry once.
-4. For `"did not connect within 30 seconds"`, see [Unity Editor not connected](#success-false--unity-editor-not-connected) in this file. Note: `BackendUnityModel=null` is a `mcp__jetbrains__run_unity_tests` C# handler log and will not appear for this tool.
-5. For method resolution failures, verify the assembly compiles via `mcp__jetbrains__get_unity_compilation_result`, then re-check the fully qualified type name and method signature in the source.
+4. For `"did not connect within 30 seconds"`, see [Unity Editor not connected](#success-false--unity-editor-not-connected) in this file. Note: `BackendUnityModel=null` is a `run_unity_tests` C# handler log and will not appear for this tool.
+5. For method resolution failures, verify the assembly compiles via `get_unity_compilation_result`, then re-check the fully qualified type name and method signature in the source.

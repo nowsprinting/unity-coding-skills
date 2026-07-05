@@ -6,7 +6,7 @@ description: >-
   iteration, reads those files and any existing files in the same test class,
   identifies and removes true duplicates, merges parameterizable tests, then
   commits. Returns a summary of removals/merges, or "no duplicates found".
-tools: Bash, Read, Edit, Write, mcp__jetbrains__*
+tools: Bash, Read, Edit, Write, mcp__jetbrains__*, mcp__rider__*
 skills:
   - test-designing-guide
   - test-writing-guide

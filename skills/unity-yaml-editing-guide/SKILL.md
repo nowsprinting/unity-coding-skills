@@ -28,7 +28,7 @@ Guide for directly editing Unity YAML-serialized asset files for Unity projects.
 - **Quote strings only when they contain non-ASCII characters,** and escape every non-ASCII code point as `\uXXXX` inside double quotes — plain ASCII stays unquoted. Match how Unity itself emits the file.
 - **Use 2-space indent, LF line endings, UTF-8 without BOM, and a trailing newline at EOF.** Tabs, CRLF, or a BOM round-trip badly when Unity re-saves the file.
 - **Do not add comments, YAML aliases (`*name`), extra tags, or chomping indicators (`|`, `>`).** Unity's YAML parser drops or rejects them, and re-save would strip cosmetic formatting anyway — don't bother polishing what Unity will normalize.
-- **After editing, let Unity re-import the asset** (focus the Editor) and confirm successful import using `mcp__jetbrains__get_unity_compilation_result`. Review the diff Unity produces on next save to confirm the edit was accepted as intended.
+- **After editing, let Unity re-import the asset** (focus the Editor) and confirm successful import using `get_unity_compilation_result`. Review the diff Unity produces on next save to confirm the edit was accepted as intended.
 
 ## Gotchas
 

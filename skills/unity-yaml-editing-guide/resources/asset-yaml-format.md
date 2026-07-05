@@ -204,7 +204,7 @@ Unity does **not** preserve user formatting, key ordering, or comments when it r
 **Recommended workflow after hand-editing:**
 
 1. Save the file.
-2. Focus the Unity Editor (or call `AssetDatabase.Refresh()` via `mcp__jetbrains__run_method_in_unity`).
+2. Focus the Unity Editor (or call `AssetDatabase.Refresh()` via `run_method_in_unity`).
 3. Unity re-imports the asset and normalizes the file.
 4. Run `git diff` to review what Unity changed — confirm the intent of the edit was preserved and no unintended data was dropped.
 

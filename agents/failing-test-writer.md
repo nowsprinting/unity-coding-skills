@@ -7,7 +7,7 @@ description: >-
   the table), runs the tests to confirm they fail (production code does not yet
   exist). Returns a summary of files added/modified and confirmation that tests
   failed as expected.
-tools: Bash, Read, Edit, Write, Skill, mcp__jetbrains__*
+tools: Bash, Read, Edit, Write, Skill, mcp__jetbrains__*, mcp__rider__*
 skills:
   - test-writing-guide
   - run-tests

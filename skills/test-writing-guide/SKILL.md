@@ -15,7 +15,7 @@ Guide for writing test code for Unity projects.
 
 ## Rules
 
-- Before modifying any test file, check if the editor is in Play Mode. If it is, stop it using the `mcp__jetbrains__unity_play_control` tool first.
+- Before modifying any test file, check if the editor is in Play Mode. If it is, stop it using the `unity_play_control` tool first.
 - Never create `.meta` files. Unity editor creates them automatically.
 - When a test creates a `GameObject`, add `[CreateScene]` to the test method (not required if `[LoadScene]` is already present).
 - When adding a test seam to production code (e.g., an `internal` accessor or a virtual override point to support injection), always wrap it with `#if UNITY_INCLUDE_TESTS` … `#endif` so it is excluded from non-test builds:

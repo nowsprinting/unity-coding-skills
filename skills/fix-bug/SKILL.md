@@ -126,11 +126,11 @@ Before applying the fix, check whether the affected area has adequate coverage f
 2. Resolve diagnostics at the `warning` or higher severity level using the following procedure,
    **one file at a time** — `mcp__ide__getDiagnostics` only returns results for files currently open
    in editor tabs, and opening all files at once exceeds the tab limit:
-   1. `mcp__jetbrains__open_file_in_editor` — open the file in the editor
+   1. `open_file_in_editor` — open the file in the editor
    2. `mcp__ide__getDiagnostics` — collect all diagnostics for that file
    3. Fix all reported issues as a single set before moving to the next file
 
-   Use `mcp__ide__getDiagnostics` instead of `mcp__jetbrains__get_file_problems` (unstable) or
+   Use `mcp__ide__getDiagnostics` instead of `get_file_problems` (unstable) or
    the Unity compiler output (does not reflect `.editorconfig` severity settings).
 3. Re-run tests using `/run-tests` command to confirm they still pass
 4. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
