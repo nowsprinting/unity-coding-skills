@@ -23,6 +23,10 @@ metadata:
 4. Commit the changes as a dedicated commit.
 5. Return a summary.
 
+## Overriding Rule
+
+**Never trade coverage for tidiness.** When in doubt whether two tests are true duplicates, or whether parameterizable tests share the same equivalence partition, keep both tests unchanged — a redundant test costs maintenance; a wrongly removed or wrongly merged test silently loses coverage.
+
 ## Duplicate Definition
 
 A true duplicate has **both** of the following in common with another test:

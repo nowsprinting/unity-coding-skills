@@ -1,7 +1,8 @@
 ### Step 1: Modify Tests
 
-1. Apply the changes described in the Findings section — test edits, plus any production visibility changes (a method demoted to `private`, or a dead test-only seam removed)
-2. Run tests with `/run-tests` and confirm **all pass**
+1. Load the `test-writing-guide` skill — and the `code-writing-guide` skill if the Findings include production changes; do not rely on automatic skill triggering
+2. Apply the changes described in the Findings section — test edits, plus any production visibility changes (a method demoted to `private`, or a dead test-only seam removed)
+3. Run tests with `/run-tests` and confirm **all pass**
 
 ### Step 2: Refactoring
 

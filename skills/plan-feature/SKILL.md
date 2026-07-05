@@ -54,6 +54,7 @@ The Plan agent output should include **only**:
 - Class names and responsibilities
 - Public and internal method signatures
 - Dependency interfaces (if any)
+- File placement: the file path for each new or modified class, and the assembly (`.asmdef`) it belongs to — assembly boundaries drive test references and `InternalsVisibleTo`, so the implementer must not have to re-derive placement
 - Brief rationale for design decisions
 
 **Do NOT include** test cases, manual tests, or any test design and verification instructions — those are the sole responsibility of the `test-designer` agent in Step 3.

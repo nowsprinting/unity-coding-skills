@@ -1,7 +1,8 @@
 ### Step 1: Skeleton (Compilable)
 
-1. Create types and method signatures only — must compile, need not work yet. **New methods: empty body only** (no logic, no exceptions; value-returning methods must return a literal default: `0`, `false`, or `null`); **modify: signature only, body unchanged**; **delete: remove the entire method** — test code may fail to compile after modify or delete; fix in Step 2
-2. Commit skeleton to git
+1. Load the `code-writing-guide` skill — the skeleton is production code; do not rely on automatic skill triggering
+2. Create types and method signatures only — must compile, need not work yet. **New methods: empty body only** (no logic, no exceptions; value-returning methods must return a literal default: `0`, `false`, or `null`); **modify: signature only, body unchanged**; **delete: remove the entire method** — test code may fail to compile after modify or delete; fix in Step 2. Place each file at the path and in the assembly specified in the Implementation Design section
+3. Commit skeleton to git
 
 ### Step 2: Test First
 
@@ -11,9 +12,10 @@
 
 ### Step 3: Implementation
 
-1. Implement product code
-2. Run tests with `/run-tests` and confirm **all pass**
-3. Commit product code to Git (including any unavoidable changes to the test code).
+1. Load the `code-writing-guide` skill — do not rely on automatic skill triggering
+2. Implement product code
+3. Run tests with `/run-tests` and confirm **all pass**
+4. Commit product code to Git (including any unavoidable changes to the test code).
 
 ### Step 4: Refactoring
 

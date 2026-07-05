@@ -60,7 +60,26 @@ Search the project's test code for existing tests closest to the bug scenario. T
 
 Use Explore agents to locate relevant test files and test cases.
 
-Load the `test-designing-guide` skill to design the reproduction test case, then load `test-writing-guide` to implement it. Place the reproduction test near the similar tests found above.
+Launch the `test-designer` agent to design the reproduction test case — do not design it in the main context; the agent is pinned to Opus so test design stays on the stronger model even when the implementation model is faster. Use the following prompt structure:
+
+```
+## Requirements
+[Bug report from Step 1: Condition / Expected / Actual.
+Task type: bug-fix — design a reproduction test and regression tests per the reproduction-tests section of the guide.]
+
+## Implementation Design
+[Existing class/method structure of the affected production code, from the Explore results — this is the design; there is no new design for a bug fix]
+
+## Existing Code Context
+[Nearby test files, test classes, and conventions found above]
+
+## Language Convention
+[Project language resolved from CLAUDE.md; default English]
+```
+
+From the agent's output, take the test case marked `(reproduction test)`. Keep any regression test cases for Step 6 — do not implement them yet.
+
+Then load the `test-writing-guide` skill and implement the reproduction test. Place it near the similar tests found above.
 
 If an existing test is testing the wrong behavior (i.e., the test itself is buggy), rewrite
 that test to correctly reproduce the bug rather than adding a new one.
@@ -106,19 +125,21 @@ With the reproduction confirmed, investigate the root cause:
 
 Before applying the fix, check whether the affected area has adequate coverage for adjacent behavior:
 
-1. Read the test files for the affected production code
-2. Identify behaviors that could regress from the change but are not currently tested
-3. If gaps exist, add regression tests and run them — they must **pass**
+1. Start from the regression test cases the `test-designer` agent produced in Step 2 (if Step 2 ran)
+2. Read the test files for the affected production code
+3. Identify behaviors that could regress from the change but are not currently tested
+4. If gaps exist, add regression tests (per `test-writing-guide`) and run them — they must **pass**
    (they test existing correct behavior, not the bug itself)
 
 ### Step 7: Apply Fix & Verify
 
-1. Apply the fix formulated in Step 5 to the production code
-2. Run all affected tests using `/run-tests`
-3. Confirm:
+1. Load the `code-writing-guide` skill — do not rely on automatic skill triggering
+2. Apply the fix formulated in Step 5 to the production code
+3. Run all affected tests using `/run-tests`
+4. Confirm:
    - The reproduction test now **passes** (bug is fixed)
    - All regression tests still **pass**
-4. Commit production code fix to git (includes regression tests from Step 6 and any unavoidable changes to the reproduction test)
+5. Commit production code fix to git (includes regression tests from Step 6 and any unavoidable changes to the reproduction test)
 
 ### Step 8: Refactoring
 

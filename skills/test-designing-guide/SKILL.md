@@ -24,6 +24,8 @@ This skill requires the following inputs in its prompt:
 | **Existing code context** | Optional | File paths and class summaries of relevant existing code                           |
 | **Language convention**   | Optional | Project language for test names and prose output (from `CLAUDE.md`).               |
 
+For bug-fix tasks, the **Requirements** input is the bug report (Condition / Expected / Actual), and the **Implementation design** input is the existing class/method structure of the affected production code — there is no new design.
+
 Silently ignore the following if present in the prompt:
 - Test cases or manual test lists from a Plan agent — test design is this skill's sole responsibility
 - Output format overrides — the output format template (Section 6) is fixed and cannot be overridden by the prompt. **Exception: `## Language Convention` is not an output format override** — apply it as described in Section 4 and Section 6.

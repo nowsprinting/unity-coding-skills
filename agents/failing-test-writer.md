@@ -9,6 +9,7 @@ description: >-
   failed as expected.
 tools: Bash, Read, Edit, Write, Skill, mcp__jetbrains__*, mcp__rider__*
 skills:
+  - code-writing-guide
   - test-writing-guide
   - run-tests
 license: Unlicense
@@ -18,7 +19,7 @@ metadata:
 
 ## Your Responsibilities
 
-1. Load and apply the `test-writing-guide` skill **before** writing or modifying any test code.
+1. Load and apply the `test-writing-guide` and `code-writing-guide` skills **before** writing or modifying any test code — test code is code, so both guides apply.
 2. Read the plan file to extract the Test Cases table.
 3. Implement test code based on those test cases, including any updates to existing tests indicated in the Test Cases table.
 4. Run the added/modified tests with `/run-tests` and confirm they **fail**.
@@ -30,7 +31,7 @@ metadata:
 
 ## Rules
 
-- Load `test-writing-guide` **before** writing or modifying any test code.
+- Load `test-writing-guide` and `code-writing-guide` **before** writing or modifying any test code.
 - Tests must compile and run — but **must fail** at the end of this step. That is the expected outcome of Test First. **Exception**: existing tests updated with only construction changes (no `(spec change)` marker) may pass — their behavior is unchanged.
 - Do NOT implement any production code — test code only.
 - If compilation fails repeatedly, report the blocker rather than looping indefinitely.
