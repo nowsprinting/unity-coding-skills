@@ -4,6 +4,7 @@ description: >-
   Provides guidelines for running Unity tests using the run_unity_tests tool.
   Make sure to use this skill whenever running, executing, or re-running tests on the Unity editor.
   This includes verifying implementations, debugging test failures, running specific test assemblies, or any task that involves the run_unity_tests tool.
+  Also covers running Play Mode tests on the player for verifying player-only behavior (e.g., #if directives and code stripping).
   Even if the user just says "run the tests" or "check if it passes", use this skill.
 license: Unlicense
 metadata:
@@ -25,6 +26,18 @@ Before running tests, complete the following steps in order:
 Then use the `run_unity_tests` tool to run the tests on the Unity editor.
 
 Test execution can take several minutes. Do not re-run while a test is in progress — always wait for it to complete or time out. If a timeout occurs, narrow down the tests using filter settings and re-run.
+
+## Run Tests on the Player
+
+`run_unity_tests` runs tests only inside the Unity Editor. Run tests on a player instead when the user asks for it (e.g., "run on player", "standalone", "実機で実行"), or when player-only behavior must be verified (code inside `#if !UNITY_EDITOR`, `Resources`-based loading, IL2CPP, player-build hooks such as `ITestPlayerBuildModifier`). Pick the section below by target platform.
+
+### Standalone Player
+
+For a standalone player running on the host OS (macOS, Windows, or Linux): Read `${CLAUDE_SKILL_DIR}/resources/run-on-standalone-player.md`. It covers the build-and-run procedure and troubleshooting including `Player.log` locations.
+
+### Other Players
+
+TBD
 
 ## Rules for Test Failures
 

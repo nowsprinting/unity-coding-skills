@@ -110,6 +110,10 @@ Editor-side crashes, domain reloads, compile errors, and test-framework lifecycl
 | Windows | `%LOCALAPPDATA%\Unity\Editor\Editor.log` |
 | Linux   | `~/.config/unity3d/Editor.log`           |
 
+### Editor.log vs Editor-prev.log
+
+Unity's normal convention is `Editor.log` = current session, `Editor-prev.log` = previous session. This does not always hold — some setups (e.g., an Editor session attached to Rider/an IDE) have been observed writing the actively-updated log to `Editor-prev.log` while `Editor.log` sits stale from an earlier session. Before trusting either file, compare their modification times (`ls -la` on both) and read whichever is actually current; do not assume the filename tells you which one is live.
+
 ## Log Patterns by Scenario
 
 ### Unity Editor not connected
