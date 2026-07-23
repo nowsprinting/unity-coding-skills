@@ -29,9 +29,9 @@
 
 #### <ClassName>
 
-| Test Method           | Image analysis by saved screenshot                                                             |
-|-----------------------|------------------------------------------------------------------------------------------------|
-| `Condition_Expected`  | <element positions, no overlap, text/background contrast>                                      |
+| Test Method          | Image analysis by saved screenshot                                                                             |
+|----------------------|----------------------------------------------------------------------------------------------------------------|
+| `Condition_Expected` | <visual aspects per Section 4 — e.g. element positions, no overlap, text/background contrast, font size/style> |
 
 ### Manual tests
 

@@ -102,17 +102,16 @@ Type in plan mode:
 
 The created plan file includes the following:
 
-- Layered-designed test cases
-  - Reduce redundant tests, tests without assertions, and unnecessary test doubles
+- Layered-designed test cases to reduce redundant tests, tests without assertions, and unnecessary test doubles:
   - Editor tests (Edit Mode tests for editor extensions and validate assets)
   - Unit tests (Play Mode tests for runtime code)
-  - Integrated tests including UI operation
+  - Integration tests including UI operation and layout assertions
   - Visual verification tests using image analysis
 - Test-first development workflow
   - Effective (failable) test code
   - Definition of Done
-- Run static analysis to improve internal quality
-- Run the Claude Code built-in `/simplify` skill
+  - Run static analysis to improve internal quality
+  - Run the Claude Code built-in `/simplify` skill
 
 ### Bug fixes through reproduction testing
 

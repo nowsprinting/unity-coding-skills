@@ -19,16 +19,16 @@ Examples:
 
 ## Naming
 
-| Target               | Convention                                                                                                            |
-|----------------------|-----------------------------------------------------------------------------------------------------------------------|
-| Test assembly        | `<ProductionAssembly>.Tests`                                                                                          |
-| Test namespace       | Same as the production class under test                                                                               |
-| Test class           | `<ClassName>Test` — e.g., `CharacterControllerTest`                                                                   |
+| Target               | Convention                                                                                                                     |
+|----------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| Test assembly        | `<ProductionAssembly>.Tests`                                                                                                   |
+| Test namespace       | Same as the production class under test                                                                                        |
+| Test class           | `<ClassName>Test` — e.g., `CharacterControllerTest`                                                                            |
 | Test method          | `<MethodName>_<Condition>_<Expected>` — e.g., `TakeDamage_WhenHealthIsZero_ReturnsZero` or `TakeDamage_HPが0のとき_ゼロを返す` |
-| System under test    | `sut`                                                                                                                 |
-| Measured value       | `actual`                                                                                                              |
-| Expected value       | `expected`                                                                                                            |
-| Test double variable | Prefix with role: `stub`, `spy`, `mock`, `fake`, `dummy`                                                              |
+| System under test    | `sut`                                                                                                                          |
+| Measured value       | `actual`                                                                                                                       |
+| Expected value       | `expected`                                                                                                                     |
+| Test double variable | Prefix with role: `stub`, `spy`, `mock`, `fake`, `dummy`                                                                       |
 
 - `<MethodName>` must always match the production method name exactly — never translate it. When the test target is not a single method — integration tests, visual verification tests, and Editor tests whose target is not a method (asset file validation, cross-asset consistency checks) — `<MethodName>` is omitted and the convention becomes `<Condition>_<Expected>`.
 - `<Condition>` and `<Expected>` follow the project language specified in `CLAUDE.md`. If no language is specified, default to English.
@@ -488,6 +488,8 @@ Follow the Spy naming convention from [Spy MonoBehaviour Conventions](#spy-monob
 
 ## UI Layout Testing
 
+These recipes implement **layout assertion tests** — deterministic assertions for UI layout requirements; displayed content is a test input, not part of the pass criterion (see `test-writing-guide` → UI Tests).
+
 Call `Canvas.ForceUpdateCanvases()` then `await Awaitable.NextFrameAsync()` before asserting to ensure layout is computed.
 
 ### Text truncation and overflow
@@ -502,6 +504,8 @@ These assertions use `Text` component properties directly; no helper methods req
 | BestFit shrinks to unreadable size  | `Assert.That(text.cachedTextGenerator.fontSizeUsedForBestFit, Is.GreaterThanOrEqualTo(minReadableSize))` |
 
 > **Note on `characterCountVisible`**: returns `-1` when the `TextGenerator` has never populated (e.g., zero-size container, font size larger than container height). `-1 ≠ text.Length` still fails the assertion and indicates a layout problem.
+>
+> **Note on font size**: `fontSizeUsedForBestFit` is the only font-size assertion that belongs to a layout assertion test — it pins a readability floor for auto-shrunk text, not an authored design value. Authored font size, font style, and font family are design intent; verify them with visual verification tests.
 
 ### Element overlap and out-of-bounds
 
@@ -558,6 +562,17 @@ private static bool IsWithinScreen(Rect r) =>
 > **Screen-size dependence**: `Screen.width`/`Screen.height` track the current Game View resolution. Add `[GameViewResolution]` (and `[Category("IgnoreCI")]`) when the result must hold at a specific resolution.
 
 For multi-element assertions: to verify no element in a set overlaps any other, loop pairwise with `Rect.Overlaps`; for horizontal-only containment in a scroll viewport, compare `xMin`/`xMax` against the viewport rect with the same ±0.5f tolerance.
+
+### Coarse position region (only when the user explicitly instructs)
+
+By default, verify on-screen positions with visual verification tests; use this recipe only when the user explicitly instructs. Free-form position checks are brittle, but with `[GameViewResolution]` pinned (add `[Category("IgnoreCI")]`), a coarse screen-region predicate is deterministic:
+
+```csharp
+// bottom-right region: below 10% of screen height and right of the horizontal center
+Assert.That(screenRect.yMin < Screen.height * 0.10f && screenRect.xMax > Screen.width * 0.5f, Is.True);
+```
+
+A single resolution gives no confidence that the layout holds across screens. A screen-relative predicate is unchanged by uniform scaling — what actually shifts layout is the **aspect ratio** (anchors and Canvas Scaler settings respond to screen shape), so cover both size and shape: write one test method per expected resolution, including at least the largest and smallest supported resolutions and the widest and narrowest supported aspect ratios. Each method gets its own `[GameViewResolution]` and the resolution in the `<Condition>` segment (e.g., `At1920x1080_RendersVersionLabelAtBottomRight` for 16:9, `At1024x768_RendersVersionLabelAtBottomRight` for 4:3), sharing the screen-relative predicate.
 
 ### `RectMask2D` precondition
 

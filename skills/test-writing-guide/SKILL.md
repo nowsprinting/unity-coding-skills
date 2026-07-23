@@ -55,14 +55,21 @@ Assert.That(battleState.Enemies[0].Hp, Is.LessThan(hpBefore));
 
 ### UI Tests
 
-#### Verify UI layout with rect-comparison assertions
+#### Layout assertion tests: verify UI layout with deterministic assertions
 
-When a layout requirement is a geometric predicate — *is this element within the screen? do two elements overlap? does text overflow its container?* — write it as an integration test with rect assertions, not a visual verification test.
+When a layout requirement is expressible as a deterministic assertion (*the element is within the screen, elements do not overlap, text does not overflow its container*), write it as a **layout assertion test** (an integration test), not a visual verification test. Displayed content (card data, text length, item count) is a test *input*: the pass criterion never varies with it. Leave to visual verification what does not suit a strict assertion: color, positional relationships like "A is to the right of B", and typography (font size, font style, font family) are design intent likely to change, and legibility (text/background contrast) is impractical to assert.
 Reasons:
 
 - **Deterministic pass/fail**: boolean assertions run unattended in CI without a human reading screenshots.
 - **Pins the specific bug**: an overlap assertion names the two elements; a screenshot cannot.
-- **Do NOT add a visual verification test for the same geometric property** — use visual verification only for what a rect cannot express (legibility, color, positional relationships like "A is to the right of B").
+- **Do NOT add a visual verification test for the same property** — verify each layout property in exactly one layer.
+
+Choose the implementation means by what the condition is about:
+
+- **Rect comparison** — overlap between elements, containment in a parent, within-screen bounds
+- **Text component properties** — text overflow/truncation via `preferredWidth` / `preferredHeight` / `cachedTextGenerator.characterCountVisible`; a BestFit readability floor via `cachedTextGenerator.fontSizeUsedForBestFit` — the only font-size assertion permitted at this layer, since its criterion is a readability floor, not an authored design value
+- **Raycast reachability** — `GameObjectFinder` with `reachable: true` (optionally with a paginator) proves the element is on screen and not covered by another element; use it when the condition is "the user can actually reach this element"
+- **Coarse position region (only when the user explicitly instructs)** — by default, on-screen position belongs to visual verification tests. When instructed, pin the resolution with `[GameViewResolution]` and assert a screen-region predicate such as "in the bottom-right region" against screen-relative thresholds (e.g., `screenRect.yMin < Screen.height * 0.10f && screenRect.xMax > Screen.width * 0.5f`); a single resolution gives no confidence that the layout holds across screens, so write one test method per expected resolution (at least the largest and smallest supported resolutions and the widest and narrowest supported aspect ratios)
 
 Before asserting, settle layout with `Canvas.ForceUpdateCanvases()` then `await Awaitable.NextFrameAsync()`. Add `[FocusGameView]` to the fixture; add `[GameViewResolution]` (and `[Category("IgnoreCI")]`) only when the assertion depends on a fixed resolution.
 
@@ -112,7 +119,7 @@ When a decorative full-screen element should not block (e.g., a background image
 When implementing a visual verification test (a test designed to verify on-screen rendering via screenshot and image analysis):
 
 1. Take a screenshot using `[TakeScreenshot]` or `ScreenshotHelper.TakeScreenshotAsync()` (see `test-helper.md`).
-2. Add `[Description("After running this test, verify the screenshots from the following perspectives: <verification aspects>")]` to the test method. The verification aspects are taken directly from the **Image analysis by saved screenshot** column in the test case design.
+2. Add `[Description("After running this test, verify the screenshots from the following perspectives: <verification aspects>")]` to the test method. The verification aspects are taken directly from the **Image analysis by saved screenshot** column in the test case design. List only aspects suited to visual verification (legibility, contrast, positional relationships, typography, visual state representation, rendering quality) — do NOT list mechanically assertable facts such as a panel's `activeSelf` or exact text content; assert those in integration tests instead.
 3. Add `[Category("VisualVerification")]` to the test method.
 4. You can omit writing `Assert` statements.
 
