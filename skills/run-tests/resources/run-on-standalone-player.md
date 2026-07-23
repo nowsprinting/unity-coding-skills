@@ -19,9 +19,9 @@ There is no MCP tool that runs tests on a player directly, so drive Unity Test F
 
 ### 1. Create a temporary runner script
 
-Copy `${CLAUDE_SKILL_DIR}/assets/PlayerTestRunner.cs` to `Assets/Editor/PlayerTestRunner.cs` in the project (delete it after verification — see step 5). The script has four parts:
+Copy `${CLAUDE_SKILL_DIR}/assets/PlayerTestRunner.cs` to `Assets/UnityCodingSkills/Editor/PlayerTestRunner.cs` in the project (delete it after verification — see step 5). The script has four parts:
 
-- **`PlayerTestRunner`** — drives `TestRunnerApi.Execute` and writes the results to `Logs/PlayerTestResult.txt` via `ICallbacks`.
+- **`PlayerTestRunner`** — drives `TestRunnerApi.Execute` and writes the results to `Temp/PlayerTestResult.txt` via `ICallbacks`.
 - **`PlayerTestBuildSettings`** (`ITestRunSettings`) — bakes the Standalone build settings (`ScriptingBackend` / `CodeGeneration` / `StrippingLevel`) into the test player. Step 1 fills the constants with the project's own PlayerSettings values, so the build diverges from the project configuration only when the user asks for an override (see "Overriding build settings with ITestRunSettings" below).
 - **`PlayerTestBuildModifier`** (`ITestPlayerBuildModifier`) — removes `BuildOptions.AutoRunPlayer` and pins the build location. Auto-run offers no way to pass command-line arguments to the player, so the build must not launch it.
 - **`PlayerTestLauncher`** (`[PostProcessBuild]`) — launches the built player with the `PlayerArguments` constant. The player still reports results back to the Editor over PlayerConnection, because `BuildOptions.ConnectToHost` is always baked into test player builds (this split build-and-launch flow is explicitly supported — see the `TestPlayerBuildModifier` scripting reference).
@@ -78,7 +78,7 @@ Run `get_unity_compilation_result` and confirm the script compiles.
 
 ### 3. Invoke the runner
 
-Call `run_method_in_unity` with type `UnityCodingSkills.RunTests.PlayerTestRunner` and method `RunOnStandalonePlayer`. For `assemblyName`, look for an `.asmdef` file in the parent directory hierarchy of the script: if one exists, use its `name` property; if none exists (the usual case for a script placed directly under `Assets/Editor/`), use `Assembly-CSharp-Editor`.
+Call `run_method_in_unity` with type `UnityCodingSkills.RunTests.PlayerTestRunner` and method `RunOnStandalonePlayer`. For `assemblyName`, run `${CLAUDE_SKILL_DIR}/scripts/resolve-assembly.sh <project-root>/Assets/UnityCodingSkills/Editor/PlayerTestRunner.cs` and use the assembly name it prints.
 
 The tool returns immediately: `TestRunnerApi.Execute` is asynchronous, and the player build plus the test run continue in the Editor. `success: true` means only that the method was invoked.
 
@@ -88,7 +88,7 @@ The player build takes minutes. Poll for the result file with a shell loop run *
 
 ```bash
 for i in $(seq 1 120); do
-  if [ -f <project-root>/Logs/PlayerTestResult.txt ]; then cat <project-root>/Logs/PlayerTestResult.txt; exit 0; fi
+  if [ -f <project-root>/Temp/PlayerTestResult.txt ]; then cat <project-root>/Temp/PlayerTestResult.txt; exit 0; fi
   sleep 10
 done
 echo "TIMEOUT after 20 minutes"; exit 1
@@ -107,7 +107,7 @@ Don't just wait out the full 20-minute timeout on faith. A failed build never pr
 
 The result file contains the counts on the first line and `FAILED: <FullName>` + message for each failed test. Note that tests gated to the Editor (e.g., `[UnityPlatform(RuntimePlatform.OSXEditor, ...)]`) are reported as skipped on the player — a non-zero skip count is expected, not a problem.
 
-Afterward, delete the temporary files: `Assets/Editor/PlayerTestRunner.cs` with its `.meta`, and `Logs/PlayerTestResult.txt`. If `Assets/link.xml` was created or modified for this run (per the "Reflection-based assertion fails only on Player" troubleshooting entry), restore it to its pre-run state: delete it with its `.meta` when the project did not have one before, or revert the added entries (e.g. `git restore Assets/link.xml`) when it did. The built player under `Temp/PlayerWithTests/` can be left in place — Unity clears `Temp/` when the Editor quits.
+Afterward, delete the temporary file `Assets/UnityCodingSkills/Editor/PlayerTestRunner.cs` with its `.meta`. If `Assets/link.xml` was created or modified for this run (per the "Reflection-based assertion fails only on Player" troubleshooting entry), restore it to its pre-run state: delete it with its `.meta` when the project did not have one before, or revert the added entries (e.g. `git restore Assets/link.xml`) when it did. The result file `Temp/PlayerTestResult.txt` and the built player under `Temp/PlayerWithTests/` can be left in place — Unity clears `Temp/` when the Editor quits.
 
 ## Player command-line arguments
 

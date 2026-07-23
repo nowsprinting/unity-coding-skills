@@ -1,5 +1,5 @@
 // Temporary script to run Play Mode tests on a standalone player.
-// Invoked via run_method_in_unity; results are polled from Logs/PlayerTestResult.txt.
+// Invoked via run_method_in_unity; results are polled from Temp/PlayerTestResult.txt.
 //
 // The build does not auto-run the player: PlayerTestBuildModifier removes
 // BuildOptions.AutoRunPlayer so that PlayerTestLauncher can launch the player
@@ -22,7 +22,9 @@ namespace UnityCodingSkills.RunTests
 {
     public static class PlayerTestRunner
     {
-        private const string ResultPath = "Logs/PlayerTestResult.txt"; // Relative to the project root
+        // Written under Temp/ (relative to the project root) so no cleanup is
+        // needed after the run — Unity clears Temp/ when the Editor quits
+        private const string ResultPath = "Temp/PlayerTestResult.txt";
 
         public static void RunOnStandalonePlayer()
         {
@@ -56,7 +58,7 @@ namespace UnityCodingSkills.RunTests
                 builder.AppendLine(
                     $"pass:{result.PassCount} fail:{result.FailCount} skip:{result.SkipCount} inconclusive:{result.InconclusiveCount}");
                 AppendFailures(result, builder);
-                Directory.CreateDirectory("Logs"); // Logs/ may have been cleaned up during the minutes-long build
+                Directory.CreateDirectory("Temp"); // Normally present while the Editor runs; recreate defensively so the result is never lost
                 File.WriteAllText(ResultPath, builder.ToString());
             }
 

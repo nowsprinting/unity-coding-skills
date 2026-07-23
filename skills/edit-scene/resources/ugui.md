@@ -74,7 +74,7 @@ Only fall back to the built-in font when the user explicitly says no custom font
 
 ```csharp
 // Load in editor scripts:
-var font = AssetDatabase.LoadAssetAtPath<Font>("Assets/DtD/Resources/Fonts/NotoSansJP-Regular.otf");
+var font = AssetDatabase.LoadAssetAtPath<Font>("Assets/MyGame/Resources/Fonts/NotoSansJP-Regular.otf");
 // Load in runtime scripts:
 var font = Resources.Load<Font>("Fonts/NotoSansJP-Regular");
 
@@ -263,7 +263,8 @@ Without this, `DefaultControls.Create*` uses `new GameObject(...)` internally fo
 
 ## Minimal sample
 
-Editor script that creates a Canvas with a Button under `Assets/Editor/`. Call it via `run_method_in_unity`.
+Editor script that creates a Canvas with a Button under `Assets/UnityCodingSkills/Editor/`. Call it via `run_method_in_unity`.
+Delete the file and its `.meta` from the filesystem once the run returns without errors (see `## Rules` in SKILL.md) — do not add a self-deleting `AssetDatabase.DeleteAsset` call to the script itself.
 
 ```csharp
 using UnityEditor;

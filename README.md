@@ -90,6 +90,14 @@ The Rider plugins for measuring complexity are also useful:
 - [CognitiveComplexity](https://plugins.jetbrains.com/plugin/12024-cognitivecomplexity)
 - [CyclomaticComplexity](https://plugins.jetbrains.com/plugin/10395-cyclomaticcomplexity)
 
+### 3. Ignoring temporary files via `.gitignore`
+
+The skills place temporary editor script files under `Assets/UnityCodingSkills/`. Adding the following pattern to your project's `.gitignore` is recommended:
+
+```gitignore
+Assets/UnityCodingSkills*
+```
+
 ## Usage
 
 ### Test-first feature implementation planning
