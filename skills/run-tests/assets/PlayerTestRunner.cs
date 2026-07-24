@@ -7,6 +7,7 @@
 // back to the Editor over PlayerConnection, because BuildOptions.ConnectToHost
 // is always baked into test player builds.
 
+using System;
 using System.IO;
 using System.Text;
 using UnityEditor;
@@ -26,6 +27,14 @@ namespace UnityCodingSkills.RunTests
         // needed after the run — Unity clears Temp/ when the Editor quits
         private const string ResultPath = "Temp/PlayerTestResult.txt";
 
+        // True only while a run started here is in flight. PlayerTestBuildModifier and
+        // PlayerTestLauncher check it so that test player builds started any other way
+        // (e.g. from the Test Runner window) pass through untouched. Static because the
+        // framework instantiates PlayerTestBuildModifier itself, so no instance state can
+        // reach it — the s_RunningPlayerTests pattern from the "Split build and run"
+        // section of the TestPlayerBuildModifier scripting reference.
+        internal static bool IsRunningPlayerTests { get; private set; }
+
         public static void RunOnStandalonePlayer()
         {
             if (File.Exists(ResultPath))
@@ -33,6 +42,7 @@ namespace UnityCodingSkills.RunTests
                 File.Delete(ResultPath);
             }
 
+            IsRunningPlayerTests = true;
             var api = ScriptableObject.CreateInstance<TestRunnerApi>();
             api.RegisterCallbacks(new Callbacks());
             api.Execute(new ExecutionSettings(new Filter
@@ -54,6 +64,7 @@ namespace UnityCodingSkills.RunTests
 
             public void RunFinished(ITestResultAdaptor result)
             {
+                IsRunningPlayerTests = false;
                 var builder = new StringBuilder();
                 builder.AppendLine(
                     $"pass:{result.PassCount} fail:{result.FailCount} skip:{result.SkipCount} inconclusive:{result.InconclusiveCount}");
@@ -127,14 +138,31 @@ namespace UnityCodingSkills.RunTests
 
     public class PlayerTestBuildModifier : ITestPlayerBuildModifier
     {
-        // Match the host OS: ".app" on macOS, ".exe" on Windows, no extension on Linux
-        internal const string BuildLocation = "Temp/PlayerWithTests/PlayerWithTests.app";
+        internal const string BuildDirectory = "Temp/PlayerWithTests";
 
         public BuildPlayerOptions ModifyOptions(BuildPlayerOptions playerOptions)
         {
+            if (!PlayerTestRunner.IsRunningPlayerTests)
+            {
+                // The attribute applies to every test player build while this file exists,
+                // independent of the test filter; leave other runs' builds untouched
+                return playerOptions;
+            }
+
             // Auto-run cannot pass arguments to the player, so PlayerTestLauncher launches it instead
             playerOptions.options &= ~BuildOptions.AutoRunPlayer;
-            playerOptions.locationPathName = BuildLocation;
+
+            // Keep the file name Unity chose — it already carries the platform-correct
+            // extension (".app" on macOS, ".exe" on Windows, none on Linux), so no
+            // per-OS hand edit is needed here
+            var buildLocation = BuildDirectory;
+            var fileName = Path.GetFileName(playerOptions.locationPathName);
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                buildLocation = Path.Combine(buildLocation, fileName);
+            }
+
+            playerOptions.locationPathName = buildLocation;
             return playerOptions;
         }
     }
@@ -150,9 +178,13 @@ namespace UnityCodingSkills.RunTests
         [PostProcessBuild]
         public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
         {
-            if (Path.GetFullPath(pathToBuiltProject) != Path.GetFullPath(PlayerTestBuildModifier.BuildLocation))
+            // [PostProcessBuild] fires for every player build in the project; launch only
+            // a test player that this run placed under BuildDirectory
+            if (!PlayerTestRunner.IsRunningPlayerTests ||
+                !Path.GetFullPath(pathToBuiltProject).StartsWith(
+                    Path.GetFullPath(PlayerTestBuildModifier.BuildDirectory), StringComparison.Ordinal))
             {
-                return; // Not the test player build
+                return;
             }
 
             if (Application.platform == RuntimePlatform.OSXEditor)
