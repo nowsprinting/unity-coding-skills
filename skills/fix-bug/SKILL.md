@@ -25,6 +25,26 @@ This skill must be used **outside plan mode**. Before doing anything else, check
 
 ## Workflow
 
+**Recording implementation notes:** Notes for this run go in `/tmp/fix-bug-notes-$CLAUDE_CODE_SESSION_ID.md`. Immediately before your **first** append in this run — and only then — delete that file if it exists (usually it will not), so this run starts from an empty one: the session id is shared by every `/fix-bug` run in the session, so an earlier run abandoned before Step 9 would otherwise leak its notes into this one. Never delete it again afterwards, including when Step 3 sends you back to Step 1 or Step 2; those loops are part of the same run and their notes must survive.
+
+While working through Steps 1-8, whenever one of the following occurs, immediately append a line to that file — do not wait until the end to reconstruct these from memory:
+
+- The confirmed Condition / Expected / Actual differs from what the user first reported, or the documentation conflicted with the report and you resolved which is correct → **Bug report clarifications**
+- You established — or later revised — which line(s) or logic are responsible and why they misbehave, including when the fix actually applied differs from the one formulated in Step 5 → **Root cause**
+- You investigated a suspected cause, code path, or reproduction approach and eliminated it → **Ruled out**
+- You considered alternatives and chose one, and why → **Tradeoffs**
+- You modified or deleted test code that was already committed, and why → **Test changes**
+
+Append with `Bash` so the shell expands `$CLAUDE_CODE_SESSION_ID` — the `Write` tool cannot append and does not expand environment variables:
+
+```bash
+cat >> "/tmp/fix-bug-notes-$CLAUDE_CODE_SESSION_ID.md" <<'EOF'
+- **Root cause**: <one line>
+EOF
+```
+
+When a step delegates to a subagent or another skill (`test-designer` in Step 2; `test-deduplicator` and `/simplify` in Step 8), append the note yourself from what it returns — they do not write to this file.
+
 ### Step 1: Clarify the Bug Report
 
 > **Do not read code files during this step.** You may only read specs and design docs.
@@ -150,3 +170,9 @@ Before applying the fix, check whether the affected area has adequate coverage f
 4. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
 5. Re-run tests using `/run-tests` command to confirm they still pass
 6. Commit all remaining changes to git
+
+### Step 9: Implementation Notes
+
+1. Resolve the notes file path with `Bash` (`echo "/tmp/fix-bug-notes-$CLAUDE_CODE_SESSION_ID.md"`), then `Read` the resolved literal path if it exists — the `Read` tool does not expand environment variables
+2. Report the entries to the user in chat under an `## Implementation Notes` heading — one bold sub-heading per category, each followed by a bullet list. Always include all six categories in this order: **Bug report clarifications**, **Root cause**, **Ruled out**, **Tradeoffs**, **Test changes**, **Open questions**. Write `- None` for any category with nothing recorded, and add any last-minute Open questions before finalizing. If the file was never created, report every category as "None"
+3. Delete the temporary notes file if it exists
