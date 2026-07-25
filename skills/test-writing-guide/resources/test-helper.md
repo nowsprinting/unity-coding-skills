@@ -20,6 +20,7 @@ Add `TestHelper.RuntimeInternals` to also use `SceneManagerHelper`, `ScreenshotH
 - Paths can be relative to the test class file: `"../../Scenes/MyScene.unity"`
 - `[LoadScene]` and `[CreateScene]` run after `OneTimeSetUp` and before `SetUp`
 - If you need to load a scene programmatically during the test, use `SceneManagerHelper.LoadSceneAsync(path)` combined with `[BuildScene]`
+- Any test that creates a `GameObject` or instantiates a prefab (`new GameObject()`, `Object.Instantiate`) needs `[CreateScene]` or `[LoadScene]` — without one, the objects are created in whatever scene the editor currently has open and leak across tests. This is not specific to visual verification tests.
 
 ### Asset loading
 
@@ -45,7 +46,7 @@ public void OneTimeSetUp() => LoadAssetAttribute.LoadAssets(this);
 | Set a custom resolution | `[GameViewResolution(640, 480, "VGA")]` — wait one frame to apply if not using `[CreateScene]`/`[LoadScene]` |
 | Show or hide Gizmos | `[GizmosShowOnGameView(true)]` on the test method only |
 
-**When to add `[FocusGameView]`**: Add it at class scope on any test class that includes UI-operation tests (using `GameObjectFinder`, click/drag operators, etc.) or screenshot-capture tests. This avoids batchmode edge cases and unintended GameView focus loss. Do not add it assembly-wide or on classes that test pure logic without UI interaction.
+**When to add `[FocusGameView]`**: Add it at method scope on any test that includes UI-operation tests (using `GameObjectFinder`, click/drag operators, etc.). This avoids unintended GameView focus loss. Do not add it assembly-wide or on classes that test pure logic without UI interaction.
 
 ```csharp
 [TestFixture]
@@ -56,7 +57,7 @@ public class MySceneTest { ... }
 **CI resolution**: To fix the GameView resolution in CI, pass test-helper CLI arguments in Unity's startup parameters rather than hardcoding it in test code:
 
 ```
--testHelperGameViewResolution WQVGA              # GameViewResolution enum name
+-testHelperGameViewResolution "Full HD"           # matched against the resolution's display name (case-insensitive), not the enum identifier — e.g. FullHD needs "Full HD", FourK_UHD needs "4K UHD"
 -testHelperGameViewWidth 400 -testHelperGameViewHeight 240  # or explicit pixels
 ```
 
@@ -83,8 +84,11 @@ public class MySceneTest { ... }
 | Take a screenshot at a specific point in the test | `await ScreenshotHelper.TakeScreenshotAsync()` |
 | Record video while the test runs | `[RecordVideo]` (requires Instant Replay package) |
 
-- The test method must be async (`async Task` or `IEnumerator` coroutine) — `[TakeScreenshot]` relies on Unity's async infrastructure to capture the frame after the test completes.
-- `[FocusGameView]` or `[GameViewResolution]` is required when running in batchmode.
+> [!WARNING]\
+> `[TakeScreenshot]` captures **after `TearDown` has run**, not at the end of the test method body. If `TearDown` destroys GameObjects or unloads the scene, the screenshot will be empty — call `await ScreenshotHelper.TakeScreenshotAsync()` inside the test method instead.
+
+- `[TakeScreenshot]` works with sync `[Test]`, async `[Test]`, and `[UnityTest]` — no need to make the method async just to use it.
+- In batchmode, the GameView resolution is pinned via the `-testHelperGameViewResolution` startup argument (see **Game View → CI resolution** above), not via attributes on the test.
 - Saved to `<Application.persistentDataPath>/TestHelper/Screenshots/<TestName>.png` by default. The absolute path is recorded in the NUnit test result as the `Screenshot` property — read it from there instead of composing the path by hand (the file name is sanitized, and gets a `_1`, `_2` … suffix when one test saves several).
 
 **Image-analysis screenshot tests**: Do not override the resolution or the output directory — let the test run at whatever the environment provides, and read the actual path back from the `Screenshot` property (see `run-tests` skill → Visual Verification).
@@ -96,12 +100,14 @@ public class MySceneTest { ... }
 public async Task MyScene_SomeState_Screenshot() { ... }
 ```
 
-**Resolution as a test condition**: When the resolution itself is part of the test condition (e.g., verifying element positions at a specific viewport size), apply `[GameViewResolution]` on the test method:
+**Resolution as a test condition**: When the resolution itself is part of the test condition (e.g., verifying element positions at a specific viewport size), apply `[GameViewResolution]` on the test method. CI runs at a constrained screen resolution and a standalone Player cannot change its resolution at run time, so a resolution-pinned test should also carry `[Category("IgnoreCI")]` and `[UnityPlatform]` restricted to the desktop editors (see `unity-test-framework.md`):
 
 ```csharp
 [Test]
 [LoadScene(ScenePath)]
 [GameViewResolution(960, 540, "540p")]
+[Category("IgnoreCI")]
+[UnityPlatform(RuntimePlatform.OSXEditor, RuntimePlatform.WindowsEditor, RuntimePlatform.LinuxEditor)]
 public async Task MyScene_SomeLayout_At960x540_Screenshot() { ... }
 ```
 

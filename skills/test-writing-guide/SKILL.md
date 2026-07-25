@@ -17,7 +17,7 @@ Guide for writing test code for Unity projects.
 
 - Before modifying any test file, check if the editor is in Play Mode. If it is, stop it using the `unity_play_control` tool first.
 - Never create `.meta` files. Unity editor creates them automatically.
-- When a test creates a `GameObject`, add `[CreateScene]` to the test method (not required if `[LoadScene]` is already present).
+- When a test creates a `GameObject` or instantiates a prefab, add `[CreateScene]` to the test method (not required if `[LoadScene]` is already present).
 - When adding a test seam to production code (e.g., an `internal` accessor or a virtual override point to support injection), always wrap it with `#if UNITY_INCLUDE_TESTS` … `#endif` so it is excluded from non-test builds:
     ```csharp
     #if UNITY_INCLUDE_TESTS
@@ -71,7 +71,7 @@ Choose the implementation means by what the condition is about:
 - **Raycast reachability** — `GameObjectFinder` with `reachable: true` (optionally with a paginator) proves the element is on screen and not covered by another element; use it when the condition is "the user can actually reach this element"
 - **Coarse position region (only when the user explicitly instructs)** — by default, on-screen position belongs to visual verification tests. When instructed, pin the resolution with `[GameViewResolution]` and assert a screen-region predicate such as "in the bottom-right region" against screen-relative thresholds (e.g., `screenRect.yMin < Screen.height * 0.10f && screenRect.xMax > Screen.width * 0.5f`); a single resolution gives no confidence that the layout holds across screens, so write one test method per expected resolution (at least the largest and smallest supported resolutions and the widest and narrowest supported aspect ratios)
 
-Before asserting, settle layout with `Canvas.ForceUpdateCanvases()` then `await Awaitable.NextFrameAsync()`. Add `[FocusGameView]` to the fixture; add `[GameViewResolution]` (and `[Category("IgnoreCI")]`) only when the assertion depends on a fixed resolution.
+Before asserting, settle layout with `Canvas.ForceUpdateCanvases()` then `await Awaitable.NextFrameAsync()`.
 
 See `unity-test-framework.md` → **UI Layout Testing** for rect helper recipes (within-screen, overlap, container overflow, text overflow).
 

@@ -559,20 +559,20 @@ private static bool IsWithinScreen(Rect r) =>
 
 > **Canvas render mode**: `GetScreenRect` assumes **Screen Space – Overlay** (world position == screen position). For Screen Space – Camera or World Space, project each corner with `RectTransformUtility.WorldToScreenPoint(canvas.worldCamera, corner)` instead.
 >
-> **Screen-size dependence**: `Screen.width`/`Screen.height` track the current Game View resolution. Add `[GameViewResolution]` (and `[Category("IgnoreCI")]`) when the result must hold at a specific resolution.
+> **Screen-size dependence**: `Screen.width`/`Screen.height` track the current Game View resolution. Add `[GameViewResolution]` when the result must hold at a specific resolution; `[Category("IgnoreCI")]` and `[UnityPlatform]` restricted to the desktop editors are recommended alongside it (see **Test Selection Attributes** above) — CI has a constrained screen resolution, and a Player cannot change resolution at run time.
 
 For multi-element assertions: to verify no element in a set overlaps any other, loop pairwise with `Rect.Overlaps`; for horizontal-only containment in a scroll viewport, compare `xMin`/`xMax` against the viewport rect with the same ±0.5f tolerance.
 
 ### Coarse position region (only when the user explicitly instructs)
 
-By default, verify on-screen positions with visual verification tests; use this recipe only when the user explicitly instructs. Free-form position checks are brittle, but with `[GameViewResolution]` pinned (add `[Category("IgnoreCI")]`), a coarse screen-region predicate is deterministic:
+By default, verify on-screen positions with visual verification tests; use this recipe only when the user explicitly instructs. Free-form position checks are brittle, but with `[GameViewResolution]` pinned (recommended alongside `[Category("IgnoreCI")]` and `[UnityPlatform]` restricted to the desktop editors), a coarse screen-region predicate is deterministic:
 
 ```csharp
 // bottom-right region: below 10% of screen height and right of the horizontal center
 Assert.That(screenRect.yMin < Screen.height * 0.10f && screenRect.xMax > Screen.width * 0.5f, Is.True);
 ```
 
-A single resolution gives no confidence that the layout holds across screens. A screen-relative predicate is unchanged by uniform scaling — what actually shifts layout is the **aspect ratio** (anchors and Canvas Scaler settings respond to screen shape), so cover both size and shape: write one test method per expected resolution, including at least the largest and smallest supported resolutions and the widest and narrowest supported aspect ratios. Each method gets its own `[GameViewResolution]` and the resolution in the `<Condition>` segment (e.g., `At1920x1080_RendersVersionLabelAtBottomRight` for 16:9, `At1024x768_RendersVersionLabelAtBottomRight` for 4:3), sharing the screen-relative predicate.
+A single resolution gives no confidence that the layout holds across screens. A screen-relative predicate is unchanged by uniform scaling — what actually shifts layout is the **aspect ratio** (anchors and Canvas Scaler settings respond to screen shape), so cover both size and shape: write one test method per expected resolution, including at least the largest and smallest supported resolutions and the widest and narrowest supported aspect ratios. Each method gets its own `[GameViewResolution]` (recommended alongside `[Category("IgnoreCI")]` and `[UnityPlatform]` restricted to the desktop editors) and the resolution in the `<Condition>` segment (e.g., `At1920x1080_RendersVersionLabelAtBottomRight` for 16:9, `At1024x768_RendersVersionLabelAtBottomRight` for 4:3), sharing the screen-relative predicate.
 
 ### `RectMask2D` precondition
 
