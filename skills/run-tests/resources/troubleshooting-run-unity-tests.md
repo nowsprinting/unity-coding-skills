@@ -48,11 +48,18 @@ Rider cannot see the Unity Editor. Possible causes:
 
 `errorMessage`: `"Test execution timed out after N seconds."`
 
-**Step 1 — Check for infinite loops first.**
-Inspect `idea.log` for `UnitTestLaunch created` and `RunUnitTestLaunch.Start called` (confirming the run started).
-Then check `Editor.log` for the lifecycle marker sequence described in [Tests launched but timed out](#tests-launched-but-timed-out) to determine whether the Editor hung.
+This fires the same way whether the Unity Editor is still running normally or has frozen completely — the MCP tool's own timeout (default 300s / `MCP_TOOL_TIMEOUT`) is on a channel independent of the Editor. Distinguishing the two determines whether retrying can help at all.
 
-**Step 2 — If no infinite loop, reduce scope or increase the timeout.**
+**Step 1 — Determine whether the Editor actually froze.**
+
+- Inspect `idea.log` for `UnitTestLaunch created` and `RunUnitTestLaunch.Start called` (confirming the run started), then check `Editor.log` for the lifecycle marker sequence described in [Tests launched but timed out](#tests-launched-but-timed-out).
+  - Markers 1–3 present but 4–5 absent, and `TestResults.xml` was never written → the Editor froze — see [Editor freeze](#possible-cause-editor-freeze) for causes.
+  - `TestResults.xml` was written → the run completed; this was not a freeze — go to Step 2.
+- If still unclear, ask the user whether the Unity Editor UI is responding to input at all. A genuinely unresponsive Editor confirms a freeze.
+
+**If frozen, retrying `run_unity_tests` will not help** — it reaches the same frozen Editor and times out again the same way. Report the freeze to the user and ask them to force-quit and relaunch the Unity Editor (`execute_run_configuration` → `Start Unity`), then fix the test code that caused it before re-running.
+
+**Step 2 — If not frozen, reduce scope or increase the timeout.**
 
 - **Narrow the test selection**: Add `assemblyNames`, `testNames`, or `categoryNames` filters to run fewer tests per call.
 - **Tests with a long `[Timeout]` attribute**: NUnit's default per-test timeout is 300,000 ms (5 minutes). If tests intentionally take longer, ask the user to increase `MCP_TOOL_TIMEOUT` (e.g., `MCP_TOOL_TIMEOUT=600`).
@@ -139,9 +146,16 @@ Test execution timed out after 300 seconds.
 
 For recovery steps, see [Timeout](#success-false--timeout).
 
-#### Possible cause: hang / infinite loop inside a test
+#### Possible cause: Editor freeze
 
-A timeout can be caused by a test that never returns. In this case `TestResults.xml` is never written, so `idea.log` alone cannot identify the hanging test. Check `Editor.log` for the test-framework lifecycle marker sequence:
+The Unity Editor's main thread never yielded, so Unity Test Framework's own timeout mechanism — which needs a yield point to check elapsed time — never got a chance to run either. Only the external MCP tool timeout eventually fires; the Editor itself remains frozen, and `TestResults.xml` is never written, so `idea.log` alone cannot identify the hanging test.
+
+Common causes:
+
+- An infinite loop, or a wait whose condition never becomes true, with **no** `yield return` / `await` reached inside the loop body. (A loop that does yield each iteration lets Unity Test Framework's own timeout fail just that one test instead — the run then continues and completes normally, which does not match this log pattern.)
+- An `async` delegate passed to an NUnit assertion overload that accepts one (`Assert.ThrowsAsync`, `Assert.CatchAsync`, `Is.Not.AllocatingGCMemory()`, …) — see `test-writing-guide` → `resources/unity-test-framework.md` → **Async Tests**.
+
+Check `Editor.log` for the test-framework lifecycle marker sequence:
 
 | Marker substring in `Editor.log`                      | Meaning                                           |
 |-------------------------------------------------------|---------------------------------------------------|
@@ -151,9 +165,9 @@ A timeout can be caused by a test that never returns. In this case `TestResults.
 | `Saving results to: ...TestResults.xml`               | All tests completed normally                      |
 | `Executing IPostBuildCleanup for: ...TestRunBuilder.` | Runner cleanup complete                           |
 
-If markers 1–3 appear but 4–5 do not, the Editor hung during test execution.
+If markers 1–3 appear but 4–5 do not, the Editor froze during test execution.
 
-`Editor.log` cannot identify *which* test hung in interactive mode — per-test `##utp:` messages are only emitted in batch mode. To isolate the hanging test: add `Debug.Log` at the start of each test method so the last logged name is visible, run tests one at a time in the Test Runner, or switch to batch-mode execution where `##utp:{"type":"TestStarted",...}` lines appear in `Editor.log`.
+`Editor.log` cannot identify *which* test caused the freeze in interactive mode — per-test `##utp:` messages are only emitted in batch mode. To isolate it: add `Debug.Log` at the start of each test method so the last logged name is visible, run tests one at a time in the Test Runner, or switch to batch-mode execution where `##utp:{"type":"TestStarted",...}` lines appear in `Editor.log`.
 
 ### Manually canceled in Unity Test Runner
 
@@ -192,7 +206,7 @@ The test filter matched no tests. For recovery steps, see [Zero test results](#s
 
 1. Grep `idea.log` for `UnityTestMcpHandler` to find the most recent invocation and see how far it progressed.
 2. `BackendUnityModel=null` → Unity Editor is not connected; see [Unity Editor not connected](#unity-editor-not-connected).
-3. `UnitTestLaunch created` is present but `RunResult received` is missing → timeout or manual cancel; increase `MCP_TOOL_TIMEOUT` or narrow the test filter. If a hang is suspected, check `Editor.log` for the lifecycle marker sequence.
+3. `UnitTestLaunch created` is present but `RunResult received` is missing → timeout, manual cancel, or Editor freeze. Check `Editor.log` for the lifecycle marker sequence and whether `TestResults.xml` was written: if the Editor froze, retrying or adjusting `MCP_TOOL_TIMEOUT` will not help — ask the user to restart the Editor first. Otherwise, increase `MCP_TOOL_TIMEOUT` or narrow the test filter.
 4. `became null` → domain reload occurred; `did not reconnect` → check `Editor.log` for a crash or compile error.
 5. `snapshot.Count=0` → filter mismatch; verify `assemblyNames` by running `resolve-test-target.sh` against any test file in the target assembly, or check `testNames` spelling.
 6. If `idea.log` shows the launch started but stopped silently, check `Editor.log` for the lifecycle marker sequence to determine whether the hang occurred before or after test code started running.
