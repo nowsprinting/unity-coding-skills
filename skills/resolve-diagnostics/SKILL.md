@@ -23,7 +23,7 @@ One or more file path arguments. Resolve them to a concrete set of files, then:
   carry IDE diagnostics, and `reformat_file` requires solution membership.
 - Drop everything else (docs, `.meta`, `.asmdef`, assets, files outside the solution).
 - Normalize the remaining paths to project/solution-root-relative form, once, up front —
-  `open_file_in_editor` and `reformat_file` both expect that form.
+  `lint_files`, `get_file_problems`, and `reformat_file` all expect that form.
 
 If no path argument is given, use `AskUserQuestion` to ask the user for the targets. Do not derive
 targets from `git status` — that would silently widen the scope beyond what was requested.
@@ -45,16 +45,20 @@ suppressed per the criteria just read.
 
 ### Step 2: Resolve Diagnostics
 
-Resolve diagnostics at the `warning` or higher severity level, **one file at a time** —
-`mcp__ide__getDiagnostics` only returns results for files currently open in editor tabs, and opening
-all files at once exceeds the tab limit:
+Resolve diagnostics at the `warning` or higher severity level, collecting them for all resolved
+files via `lint_files` rather than one file at a time. Both `lint_files` and its fallback
+`get_file_problems` require Rider 2026.2 or later.
 
-1. `open_file_in_editor` — open the file in the editor
-2. `mcp__ide__getDiagnostics` — collect all diagnostics for that file
-3. Decide each diagnostic per the criteria read in Step 1, and apply all resulting changes as a
-   single set before moving to the next file
+1. `lint_files` — pass every resolved file in one call
+   - If the call errors, fall back to `get_file_problems`, called once per file
+   - On a `timedOut` or `more` result, retry the outstanding file(s) with `get_file_problems`
+   - If a timeout persists, use `AskUserQuestion` to confirm the user is running Rider 2026.2 or
+     later before retrying further
+   - Files reported as not analyzed carry into Step 4 as skipped
+2. Decide each diagnostic per the criteria read in Step 1, and apply all resulting changes as a
+   single set per file
 
-Use `mcp__ide__getDiagnostics` instead of `get_file_problems` (unstable) or the Unity compiler
+Do not use `mcp__ide__getDiagnostics` (limited to files open in editor tabs) or the Unity compiler
 output (does not reflect `.editorconfig` severity settings).
 
 ### Step 3: Reformat
@@ -66,3 +70,5 @@ passing `rootFolder` as the project/solution root.
 
 If any diagnostic was suppressed rather than fixed, list each one for the user together with its
 reason. The suppression site itself already carries a "why not" comment per the Step 1 criteria.
+
+Also list any files skipped in Step 2 as not analyzed, together with the reason given.

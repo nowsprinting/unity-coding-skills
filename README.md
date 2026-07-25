@@ -64,14 +64,23 @@ The `run-tests` and `edit-scene` skills require the JetBrains Rider built-in MCP
 3. Install [MCP Server Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin
 
 > [!IMPORTANT]\
-> When Rider is earlier than 2026.2 and you are using other JetBrains IDEs simultaneously with Rider, port numbers are assigned in the order they are launched.
-> For example, if you launch Rider after IDEA, the port number for Rider will be `64343`.
+> JetBrains Rider 2026.2 or later is recommended.
+
+> [!IMPORTANT]\
+> On Rider 2026.2, when both the JetBrains and Rider MCP toolsets are enabled, they expose tools with the same name.
+> Prefer the tools provided by Rider, and disable the duplicates:
+> - Under the **Analysis** toolset: `get_file_problems`, `lint_files`
+> - Under the **Formatting** toolset: `reformat_file`
 
 > [!TIP]\
+> The JetBrains MCP server also provides tools useful for coding agents, such as `list_directory_tree`, `search_file`, `search_regex`, `search_symbol`, and `search_text`.
+
+> [!NOTE]\
 > The MCP server is registered under different names depending on your Rider version: `rider` on Rider 2026.2 or later, `jetbrains` on versions earlier than 2026.2.
 
-> [!TIP]\
-> The JetBrains MCP server also provides tools useful for the coding agents, e.g., `search_symbol`, `find_files_by_glob`.
+> [!NOTE]\
+> When Rider is earlier than 2026.2 and you are using other JetBrains IDEs simultaneously with Rider, port numbers are assigned in the order they are launched.
+> For example, if you launch Rider after IDEA, the port number for Rider will be `64343`.
 
 ### 2. Enforcing coding rules via `.editorconfig`
 
