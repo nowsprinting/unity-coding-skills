@@ -5,12 +5,8 @@ They are not always appropriate for the specific code at hand — sometimes foll
 
 ## Diagnostics
 
-When a diagnostic recommendation does not fit the specific context (e.g., applying it would hurt readability or conflict with the local design):
-
-- Suppress it with the `[SuppressMessage]` attribute, or
-- Suppress it with a `// ReSharper disable once <InspectionName>` comment.
-
-Prefer the narrowest suppression scope possible (a single line or member, not a whole file or assembly).
+- If the recommendation fits the code, apply it.
+- If it does not fit the specific context (e.g., applying it would hurt readability or conflict with the local design), it is fine to suppress it — with the `[SuppressMessage]` attribute or a `// ReSharper disable once <InspectionName>` comment, at the narrowest scope possible (a single line or member, not a whole file or assembly). **Report the suppressed diagnostic to the user with the reason** — explain what the diagnostic was and why it was not applied — and leave a "why not" code comment at the suppression site (see the "Why Not" Comments section in `coding-guideline.md`). This prevents the same diagnostic from being suppressed without record in the future and helps future readers (human or AI) understand the intent.
 
 ## Review Feedback
 

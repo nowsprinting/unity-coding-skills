@@ -20,10 +20,8 @@
 ### Step 4: Refactoring
 
 1. Launch `test-deduplicator` agent with: list of test files added or modified in Step 2
-2. Resolve diagnostics at the `warning` or higher severity level using the following procedure, **one file at a time** — `mcp__ide__getDiagnostics` only returns results for files currently open in editor tabs, and opening all files at once exceeds the tab limit:
-     1. `open_file_in_editor` — open the file in the editor
-     2. `mcp__ide__getDiagnostics` — collect all diagnostics for that file. Use `mcp__ide__getDiagnostics` instead of `get_file_problems` (unstable) or the Unity compiler output (does not reflect `.editorconfig` severity settings).
-     3. Fix all reported issues as a single set before moving to the next file
+2. Run `/resolve-diagnostics` with the files added or modified in Steps 1-3 — compute the list
+   **after** the `test-deduplicator` agent finishes, so its edits are covered too
 3. Run tests with `/run-tests` and confirm **all pass**
 4. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
 5. Run tests with `/run-tests` and confirm **all pass**
