@@ -302,6 +302,25 @@ Even when holding the instance in a private field for `TearDown` cleanup, always
 
 When multiple test methods in a class share the same scene setup, create a test scene file and load it with `[LoadScene]` instead of repeating the setup in each test. Scene files are typically 1:1 with the test class, so name the file after the test class (e.g., `CharacterControllerTest.unity`). Place it under `Tests/Scenes/`. Use the `edit-scene` skill to create the scene file.
 
+### Default Parameter Values
+
+Give a creation-method parameter a default so that tests state only the values their outcome depends on. A default therefore declares "this value does not matter here" — pick one that actually reads that way.
+
+- Use a **neutral** value: `0`, `null`, `false`, empty string/collection. A domain-plausible default (e.g. `hp = 79`) breaks the declaration — it silently feeds a meaningful value into every test that omits the argument, and no reader can tell it apart from a deliberate Arrange choice. Same reason [Lifecycle Hooks](#lifecycle-hooks) keeps assertion-relevant values out of `[SetUp]`.
+- If no neutral value works — `0`/`null` breaks the object graph or crashes something downstream — then nothing can mean "does not matter", so **give no default at all**. Make the parameter required so every call site states its own value. Substituting a different "safe" value just hides the same problem behind a less obvious number.
+
+A parameter no assertion can depend on (e.g. a display name used only for logging) genuinely does not matter, so a descriptive placeholder such as `"TestEnemy"` is fine in place of `null` — but default to neutral, and deviate only when you can state why the value is provably inert.
+
+```csharp
+// Do NOT do this — 79/80 reads as an intentional Arrange choice; 2 silently hides that 0 throws
+private RunState CreateRunState(int hp = 79, int maxHp = 80) { ... }
+private static Catalog CreateCatalog(int midCount = 2) { ... }
+
+// Do this — neutral where a "does not matter" value exists; required where none does
+private RunState CreateRunState(int hp = 0, int maxHp = 0) { ... }
+private static Catalog CreateCatalog(int midCount) { ... }
+```
+
 ## Lifecycle Hooks
 
 | Attribute                                        | Timing                               | Notes                                                   |
