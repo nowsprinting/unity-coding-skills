@@ -86,7 +86,7 @@ The `run-tests` and `edit-scene` skills require the JetBrains Rider built-in MCP
 
 Any coding rules or Roslyn analyzer diagnostics you want Claude to respect should be set to `warning` or higher severity in `.editorconfig`.
 
-For example, to prevent leaving unused code, add the following diagnostics:
+For example, to prevent leaving unused types and members, add the following diagnostics:
 
 ```
 resharper_unused_type_local_highlighting = warning
@@ -95,10 +95,14 @@ resharper_unused_member_global_highlighting = warning
 resharper_unused_member_local_highlighting = warning
 ```
 
-The Rider plugins for measuring complexity are also useful:
+> [!TIP]\
+> You can find the open-source Roslyn analyzer version compatible with your project's Unity version in
+> [Which version of Roslyn analyzers should I use with Unity?](https://github.com/nowsprinting/which-version-of-roslyn-analyzers-should-i-use-with-unity).
 
-- [CognitiveComplexity](https://plugins.jetbrains.com/plugin/12024-cognitivecomplexity)
-- [CyclomaticComplexity](https://plugins.jetbrains.com/plugin/10395-cyclomaticcomplexity)
+> [!TIP]\
+> The following Rider plugins for measuring complexity are also useful:
+> - [CognitiveComplexity](https://plugins.jetbrains.com/plugin/12024-cognitivecomplexity)
+> - [CyclomaticComplexity](https://plugins.jetbrains.com/plugin/10395-cyclomaticcomplexity)
 
 ### 3. Ignoring temporary files via `.gitignore`
 
