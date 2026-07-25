@@ -12,7 +12,7 @@ Add `[GameViewResolution(960, 540, "540p")]` to the test method temporarily, re-
 [Test]
 [CreateScene]
 [GameViewResolution(960, 540, "540p")]  // temporary — remove after analysis
-[TakeScreenshot(directory: "Logs/Screenshots/MyScene")]
+[TakeScreenshot]
 public async Task MyTest_Screenshot() { ... }
 ```
 

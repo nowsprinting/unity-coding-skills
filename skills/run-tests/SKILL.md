@@ -5,6 +5,7 @@ description: >-
   Make sure to use this skill whenever running, executing, or re-running tests on the Unity editor.
   This includes verifying implementations, debugging test failures, running specific test assemblies, or any task that involves the run_unity_tests tool.
   Also covers running Play Mode tests on the player for verifying player-only behavior (e.g., #if directives and code stripping).
+  Also covers verifying `[Category("VisualVerification")]` tests after a run by analyzing the saved screenshots.
   Even if the user just says "run the tests" or "check if it passes", use this skill.
 license: Unlicense
 metadata:
@@ -38,6 +39,33 @@ For a standalone player running on the host OS (macOS, Windows, or Linux): Read 
 ### Other Players
 
 TBD
+
+## Visual Verification
+
+A test method carrying `[Category("VisualVerification")]` has no `Assert` statements (see `test-writing-guide` skill), so `Passed` only means the test ran without throwing — it says nothing about whether the screen actually looks right. That judgment has to come from analyzing the screenshot the test captured.
+
+**Only analyze when the run was to confirm a change made in this session** — production code, test code, a scene, a prefab, or another asset. Skip the analysis when nothing is under verification: a regression run over unchanged code, or when the user only asked whether the tests pass. When in doubt, skip.
+
+This applies to Editor runs (`run_unity_tests`) only. A standalone-player run writes `Temp/PlayerTestResult.txt`, not an XML result file, and on macOS the Player's `persistentDataPath` differs from the Editor's — see `resources/run-on-standalone-player.md`. `[TakeScreenshot]` itself is Play Mode only.
+
+### Procedure
+
+1. Run: `python3 ${CLAUDE_SKILL_DIR}/scripts/extract-visual-verification.py <unity-project-root>`
+   This prints, per `[Category("VisualVerification")]` test found in `Application.persistentDataPath/TestResults.xml`, its NUnit `result`, its `Description` property (the verification aspects), and its `Screenshot` propert(y/ies) (absolute path(s)). See the script's own comments for why an XML library is used instead of grep/awk (class-scoped `[Category]` lands on the ancestor `<test-suite>`, not the `<test-case>`; a test can record more than one `Screenshot`).
+2. Check freshness before trusting the output: compare the printed list of "All N test(s) in this result file" against the tests you actually just ran. A filtered run's XML contains only the test-cases that were executed, so a mismatch (extra tests you didn't run, or missing ones you did) means this file is from an earlier run — `TestResults.xml` is overwritten on each run, not appended. Treat the printed age (`— N seconds ago`) as a secondary signal only; it can't discriminate a stale file from a few minutes ago from a run that legitimately took a few minutes. On either signal of staleness, stop and report it instead of analyzing.
+3. For each test whose `result` is `Passed`, read the image(s) at its `Screenshot` path(s) and judge them against the aspects listed in `Description`. Report each aspect's verdict with what you actually saw in the image.
+4. For a test whose `result` is not `Passed`, do not analyze — report it as a failure instead (the screenshot, if any, may be from a partial run).
+
+### If no TestResults.xml is found (exit code 3)
+
+`TestResults.xml` under `persistentDataPath` is written by the `com.unity.test-framework.performance` package's `RunFinished` callback, not by Unity Test Framework itself — UTF only writes a result XML for CLI/batchmode runs (to `<project-root>/TestResults-<ticks>.xml`), never for Test Runner window / MCP-driven runs. If that package isn't installed, fall back:
+
+- **Screenshot paths**: `[TakeScreenshot]`/`ScreenshotHelper` log `Save screenshot to <absolute path>` on every capture. Find the current log file (compare mtimes of `Editor.log` and `Editor-prev.log` — see `resources/troubleshooting-run-unity-tests.md` → "Editor.log vs Editor-prev.log"), then take the `Save screenshot to` lines that appear **after** the last `- Finished resetting the current domain` line (the lifecycle marker for the run you just triggered — same resource, "Tests launched but timed out" table).
+- **Verification aspects**: read the `[Description(...)]` attribute directly from the test's source file.
+
+### Helper script
+
+`${CLAUDE_SKILL_DIR}/scripts/get-persistent-data-path.sh <unity-project-root>` prints the Editor's `Application.persistentDataPath` for the current OS (from `companyName`/`productName` in `ProjectSettings/ProjectSettings.asset`, per [Unity's docs](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html)). `extract-visual-verification.py` calls it automatically; use it directly only when you need the raw directory.
 
 ## Rules for Test Failures
 

@@ -85,13 +85,14 @@ public class MySceneTest { ... }
 
 - The test method must be async (`async Task` or `IEnumerator` coroutine) — `[TakeScreenshot]` relies on Unity's async infrastructure to capture the frame after the test completes.
 - `[FocusGameView]` or `[GameViewResolution]` is required when running in batchmode.
+- Saved to `<Application.persistentDataPath>/TestHelper/Screenshots/<TestName>.png` by default. The absolute path is recorded in the NUnit test result as the `Screenshot` property — read it from there instead of composing the path by hand (the file name is sanitized, and gets a `_1`, `_2` … suffix when one test saves several).
 
-**Image-analysis screenshot tests**: Do not override the resolution — let the test run at whatever the environment provides.
+**Image-analysis screenshot tests**: Do not override the resolution or the output directory — let the test run at whatever the environment provides, and read the actual path back from the `Screenshot` property (see `run-tests` skill → Visual Verification).
 
 ```csharp
 [Test]
 [LoadScene(ScenePath)]
-[TakeScreenshot(directory: "Logs/Screenshots/MyScene")]
+[TakeScreenshot]
 public async Task MyScene_SomeState_Screenshot() { ... }
 ```
 
