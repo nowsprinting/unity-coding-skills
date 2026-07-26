@@ -15,7 +15,7 @@ cat >> "/tmp/plan-feature-notes-<plan-file-basename>.md" <<'EOF'
 EOF
 ```
 
-When a step delegates to a subagent or another skill (`failing-test-writer` in Step 2; `test-deduplicator`, `/resolve-diagnostics`, and `/simplify` in Step 4), append the note yourself from what it returns — they do not write to this file.
+When a step delegates to a subagent or another skill (`failing-test-writer` in Step 2; `test-deduplicator`, `/simplify`, and `/resolve-diagnostics` in Step 4), append the note yourself from what it returns — they do not write to this file.
 
 ### Step 1: Skeleton (Compilable)
 
@@ -39,10 +39,9 @@ When a step delegates to a subagent or another skill (`failing-test-writer` in S
 ### Step 4: Refactoring
 
 1. Launch `test-deduplicator` agent with: list of test files added or modified in Step 2
-2. Run `/resolve-diagnostics` with the files added or modified in Steps 1-3 — compute the list
-   **after** the `test-deduplicator` agent finishes, so its edits are covered too
+2. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
 3. Run tests with `/run-tests` and confirm **all pass**
-4. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
+4. Run `/resolve-diagnostics` with the files added or modified in Steps 1-3 — compute the list **after** the `test-deduplicator` agent and `/simplify` finish, so their edits are covered too
 5. Run tests with `/run-tests` and confirm **all pass**
 6. Commit all remaining changes to git
 

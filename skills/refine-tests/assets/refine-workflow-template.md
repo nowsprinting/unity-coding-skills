@@ -15,7 +15,7 @@ cat >> "/tmp/refine-tests-notes-<plan-file-basename>.md" <<'EOF'
 EOF
 ```
 
-When a step delegates to another skill (`/resolve-diagnostics` and `/simplify` in Step 2), append the note yourself from what it returns — they do not write to this file.
+When a step delegates to another skill (`/simplify` and `/resolve-diagnostics` in Step 2), append the note yourself from what it returns — they do not write to this file.
 
 ### Step 1: Modify Tests
 
@@ -25,9 +25,9 @@ When a step delegates to another skill (`/resolve-diagnostics` and `/simplify` i
 
 ### Step 2: Refactoring
 
-1. Run `/resolve-diagnostics` with the files modified in Step 1
+1. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
 2. Run tests with `/run-tests` and confirm **all pass**
-3. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
+3. Run `/resolve-diagnostics` with the files modified in Step 1 — compute the list **after** `/simplify` finishes, so its edits are covered too
 4. Run tests with `/run-tests` and confirm **all pass**
 5. Commit all remaining changes to git
 

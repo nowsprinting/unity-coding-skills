@@ -43,7 +43,7 @@ cat >> "/tmp/fix-bug-notes-$CLAUDE_CODE_SESSION_ID.md" <<'EOF'
 EOF
 ```
 
-When a step delegates to a subagent or another skill (`test-designer` in Step 2; `test-deduplicator` and `/simplify` in Step 8), append the note yourself from what it returns — they do not write to this file.
+When a step delegates to a subagent or another skill (`test-designer` in Step 2; `test-deduplicator`, `/simplify`, and `/resolve-diagnostics` in Step 8), append the note yourself from what it returns — they do not write to this file.
 
 ### Step 1: Clarify the Bug Report
 
@@ -164,10 +164,9 @@ Before applying the fix, check whether the affected area has adequate coverage f
 ### Step 8: Refactoring
 
 1. Launch `test-deduplicator` agent with: list of test files added or modified in this iteration
-2. Run `/resolve-diagnostics` with the files added or modified in this iteration — compute the list
-   **after** the `test-deduplicator` agent finishes, so its edits are covered too
+2. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
 3. Re-run tests using `/run-tests` command to confirm they still pass
-4. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
+4. Run `/resolve-diagnostics` with the files added or modified in this iteration — compute the list **after** the `test-deduplicator` agent and `/simplify` finish, so their edits are covered too
 5. Re-run tests using `/run-tests` command to confirm they still pass
 6. Commit all remaining changes to git
 

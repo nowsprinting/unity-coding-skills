@@ -132,8 +132,7 @@ The created plan file includes the following:
 - Test-first development workflow
   - Effective (failable) test code
   - Definition of Done
-  - Run static analysis to improve internal quality
-  - Run the Claude Code built-in `/simplify` skill
+  - Safe refactoring to improve internal quality (uses `/simplify` skill and static analysis)
 
 ### Bug fixes through reproduction testing
 
