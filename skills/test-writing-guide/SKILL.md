@@ -71,7 +71,7 @@ Choose the implementation means by what the condition is about:
 - **Raycast reachability** — `GameObjectFinder` with `reachable: true` (optionally with a paginator) proves the element is on screen and not covered by another element; use it when the condition is "the user can actually reach this element"
 - **Coarse position region (only when the user explicitly instructs)** — by default, on-screen position belongs to visual verification tests. When instructed, pin the resolution with `[GameViewResolution]` and assert a screen-region predicate such as "in the bottom-right region" against screen-relative thresholds (e.g., `screenRect.yMin < Screen.height * 0.10f && screenRect.xMax > Screen.width * 0.5f`); a single resolution gives no confidence that the layout holds across screens, so write one test method per expected resolution (at least the largest and smallest supported resolutions and the widest and narrowest supported aspect ratios)
 
-Before asserting, settle layout with `Canvas.ForceUpdateCanvases()` then `await Awaitable.NextFrameAsync()`.
+Before asserting, settle layout with `Canvas.ForceUpdateCanvases()` then `await Awaitable.NextFrameAsync()` — the former rebuilds pending layout/graphic geometry (rect sizes, text metrics); the latter waits for a real render pass, which is what a raycast reachability check needs, since a newly activated/deactivated `Graphic`'s `CanvasRenderer.depth` stays unset until then and `GraphicRaycaster` silently skips any candidate whose `depth == -1` — `ForceUpdateCanvases()` alone does not assign it.
 
 See `unity-test-framework.md` → **UI Layout Testing** for rect helper recipes (within-screen, overlap, container overflow, text overflow).
 
