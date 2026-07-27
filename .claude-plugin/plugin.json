@@ -1,6 +1,6 @@
 {
   "name": "unity-coding-skills",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Skills and subagents for developing Unity projects with Claude Code — maintainable test design and implementation, test-first workflow, coding guidelines, scene editing, and more.",
   "author": {
     "name": "Koji Hasegawa",
