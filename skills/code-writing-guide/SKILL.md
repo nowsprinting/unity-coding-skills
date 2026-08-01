@@ -19,6 +19,7 @@ Guide for writing code in Unity projects.
 - Never create `.meta` files. Unity editor creates them automatically.
 - When editing (creating or modifying) scene (`.unity`) or prefab (`.prefab`) files, use the `edit-scene` skill.
 - When instantiating a prefab multiple times, give each instance a unique `GameObject.name`; otherwise, automated tests cannot identify a specific instance. Use a concrete name (e.g., `"<PrefabName>(Hero)"`) or append an index (e.g., `"<PrefabName>(0)"`).
+- The header comment of an added or modified source file must follow the `file_header_template` format defined in the `.editorconfig` at that project's (or package's) root directory.
 
 ## Resources
 
