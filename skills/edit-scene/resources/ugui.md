@@ -103,6 +103,8 @@ var font = Resources.Load<Font>("Fonts/NotoSansJP-Regular");
 > Legacy Text with `Truncate` + a vertically-centered alignment (`MiddleCenter`, `MiddleLeft`, `MiddleRight`) silently produces an **empty mesh** — no text rendered, no error — when `fontLineHeight > rectHeight`. The mechanism: MiddleCenter shifts the text block upward so the first line starts above `y = 0`; Unity's TextGenerator then excludes that line as "out of bounds", leaving no lines at all. `HorizontalOverflow: Wrap` compounds this by increasing the block height whenever text wraps.
 >
 > If `Truncate` is genuinely required: switch alignment to `UpperLeft` (first line always starts at `y = 0`) and ensure `rectHeight ≥ fontSize × 1.4` to accommodate the font's actual line height.
+>
+> **Don't trust a single test resolution to rule this out.** The exact `rectHeight` threshold where the mesh goes empty shifts with the Canvas's `CanvasScaler.scaleFactor` — confirmed empirically to be **non-monotonic** (a `rectHeight` that renders fine at `scaleFactor` 0.5 and 2.0 produced an empty mesh at 1.0 and 0.25 for the same font/fontSize), an artifact of integer-pixel rounding inside `TextGenerator`. A screenshot or manual check at one GameView size proves nothing about other sizes; `Overflow` is the only reliable fix, not a `rectHeight` bumped just enough to pass one check.
 
 ## `DefaultControls.Resources` setup
 
