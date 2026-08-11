@@ -122,6 +122,8 @@ When implementing a visual verification test (a test designed to verify on-scree
 3. Add `[Category("VisualVerification")]` to the test method.
 4. You can omit writing `Assert` statements.
 
+When a designed visual verification test shares its test condition with a designed layout assertion test, you may implement both as a single test method: take the screenshot in the layout assertion test, apply steps 2–3 to it, and keep the layout assertions (step 4 does not apply).
+
 ## Resources
 
 Read the appropriate resource file based on the situation:
