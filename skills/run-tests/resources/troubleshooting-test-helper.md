@@ -10,9 +10,9 @@ Add `[GameViewResolution(960, 540, "540p")]` to the test method temporarily, re-
 
 ```csharp
 [Test]
-[CreateScene]
+[TakeScreenshot]                        // before [CreateScene] — its AfterTest unloads the scene
+[CreateScene(camera: true)]             // camera clears the GameView between tests
 [GameViewResolution(960, 540, "540p")]  // temporary — remove after analysis
-[TakeScreenshot]
 public async Task MyTest_Screenshot() { ... }
 ```
 
