@@ -11,10 +11,10 @@ Add `TestHelper.RuntimeInternals` to also use `SceneManagerHelper`, `ScreenshotH
 
 ### Scene setup
 
-| Goal | Solution |
-|------|----------|
-| Load an existing scene before the test | `[LoadScene("Assets/path/to/Scene.unity")]` on the test method |
-| Create a new empty scene before the test | `[CreateScene]` on the test method |
+| Goal                                                    | Solution                                                        |
+|---------------------------------------------------------|-----------------------------------------------------------------|
+| Load an existing scene before the test                  | `[LoadScene("Assets/path/to/Scene.unity")]` on the test method  |
+| Create a new empty scene before the test                | `[CreateScene]` on the test method                              |
 | Include a scene not in Build Settings for player builds | `[BuildScene("Assets/path/to/Scene.unity")]` on the test method |
 
 - Paths can be relative to the test class file: `"../../Scenes/MyScene.unity"`
@@ -24,8 +24,8 @@ Add `TestHelper.RuntimeInternals` to also use `SceneManagerHelper`, `ScreenshotH
 
 ### Asset loading
 
-| Goal | Solution |
-|------|----------|
+| Goal                                       | Solution                                 |
+|--------------------------------------------|------------------------------------------|
 | Load an asset into a field before the test | `[LoadAsset("path")]` on a private field |
 
 Must call `LoadAssetAttribute.LoadAssets(this)` from `[OneTimeSetUp]`.
@@ -40,11 +40,11 @@ public void OneTimeSetUp() => LoadAssetAttribute.LoadAssets(this);
 
 ### Game View
 
-| Goal | Solution |
-|------|----------|
-| Focus the Game View before the test | `[FocusGameView]` |
-| Set a custom resolution | `[GameViewResolution(640, 480, "VGA")]` — wait one frame to apply if not using `[CreateScene]`/`[LoadScene]` |
-| Show or hide Gizmos | `[GizmosShowOnGameView(true)]` on the test method only |
+| Goal                                | Solution                                                                                                     |
+|-------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| Focus the Game View before the test | `[FocusGameView]`                                                                                            |
+| Set a custom resolution             | `[GameViewResolution(640, 480, "VGA")]` — wait one frame to apply if not using `[CreateScene]`/`[LoadScene]` |
+| Show or hide Gizmos                 | `[GizmosShowOnGameView(true)]` on the test method only                                                       |
 
 **When to add `[FocusGameView]`**: Add it at method scope on any test that includes UI-operation tests (using `GameObjectFinder`, click/drag operators, etc.). This avoids unintended GameView focus loss. Do not add it assembly-wide or on classes that test pure logic without UI interaction.
 
@@ -63,26 +63,26 @@ public class MySceneTest { ... }
 
 ### Skip conditions
 
-| Goal | Solution |
-|------|----------|
-| Skip in `-batchmode` | `[IgnoreBatchMode("reason")]` |
-| Skip in Editor window mode | `[IgnoreWindowMode("reason")]` |
+| Goal                          | Solution                                   |
+|-------------------------------|--------------------------------------------|
+| Skip in `-batchmode`          | `[IgnoreBatchMode("reason")]`              |
+| Skip in Editor window mode    | `[IgnoreWindowMode("reason")]`             |
 | Skip for older Unity versions | `[UnityVersion(newerThanOrEqual: "2022")]` |
-| Skip for newer Unity versions | `[UnityVersion(olderThan: "2019.4.0f1")]` |
+| Skip for newer Unity versions | `[UnityVersion(olderThan: "2019.4.0f1")]`  |
 
 ### Timing
 
-| Goal | Solution |
-|------|----------|
+| Goal                                    | Solution                                    |
+|-----------------------------------------|---------------------------------------------|
 | Change `Time.timeScale` during the test | `[TimeScale(2.0f)]` on the test method only |
 
 ### Screenshots and video (Play Mode only — do NOT use in Edit Mode)
 
-| Goal | Solution |
-|------|----------|
-| Take a screenshot after the test completes | `[TakeScreenshot]` on the test method |
-| Take a screenshot at a specific point in the test | `await ScreenshotHelper.TakeScreenshotAsync()` |
-| Record video while the test runs | `[RecordVideo]` (requires Instant Replay package) |
+| Goal                                              | Solution                                          |
+|---------------------------------------------------|---------------------------------------------------|
+| Take a screenshot after the test completes        | `[TakeScreenshot]` on the test method             |
+| Take a screenshot at a specific point in the test | `await ScreenshotHelper.TakeScreenshotAsync()`    |
+| Record video while the test runs                  | `[RecordVideo]` (requires Instant Replay package) |
 
 > [!WARNING]\
 > `[TakeScreenshot]` captures **after `TearDown` has run**, not at the end of the test method body. If `TearDown` destroys GameObjects or unloads the scene, the screenshot will be empty — call `await ScreenshotHelper.TakeScreenshotAsync()` inside the test method instead.
@@ -117,21 +117,21 @@ public async Task MyScene_SomeLayout_At960x540_Screenshot() { ... }
 
 Add `using Is = TestHelper.Constraints.Is;` to use these alongside NUnit's `Is`.
 
-| Goal | Constraint |
-|------|------------|
-| Assert a `UnityEngine.Object` was destroyed | `Assert.That(actual, Is.Destroyed)` |
-| Assert it was NOT destroyed | `Assert.That(actual, Is.Not.Destroyed)` |
+| Goal                                        | Constraint                              |
+|---------------------------------------------|-----------------------------------------|
+| Assert a `UnityEngine.Object` was destroyed | `Assert.That(actual, Is.Destroyed)`     |
+| Assert it was NOT destroyed                 | `Assert.That(actual, Is.Not.Destroyed)` |
 
 ### Layout constraints
 
 Requires test-helper **v1.6.1 or later**. These implement the recipes referenced by `test-writing-guide` → **Layout assertion tests**.
 
-| Goal | Constraint |
-|------|------------|
-| A dialog/popup/root panel is within the screen bounds | `Assert.That(rootPanel, Is.WithinScreen)` |
-| An element is fully within its parent container | `Assert.That(element, Is.FullyWithin(container))` |
-| No pair in a collection overlaps | `Assert.That(elements, Is.Not.Overlapping)` |
-| Text does not overflow its own `RectTransform` | `Assert.That(element, Is.Not.TextOverflowing)` |
+| Goal                                                  | Constraint                                        |
+|-------------------------------------------------------|---------------------------------------------------|
+| A dialog/popup/root panel is within the screen bounds | `Assert.That(rootPanel, Is.WithinScreen)`         |
+| An element is fully within its parent container       | `Assert.That(element, Is.FullyWithin(container))` |
+| No pair in a collection overlaps                      | `Assert.That(elements, Is.Not.Overlapping)`       |
+| Text does not overflow its own `RectTransform`        | `Assert.That(element, Is.Not.TextOverflowing)`    |
 
 `Overlapping` and `TextOverflowing` match when the defect is present, so the form you actually write is the negated one (`Is.Not.Overlapping`, `Is.Not.TextOverflowing`) — don't write `Is.Overlapping` meaning "no overlap".
 
@@ -139,11 +139,11 @@ Requires test-helper **v1.6.1 or later**. These implement the recipes referenced
 
 **Modifiers**
 
-| Modifier | Applies to | Effect |
-|----------|-----------|--------|
-| `.Within(px)` | all four | Tolerance in pixels, default `0.5f`, negative values clamp to 0 |
-| `.Horizontally()` / `.Vertically()` | `FullyWithin` only | Narrow the check to one axis; calling both is equivalent to neither (both axes checked) |
-| `.Ignoring(group)` | `Overlapping` only | Exclude pairs where both members belong to `group`; a member is still checked against elements outside the group; call repeatedly to register multiple groups |
+| Modifier                            | Applies to         | Effect                                                                                                                                                        |
+|-------------------------------------|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `.Within(px)`                       | all four           | Tolerance in pixels, default `0.5f`, negative values clamp to 0                                                                                               |
+| `.Horizontally()` / `.Vertically()` | `FullyWithin` only | Narrow the check to one axis; calling both is equivalent to neither (both axes checked)                                                                       |
+| `.Ignoring(group)`                  | `Overlapping` only | Exclude pairs where both members belong to `group`; a member is still checked against elements outside the group; call repeatedly to register multiple groups |
 
 ```csharp
 Assert.That(card, Is.FullyWithin(viewport).Horizontally().Within(2f));
@@ -173,10 +173,10 @@ Assert.That(image, Is.FullyWithin(containerRectTransform));
 
 ## Comparers
 
-| Goal | Comparer |
-|------|----------|
-| Compare two `Texture2D` perceptually using FLIP | `new FlipTexture2dEqualityComparer(meanErrorTolerance: 0.01f)` |
-| Compare two strings as equivalent XML (order-insensitive, ignores comments and whitespace) | `new XmlComparer()` |
+| Goal                                                                                       | Comparer                                                       |
+|--------------------------------------------------------------------------------------------|----------------------------------------------------------------|
+| Compare two `Texture2D` perceptually using FLIP                                            | `new FlipTexture2dEqualityComparer(meanErrorTolerance: 0.01f)` |
+| Compare two strings as equivalent XML (order-insensitive, ignores comments and whitespace) | `new XmlComparer()`                                            |
 
 ```csharp
 Assert.That(actual, Is.EqualTo(expected).Using(new XmlComparer()));
