@@ -57,7 +57,7 @@ Assert.That(battleState.Enemies[0].Hp, Is.LessThan(hpBefore));
 
 #### Layout assertion tests: verify UI layout with deterministic assertions
 
-When a layout requirement is expressible as a deterministic assertion (*the element is within the screen, elements do not overlap, text does not overflow its container*), write it as a **layout assertion test** (an integration test), not a visual verification test. Displayed content (card data, text length, item count) is a test *input*: the pass criterion never varies with it. Leave to visual verification what does not suit a strict assertion: color, positional relationships like "A is to the right of B", and typography (font size, font style, font family) are design intent likely to change, and legibility (text/background contrast) is impractical to assert.
+When a layout requirement is expressible as a deterministic assertion (*the element is within the screen, elements do not overlap, text does not overflow its container*), write it as a **layout assertion test** (an integration test), not a visual verification test. Displayed content (card data, text length, item count) is a test *input*: the pass criterion never varies with it. Leave to visual verification what does not suit a strict assertion: color, positional relationships like "A is to the right of B", on-screen position, and typography (font size, font style, font family) are design intent likely to change, and legibility (text/background contrast) is impractical to assert.
 Reasons:
 
 - **Deterministic pass/fail**: boolean assertions run unattended in CI without a human reading screenshots.
@@ -66,14 +66,13 @@ Reasons:
 
 Choose the implementation means by what the condition is about:
 
-- **Rect comparison** — overlap between elements, containment in a parent, within-screen bounds
-- **Text component properties** — text overflow/truncation via `preferredWidth` / `preferredHeight` / `cachedTextGenerator.characterCountVisible`; a BestFit readability floor via `cachedTextGenerator.fontSizeUsedForBestFit` — the only font-size assertion permitted at this layer, since its criterion is a readability floor, not an authored design value
+- **Rect comparison** — `Is.WithinScreen` (within-screen bounds), `Is.FullyWithin(container)` (containment in a parent), `Is.Not.Overlapping` (overlap between elements)
+- **Text overflow** — `Is.Not.TextOverflowing` (preferred/rendered size exceeds the rect, or characters are truncated)
 - **Raycast reachability** — `GameObjectFinder` with `reachable: true` (optionally with a paginator) proves the element is on screen and not covered by another element; use it when the condition is "the user can actually reach this element"
-- **Coarse position region (only when the user explicitly instructs)** — by default, on-screen position belongs to visual verification tests. When instructed, pin the resolution with `[GameViewResolution]` and assert a screen-region predicate such as "in the bottom-right region" against screen-relative thresholds (e.g., `screenRect.yMin < Screen.height * 0.10f && screenRect.xMax > Screen.width * 0.5f`); a single resolution gives no confidence that the layout holds across screens, so write one test method per expected resolution (at least the largest and smallest supported resolutions and the widest and narrowest supported aspect ratios)
 
 Before asserting, settle layout with `Canvas.ForceUpdateCanvases()` then `await Awaitable.NextFrameAsync()` — the former rebuilds pending layout/graphic geometry (rect sizes, text metrics); the latter waits for a real render pass, which is what a raycast reachability check needs, since a newly activated/deactivated `Graphic`'s `CanvasRenderer.depth` stays unset until then and `GraphicRaycaster` silently skips any candidate whose `depth == -1` — `ForceUpdateCanvases()` alone does not assign it.
 
-See `unity-test-framework.md` → **UI Layout Testing** for rect helper recipes (within-screen, overlap, container overflow, text overflow).
+See `test-helper.md` → **Layout constraints** for the constraint API (`Is.WithinScreen` / `Is.FullyWithin` / `Is.Not.Overlapping` / `Is.Not.TextOverflowing`).
 
 #### Use GameObjectFinder instead of GameObject.Find
 
