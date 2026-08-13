@@ -167,8 +167,7 @@ Before applying the fix, check whether the affected area has adequate coverage f
 2. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
 3. Re-run tests using `/run-tests` command to confirm they still pass
 4. Run `/resolve-diagnostics` with the files added or modified in this iteration — compute the list **after** the `test-deduplicator` agent and `/simplify` finish, so their edits are covered too
-5. Re-run tests using `/run-tests` command to confirm they still pass
-6. Commit all remaining changes to git
+5. Commit all remaining changes to git
 
 ### Step 9: Implementation Notes
 

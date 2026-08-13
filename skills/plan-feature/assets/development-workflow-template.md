@@ -42,8 +42,7 @@ When a step delegates to a subagent or another skill (`failing-test-writer` in S
 2. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
 3. Run tests with `/run-tests` and confirm **all pass**
 4. Run `/resolve-diagnostics` with the files added or modified in Steps 1-3 — compute the list **after** the `test-deduplicator` agent and `/simplify` finish, so their edits are covered too
-5. Run tests with `/run-tests` and confirm **all pass**
-6. Commit all remaining changes to git
+5. Commit all remaining changes to git
 
 ### Step 5: Implementation Notes
 

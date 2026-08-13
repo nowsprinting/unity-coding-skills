@@ -12,8 +12,8 @@ metadata:
   author: Koji Hasegawa
 ---
 
-Resolves IDE diagnostics at the `warning` or higher severity level for the given files, then
-reformats them to the solution's code style.
+Resolves IDE diagnostics at the `warning` or higher severity level for the given files, reformats
+them to the solution's code style, then runs the tests.
 
 ## Input
 
@@ -54,7 +54,7 @@ files via `lint_files` rather than one file at a time. Both `lint_files` and its
    - On a `timedOut` or `more` result, retry the outstanding file(s) with `get_file_problems`
    - If a timeout persists, use `AskUserQuestion` to confirm the user is running Rider 2026.2 or
      later before retrying further
-   - Files reported as not analyzed carry into Step 4 as skipped
+   - Files reported as not analyzed carry into Step 5 as skipped
 2. Decide each diagnostic per the criteria read in Step 1, and apply all resulting changes as a
    single set per file
 
@@ -66,7 +66,14 @@ output (does not reflect `.editorconfig` severity settings).
 Call `reformat_file` once with the full list of files resolved in Input (not one call per file),
 passing `rootFolder` as the project/solution root.
 
-### Step 4: Report Suppressions
+### Step 4: Run Tests
+
+If any file was modified in Step 2 — a fix or a suppression — load the `run-tests` skill (do not
+rely on automatic skill triggering) and run the tests for the affected assemblies, then confirm they
+still pass. Step 3's reformatting alone does not change behavior, so skip this step when Step 2
+applied no changes.
+
+### Step 5: Report Suppressions
 
 If any diagnostic was suppressed rather than fixed, list each one for the user together with its
 reason. The suppression site itself already carries a "why not" comment per the Step 1 criteria.
