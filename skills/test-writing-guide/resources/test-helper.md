@@ -131,29 +131,29 @@ Add `using Is = TestHelper.Constraints.Is;` to use these alongside NUnit's `Is`.
 
 ### Layout constraints
 
-Requires test-helper **v1.6.1 or later**. These implement the recipes referenced by `test-writing-guide` → **Layout assertion tests**.
+Requires test-helper **v1.6.2 or later**. These implement the recipes referenced by `test-writing-guide` → **Layout assertion tests**.
 
-| Goal                                                  | Constraint                                        |
-|-------------------------------------------------------|---------------------------------------------------|
-| A dialog/popup/root panel is within the screen bounds | `Assert.That(rootPanel, Is.WithinScreen)`         |
-| An element is fully within its parent container       | `Assert.That(element, Is.FullyWithin(container))` |
-| No pair in a collection overlaps                      | `Assert.That(elements, Is.Not.Overlapping)`       |
-| Text does not overflow its own `RectTransform`        | `Assert.That(element, Is.Not.TextOverflowing)`    |
+| Goal                                                  | Constraint                                            |
+|-------------------------------------------------------|-------------------------------------------------------|
+| A dialog/popup/root panel is within the screen bounds | `Assert.That(rootPanel, Is.WithinScreen)`             |
+| An element is fully within its parent container       | `Assert.That(element, Is.WithinContainer(container))` |
+| No pair in a collection overlaps                      | `Assert.That(elements, Is.Not.Overlapping)`           |
+| Text does not overflow its own `RectTransform`        | `Assert.That(element, Is.Not.TextOverflowing)`        |
 
 `Overlapping` and `TextOverflowing` match when the defect is present, so the form you actually write is the negated one (`Is.Not.Overlapping`, `Is.Not.TextOverflowing`) — don't write `Is.Overlapping` meaning "no overlap".
 
-`WithinScreen` targets a screen's top-level, dynamically-positioned container (dialog, popup, context menu) — the one actually at risk of clipping past the screen edge. Elements nested inside it are checked against their **parent container** with `FullyWithin`, not against the screen again — see `test-designing-guide` → Integration test perspectives → UI layout.
+`WithinScreen` targets a screen's top-level, dynamically-positioned container (dialog, popup, context menu) — the one actually at risk of clipping past the screen edge. Elements nested inside it are checked against their **parent container** with `WithinContainer`, not against the screen again — see `test-designing-guide` → Integration test perspectives → UI layout.
 
 **Modifiers**
 
-| Modifier                            | Applies to         | Effect                                                                                                                                                        |
-|-------------------------------------|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `.Within(px)`                       | all four           | Tolerance in pixels, default `0.5f`, negative values clamp to 0                                                                                               |
-| `.Horizontally()` / `.Vertically()` | `FullyWithin` only | Narrow the check to one axis; calling both is equivalent to neither (both axes checked)                                                                       |
-| `.Ignoring(group)`                  | `Overlapping` only | Exclude pairs where both members belong to `group`; a member is still checked against elements outside the group; call repeatedly to register multiple groups |
+| Modifier                            | Applies to             | Effect                                                                                                                                                        |
+|-------------------------------------|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `.Within(px)`                       | all four               | Tolerance in pixels, default `0.5f`, negative values clamp to 0                                                                                               |
+| `.Horizontally()` / `.Vertically()` | `WithinContainer` only | Narrow the check to one axis; calling both is equivalent to neither (both axes checked)                                                                       |
+| `.Ignoring(group)`                  | `Overlapping` only     | Exclude pairs where both members belong to `group`; a member is still checked against elements outside the group; call repeatedly to register multiple groups |
 
 ```csharp
-Assert.That(card, Is.FullyWithin(viewport).Horizontally().Within(2f));
+Assert.That(card, Is.WithinContainer(viewport).Horizontally().Within(2f));
 Assert.That(cards, Is.Not.Overlapping.Ignoring(ignoredGroup).Within(2f));
 Assert.That(flavorText, Is.Not.TextOverflowing.Within(1f));
 ```
@@ -169,11 +169,11 @@ Assert.That(flavorText, Is.Not.TextOverflowing.Within(1f));
 
 **What these constraints do NOT see**: they compare axis-aligned bounding boxes of the four world corners only — `RectMask2D` clipping, `Canvas.enabled`, `CanvasGroup.alpha`, and `activeInHierarchy` are ignored (geometry only). A rotated element is over-approximated by its AABB. All three Canvas render modes (Overlay / Camera / World Space) are supported.
 
-To verify an element is not clipped by a `RectMask2D`, pass the mask's `RectTransform` as the `FullyWithin` container, guarded by `Assume.That` — the constraint itself doesn't know whether masking is even in effect, so a passing `FullyWithin` on an unmasked container proves nothing about clipping:
+To verify an element is not clipped by a `RectMask2D`, pass the mask's `RectTransform` as the `WithinContainer` container, guarded by `Assume.That` — the constraint itself doesn't know whether masking is even in effect, so a passing `WithinContainer` on an unmasked container proves nothing about clipping:
 
 ```csharp
-Assume.That(containerGo.GetComponent<RectMask2D>(), Is.Not.Null); // Without RectMask2D, a failing FullyWithin does not mean clipping — elements outside the bounds are still rendered
-Assert.That(image, Is.FullyWithin(containerRectTransform));
+Assume.That(containerGo.GetComponent<RectMask2D>(), Is.Not.Null); // Without RectMask2D, a failing WithinContainer does not mean clipping — elements outside the bounds are still rendered
+Assert.That(image, Is.WithinContainer(containerRectTransform));
 ```
 
 ---
