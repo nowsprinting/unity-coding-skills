@@ -69,18 +69,22 @@ Only the color block values are set; `transition` stays at its component default
 ### Font
 
 If the user has specified a project font (e.g. in CLAUDE.md, a task description, or earlier in the conversation), assign it to every `Text` component you create.
-If no font is specified, ask the user with `AskUserQuestion` before proceeding.
-Only fall back to the built-in font when the user explicitly says no custom font is needed.
+Otherwise use the built-in font — it requires no font assets to be installed and works on Windows/macOS/Linux in Unity 2019+:
 
 ```csharp
-// Load in editor scripts:
-var font = AssetDatabase.LoadAssetAtPath<Font>("Assets/MyGame/Resources/Fonts/NotoSansJP-Regular.otf");
-// Load in runtime scripts:
-var font = Resources.Load<Font>("Fonts/NotoSansJP-Regular");
+// Project font (example — use the project's actual asset path):
+var font = AssetDatabase.LoadAssetAtPath<Font>("Assets/MyGame/Fonts/MyFont.otf");
 
-// Built-in fallback (Unity 6.x) — only when no project font is specified:
-// Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+// Built-in font when no project font is specified.
+// The resource was renamed in Unity 2022.2 (Arial.ttf fails there, and vice versa):
+#if UNITY_2022_2_OR_NEWER
+var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+#else
+var font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+#endif
 ```
+
+**TextMesh Pro** (`TMPro.TextMeshProUGUI`) does not use `Font` assets, so the names above do not apply. Leave `font` unassigned and it falls back to `TMP_Settings.defaultFontAsset` (LiberationSans SDF from TMP Essential Resources); assign a project `TMP_FontAsset` only when one is specified.
 
 ### FontData defaults (from `FontData.defaultFontData`)
 
