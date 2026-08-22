@@ -5,6 +5,7 @@ Reference for creating uGUI components that match the Unity editor's **GameObjec
 ## Principles
 
 - For **Button** and **Text**: use the legacy variants (`UnityEngine.UI.Button` / `UnityEngine.UI.Text`) by default. Switch to TextMesh Pro (`TMPro.TextMeshProUGUI` etc.) only when the user explicitly requests it.
+  - When TMP is requested and the project lacks TMP Essential Resources, import them with `TMPro.TMP_PackageResourceImporter.ImportResources(importEssentials: true, importExtras: false, interactive: false)`. Never use `EditorApplication.ExecuteMenuItem("Window/TextMeshPro/Import TMP Essential Resources")` — it opens a modal dialog that blocks the `run_method_in_unity` call until a human dismisses it.
 - Use `ObjectFactory.CreateGameObject` / `ObjectFactory.AddComponent` (editor-only) instead of `new GameObject(...)` / `gameObject.AddComponent<T>()` so that Undo history and user Presets are applied automatically.
 - `DefaultControls.Create*` methods are the public API equivalent of the context menu — use them for all standard controls.
 
@@ -19,6 +20,7 @@ Reference for creating uGUI components that match the Unity editor's **GameObjec
 | Image | `DefaultControls.CreateImage(resources)` | public |
 | Panel | `DefaultControls.CreatePanel(resources)` | public |
 | Raw Image | `DefaultControls.CreateRawImage(resources)` | public |
+| Scroll View | `DefaultControls.CreateScrollView(resources)` | public — uses `background` + `mask` sprites |
 | ❌ context menu wrappers | `UnityEditor.UI.MenuOptions.*` | `internal class` — **cannot call directly** |
 
 ## Shared constants (from `DefaultControls.cs`)
@@ -246,6 +248,46 @@ Panel    RectTransform: anchorMin=(0,0), anchorMax=(1,1), anchoredPosition=(0,0)
 ```
 
 The Panel always stretches to fill its parent — `MenuOptions.AddPanel` zeros out `anchoredPosition` and `sizeDelta` after placement.
+
+### Scroll View
+
+```csharp
+var scrollViewGo = DefaultControls.CreateScrollView(res);
+// scrollViewGo.name == "Scroll View"
+```
+
+Defaults:
+```
+Scroll View                RectTransform: size (200, 200)
+  Image: sprite=Background, type=Sliced, color=(1,1,1,0.392)
+  ScrollRect: content=Content, viewport=Viewport, both scrollbars assigned,
+              visibility=AutoHideAndExpandViewport, scrollbarSpacing=-3
+  ├── Viewport             RectTransform: stretch, pivot=(0,1)
+  │     Mask: showMaskGraphic=false
+  │     Image: sprite=UIMask, type=Sliced
+  │   └── Content          RectTransform: anchorMin=(0,1), anchorMax=(1,1), sizeDelta=(0,300), pivot=(0,1)
+  ├── Scrollbar Horizontal (bottom edge)
+  └── Scrollbar Vertical   (right edge, direction=BottomToTop)
+```
+
+`CreateScrollView` adds **no Layout Group and no ContentSizeFitter** to Content — its height stays fixed at 300 regardless of children. For a list that should grow with its children (static entries or items instantiated at runtime), add both to Content:
+
+```csharp
+var content = scrollViewGo.transform.Find("Viewport/Content").gameObject;
+ObjectFactory.AddComponent<VerticalLayoutGroup>(content);
+var fitter = ObjectFactory.AddComponent<ContentSizeFitter>(content);
+fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+```
+
+Common failures:
+- Content doesn't scroll → no ContentSizeFitter on Content (height never exceeds the viewport), or Mask missing on Viewport
+- Items duplicated each time a panel reopens → runtime population code must clear Content's children before repopulating
+
+## Layout notes
+
+- **Pivot must match the anchor.** When placing an element at a corner or edge ("top right", "bottom bar"), set the anchor preset first, set `pivot` to the same point (not the default `(0.5, 0.5)`), then set `anchoredPosition`. Otherwise offsets are measured from the element's center and it lands half-outside the intended corner.
+- **ContentSizeFitter under a size-controlling Layout Group parent conflicts.** A ContentSizeFitter on a child whose parent Layout Group has Control Child Size enabled for that axis has both components driving the same RectTransform — causing jitter or a silently ignored fitter. Disable Control Child Size on the parent for that axis, or remove the fitter.
+- **ContentSizeFitter + Layout Group on the same object is fine** — that is the supported auto-size pattern (see Scroll View Content above): the Layout Group computes the preferred size from the children and controls them; the fitter applies that size to the object itself.
 
 ## Canvas / EventSystem notes
 
