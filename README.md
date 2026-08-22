@@ -64,7 +64,7 @@ The `run-tests` and `edit-scene` skills require the JetBrains Rider built-in MCP
 3. Install [MCP Server Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin
 
 > [!IMPORTANT]\
-> JetBrains Rider 2026.2 or later is recommended.
+> JetBrains Rider 2026.2.1 or later is recommended.
 
 > [!IMPORTANT]\
 > On Rider 2026.2, when both the JetBrains and Rider MCP toolsets are enabled, they expose tools with the same name.

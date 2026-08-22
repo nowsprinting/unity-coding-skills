@@ -57,6 +57,9 @@ files via `lint_files` rather than one file at a time. Both `lint_files` and its
    - Files reported as not analyzed carry into Step 5 as skipped
 2. Decide each diagnostic per the criteria read in Step 1, and apply all resulting changes as a
    single set per file
+   - When a fix is a rename (naming-convention inspections) or a symbol removal (unused-member
+     findings), apply it via `rename_refactoring` / `safe_delete` so references are updated across
+     the solution
 
 Do not use `mcp__ide__getDiagnostics` (limited to files open in editor tabs) or the Unity compiler
 output (does not reflect `.editorconfig` severity settings).

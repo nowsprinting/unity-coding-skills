@@ -16,6 +16,7 @@ Guide for writing code in Unity projects.
 ## Rules
 
 - Before modifying any code file, check if the editor is in Play Mode. If it is, stop it using the `unity_play_control` tool first — Play Mode may skip recompilation, leaving stale code active.
+- When a change is a structural refactoring — renaming a symbol, extracting a method/interface/base class, changing a method signature, moving a type to another namespace, or deleting a symbol — use the Rider MCP refactoring tools (`rename_refactoring`, `extract_method`, `extract_interface`, `extract_base_class`, `change_api_signature`, `move_type_to_namespace`, `reorganize_namespaces`, `safe_delete`) instead of text edits. They update all references and call sites across the solution.
 - Never create `.meta` files. Unity editor creates them automatically.
 - When editing (creating or modifying) scene (`.unity`) or prefab (`.prefab`) files, use the `edit-scene` skill.
 - When instantiating a prefab multiple times, give each instance a unique `GameObject.name`; otherwise, automated tests cannot identify a specific instance. Use a concrete name (e.g., `"<PrefabName>(Hero)"`) or append an index (e.g., `"<PrefabName>(0)"`).
