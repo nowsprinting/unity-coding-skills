@@ -76,9 +76,26 @@ rely on automatic skill triggering) and run the tests for the affected assemblie
 still pass. Step 3's reformatting alone does not change behavior, so skip this step when Step 2
 applied no changes.
 
-### Step 5: Report Suppressions
+### Step 5: Report Suppressions and Known-Issue Items
 
 If any diagnostic was suppressed rather than fixed, list each one for the user together with its
 reason. The suppression site itself already carries a "why not" comment per the Step 1 criteria.
 
 Also list any files skipped in Step 2 as not analyzed, together with the reason given.
+
+Also list any diagnostics handled under the Gotchas below, each with the user-verification request
+described there.
+
+## Gotchas
+
+Known issues in `lint_files` / `get_file_problems` as of Rider 2026.2.1:
+
+- [RIDER-142275](https://youtrack.jetbrains.com/issue/RIDER-142275): inspections from ReSharper
+  plugins are returned with an empty description. Do not guess what such a diagnostic means or
+  attempt a fix — leave it as is, and in Step 5 ask the user to open the file in the editor and
+  check what the inspection actually reports (e.g., whether it is a complexity finding).
+- [RIDER-142276](https://youtrack.jetbrains.com/issue/RIDER-142276): Roslyn analyzer diagnostics
+  that are already suppressed in source are still reported. Once a `#pragma warning disable` for
+  the diagnostic is in place, treat it as resolved and move on even if the tools keep reporting
+  it — do not re-fix or re-suppress. In Step 5, ask the user to confirm the suppression is
+  effective in the editor.
