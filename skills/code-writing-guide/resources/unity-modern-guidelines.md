@@ -92,6 +92,14 @@ Project Unity version:
     // Use:
     var slice = items[1..4];
     ```
+- Use `System.MathF` for `float` math instead of double-cast `System.Math` (keep `System.Math` for
+  `double` math)
+    ```csharp
+    // Instead of:
+    var root = (float)Math.Sqrt(value);
+    // Use:
+    var root = MathF.Sqrt(value);
+    ```
 
 **C# 9.0:**
 - Target-typed `new()`: `List<Enemy> enemies = new();` instead of `new List<Enemy>()`
