@@ -131,3 +131,4 @@ Read the appropriate resource file based on the situation:
 - Before writing or modifying any test code file: Read `${CLAUDE_SKILL_DIR}/resources/unity-test-framework.md`
 - Before writing or modifying any test code file: Read `${CLAUDE_SKILL_DIR}/resources/test-helper.md`
 - Before writing or modifying UI tests with `TestHelper.UI` namespace API (e.g., `GameObjectFinder`, `Monkey`): Read `${CLAUDE_SKILL_DIR}/resources/test-helper-ui.md`
+- Before writing or modifying performance tests (`com.unity.test-framework.performance`, `[Performance]`, `Measure.*`): Read `${CLAUDE_SKILL_DIR}/resources/unity-test-framework-performance.md`

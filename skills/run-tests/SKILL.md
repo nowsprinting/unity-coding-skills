@@ -28,6 +28,12 @@ Then use the `run_unity_tests` tool to run the tests on the Unity editor.
 
 Test execution can take several minutes. Do not re-run while a test is in progress — always wait for it to complete or time out. If a timeout occurs, narrow down the tests using filter settings and re-run.
 
+### Performance Test Results
+
+When `com.unity.test-framework.performance` is installed, each run writes its measurements to `Application.persistentDataPath/PerformanceTestResults.json` (alongside the `TestResults.xml` they are parsed from). Resolve that directory with `${CLAUDE_SKILL_DIR}/scripts/get-persistent-data-path.sh <unity-project-root>`.
+
+For the package's measurement pitfalls, see the `test-writing-guide` skill's `resources/unity-test-framework-performance.md`.
+
 ## Run Tests on the Player
 
 `run_unity_tests` runs tests only inside the Unity Editor. Run tests on a player instead when the user asks for it (e.g., "run on player", "standalone", "実機で実行"), or when player-only behavior must be verified (code inside `#if !UNITY_EDITOR`, `Resources`-based loading, IL2CPP, player-build hooks such as `ITestPlayerBuildModifier`). Pick the section below by target platform.
