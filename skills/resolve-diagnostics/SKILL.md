@@ -46,8 +46,11 @@ suppressed per the criteria just read.
 ### Step 2: Resolve Diagnostics
 
 Resolve diagnostics at the `warning` or higher severity level, collecting them for all resolved
-files via `lint_files` rather than one file at a time. Both `lint_files` and its fallback
-`get_file_problems` require Rider 2026.2 or later.
+files via `lint_files` rather than one file at a time. By default the tools also return
+`suggestion`- and `hint`-level results — those are out of scope, with one exception: a
+`suggestion`-level diagnostic related to performance (execution speed, memory allocation, boxing,
+etc.) should be considered for fixing too, though it never requires suppression when declined.
+Both `lint_files` and its fallback `get_file_problems` require Rider 2026.2 or later.
 
 1. `lint_files` — pass every resolved file in one call
    - If the call errors, fall back to `get_file_problems`, called once per file
