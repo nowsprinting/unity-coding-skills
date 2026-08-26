@@ -2,25 +2,17 @@
 name: refine-tests
 description: >-
   Reviews existing test code for conformance to the test-designing-guide and
-  test-writing-guide, then produces a refinement plan. Use this skill in plan
-  mode when the user wants to review or refine existing test code (a single
-  test file or a directory of tests) so it follows the project's test design
-  and writing conventions. Typically invoked as `/refine-tests <path>`.
-argument-hint: "[path]"
+  test-writing-guide, then applies the refinements. Use this skill when the
+  user wants to review or refine existing test code so it follows the
+  project's test design and writing conventions.
+  Typically invoked as `/refine-tests <PATH>`.
+argument-hint: "[file paths]"
 license: Unlicense
 metadata:
   author: Koji Hasegawa
 ---
 
-Reviews existing test code for conformance to the test-designing-guide and test-writing-guide, detects `[Category("Internal")]` tests over-promoted for testability and moves them to the public seam (demoting now-unneeded `internal` methods to `private`), then produces a refinement plan.
-
-## Mode Check
-
-This skill requires **plan mode**. Before doing anything else, check the current mode:
-
-- `ExitPlanMode` is in the deferred tools list → **not in plan mode** → stop immediately and tell the user:
-  > "This skill (`/refine-tests`) requires plan mode. Enter plan mode first: use `/plan` or press Shift+Tab to toggle."
-- `ExitPlanMode` is NOT in the deferred tools list (i.e., directly callable) → in plan mode → proceed.
+Reviews existing test code for conformance to the test-designing-guide and test-writing-guide, then applies the refinements.
 
 ## Scope Check
 
@@ -31,9 +23,30 @@ This skill is for refining **existing** tests for conformance to the guides. If 
 
 ## Input
 
-One or more target path arguments. Each may be a single test file, a directory (resolved recursively to its test files), or a glob. Resolve the argument(s) to the concrete set of test files to review before proceeding.
+One or more file path arguments. Resolve them to the concrete set of test files to review before proceeding.
+
+If no path argument is given, use `AskUserQuestion` to ask the user for the targets. Do not derive targets from `git status` — that would silently widen the scope beyond what was requested.
 
 ## Workflow
+
+**Recording implementation notes:** Notes for this run go in `/tmp/refine-tests-notes-$CLAUDE_CODE_SESSION_ID.md`. Immediately before your **first** append in this run — and only then — delete that file if it exists (usually it will not), so this run starts from an empty one: the session id is shared by every `/refine-tests` run in the session, so an earlier run abandoned before Step 7 would otherwise leak its notes into this one.
+
+While working through Steps 5–6, whenever one of the following occurs, immediately append a line to that file — do not wait until the end to reconstruct these from memory:
+
+- A Finding was ambiguous, or proved wrong once applied, and you made a judgment call → **Design decisions**
+- You intentionally departed from a Finding, and why → **Deviations**
+- You considered alternatives and chose one, and why → **Tradeoffs**
+- You changed production code — a method demoted to `private`, a dead test-only seam removed, or any other production edit — and why → **Production code changes**
+
+Append with `Bash` so the shell expands `$CLAUDE_CODE_SESSION_ID` — the `Write` tool cannot append and does not expand environment variables:
+
+```bash
+cat >> "/tmp/refine-tests-notes-$CLAUDE_CODE_SESSION_ID.md" <<'EOF'
+- **Production code changes**: <one line>
+EOF
+```
+
+When a step delegates to another skill (`/simplify` and `/resolve-diagnostics` in Step 6), append the note yourself from what it returns — they do not write to this file.
 
 ### Step 1: Read the Target Tests
 
@@ -91,16 +104,21 @@ Test through the same seam production code uses. A `[Category("Internal")]` test
 
 Pass 2 Findings change **production** code — record the file path + method explicitly.
 
-### Step 5: Review
+### Step 5: Modify Tests
 
-Read the critical test files. Confirm the proposed changes in the Findings list are consistent with each other and that each change preserves what the test verifies. Also cross-check duplicate findings (Step 3) against conformance findings (Step 2): a test slated for rename must not also be the redundant side of a duplicate finding. For seam-redundancy findings (Step 4): confirm each moved test still asserts the same observable outcome through the public seam, and each demotion / seam-removal finding has no remaining cross-assembly `internal` user.
+1. Load the `test-writing-guide` skill — and the `code-writing-guide` skill if the Findings include production changes; do not rely on automatic skill triggering
+2. Apply the changes described in the Findings list from Steps 2–4 — test edits, plus any production visibility changes (a method demoted to `private`, or a dead test-only seam removed)
+3. Run tests with `/run-tests` and confirm **all pass**
 
-### Step 6: Write the Plan File
+### Step 6: Refactoring
 
-Assemble the plan file with these sections:
+1. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
+2. Run tests with `/run-tests` and confirm **all pass**
+3. Run `/resolve-diagnostics` with the files modified in Step 5 — compute the list **after** `/simplify` finishes, so its edits are covered too
+4. Commit all remaining changes to git
 
-1. **Context** — what is being refined and why
-2. **Findings** — the Findings list from Steps 2–4 (location / rule / proposed change; may include production visibility changes)
-3. **Refine Workflow** — Read `${CLAUDE_SKILL_DIR}/assets/refine-workflow-template.md` and paste its full contents verbatim as the body of this section
+### Step 7: Implementation Notes
 
-### Step 7: Call ExitPlanMode
+1. `Read` `/tmp/refine-tests-notes-$CLAUDE_CODE_SESSION_ID.md` if it exists — if it was never created, every category is "None"
+2. Report its entries to the user in chat under `## Implementation Notes` — one bold sub-heading per category, each followed by a bullet list. Always include all five categories in this order: **Design decisions**, **Deviations**, **Tradeoffs**, **Production code changes**, **Open questions**. Write `- None` for any category with nothing recorded, and add any last-minute Open questions before finalizing
+3. Delete the temporary notes file if it exists

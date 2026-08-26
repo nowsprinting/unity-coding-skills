@@ -13,7 +13,7 @@ This plugin provides the methodology, conventions, and tools to make that signal
 | `edit-scene`               | Creates and modifies `.unity` and `.prefab` files                                                              | [MCP server](https://www.jetbrains.com/help/rider/mcp-server.html) and [MCP Server Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |
 | `fix-bug`                  | Diagnoses and fixes bugs using a test-first workflow (reproduce, diagnose, fix)                                |                                                                                                                                                                                           |
 | `plan-feature`             | Orchestrates the test-first planning workflow for feature implementation in plan mode                          |                                                                                                                                                                                           |
-| `refine-tests`             | Reviews existing test code for conformance to the test design and writing guides, then plans the refinement    |                                                                                                                                                                                           |
+| `refine-tests`             | Reviews existing test code for conformance to the test design and writing guides, then applies the refinements |                                                                                                                                                                                           |
 | `resolve-diagnostics`      | Resolves IDE diagnostics at `warning` or higher severity in the specified files, then reformats them           | [MCP server](https://www.jetbrains.com/help/rider/mcp-server.html)                                                                                                                        |
 | `run-tests`                | Running Unity tests via the `run_unity_tests` tool                                                             | [MCP server](https://www.jetbrains.com/help/rider/mcp-server.html) and [MCP Server Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |
 | `test-designing-guide`     | Design maintainable test cases; reduce redundant tests, tests without assertions, and unnecessary test doubles |                                                                                                                                                                                           |
@@ -116,8 +116,6 @@ Assets/UnityCodingSkills*
 
 ### Test-first feature implementation planning
 
-Type in plan mode:
-
 ```bash
 /plan-feature <SPEC>
 ```
@@ -134,15 +132,19 @@ The created plan file includes the following:
   - Definition of Done
   - Safe refactoring to improve internal quality (uses `/simplify` skill and static analysis)
 
-### Bug fixes through reproduction testing
+> [!IMPORTANT]\
+> This skill requires plan mode.
 
-Type out of plan mode:
+### Bug fixes through reproduction testing
 
 ```bash
 /fix-bug <INCIDENT>
 ```
 
 Create, run, and verify tests to reproduce the bug, then fix it.
+
+> [!IMPORTANT]\
+> This skill must be used outside plan mode.
 
 > [!TIP]\
 > The `INCIDENT` can specify an issue description or the failed test name.
@@ -152,11 +154,12 @@ Create, run, and verify tests to reproduce the bug, then fix it.
 
 ### Refine existing test code for conformance to the test design and writing guides
 
-Type in plan mode:
-
 ```bash
 /refine-tests <PATH>
 ```
+
+> [!NOTE]\
+> This skill is intended for use outside plan mode, but it can also be used from plan mode.
 
 ## Contributing
 
