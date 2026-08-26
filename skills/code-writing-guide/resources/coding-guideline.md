@@ -7,6 +7,43 @@ Do NOT maintain backward compatibility unless explicitly requested. Break things
 - Under `Assets/`: delete unused methods outright.
 - Under `Packages/`: for `public` members, mark them with `[Obsolete]` first to announce deprecation before removal.
 
+## Unity Version-Dependent Code
+
+This section applies only to code under `Packages/`, where a UPM package must support a range of Unity versions
+(take the minimum from the package's `package.json` `unity` / `unityRelease` fields). Code under `Assets/` is
+built with a single Unity version — write it directly for that version, with no `#if` and no suppression comment.
+
+When code is **needed on some Unity versions and not on others** — it is required on one side of a version boundary
+and redundant or invalid on the other — wrap it in a `#if` directive. This includes `using` directives.
+
+Do NOT leave such code unconditional with a diagnostic-suppression comment
+(`// ReSharper disable once ...`, `[SuppressMessage]`, `#pragma warning disable`):
+the IDE and analyzers only ever see one Unity version, so their verdict is correct on just one side of the boundary,
+and suppressing it makes that misjudgement permanent.
+
+- Use `UNITY_<version>_OR_NEWER` symbols. There is no `_OR_OLDER` form, so express "older only" as `#if !UNITY_<version>_OR_NEWER`.
+- Place version-guarded `using` directives in a block at the end of the using list, so the rest stays sortable.
+- Add a "why not" comment naming what changed at that version (see the "Why Not" Comments section below).
+  The boundary version alone does not explain itself.
+
+    ```csharp
+    using System.Threading.Tasks;
+    using NUnit.Framework;
+    #if !UNITY_2023_1_OR_NEWER
+    // Unity 2023.1 or newer provides the awaiter for AsyncOperation;
+    // on older versions it comes from UniTask.
+    using Cysharp.Threading.Tasks;
+    #endif
+    ```
+
+**This does not apply when the code works on every supported version and a newer version merely deprecates it.**
+Such code is version-independent, so it needs no `#if`; suppress the deprecation warning
+(`#pragma warning disable CS0618`) with a "why not" comment instead.
+Only switch to a `#if` branch once the API is actually removed, or once you want the newer API on newer versions.
+
+**This is for Unity version differences only, in `Assets/` or `Packages/` alike.**
+Guard on whether a package is installed with an asmdef `versionDefines` symbol instead (e.g. `#if ENABLE_UNITASK`).
+
 ## Structure
 
 - Editor extension code goes under the `Editor/` directory.
