@@ -91,6 +91,14 @@ described there.
 
 ## Gotchas
 
+Suppression comment format:
+
+- The `// ReSharper disable once <InspectionName>` form works only for ReSharper's built-in
+  inspections (e.g., `RedundantEmptySwitchSection`) — it has no effect on Roslyn analyzer
+  diagnostics. To suppress an analyzer diagnostic, wrap the code in
+  `#pragma warning disable <ID>` / `#pragma warning restore <ID>` using the analyzer's
+  diagnostic ID (e.g., `NUnit2007`).
+
 Known issues in `lint_files` / `get_file_problems` as of Rider 2026.2.1:
 
 - [RIDER-142275](https://youtrack.jetbrains.com/issue/RIDER-142275): inspections from ReSharper
