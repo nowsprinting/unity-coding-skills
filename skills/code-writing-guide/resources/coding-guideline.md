@@ -52,12 +52,6 @@ Guard on whether a package is installed with an asmdef `versionDefines` symbol i
 - Namespaces must align with the directory structure relative to the `Scripts` folder.
   For example, a file at `Assets/MyGame/Scripts/Runtime/Foo/Bar.cs` should use the namespace `MyGame.Foo.Bar`.
 
-## Naming
-
-- Abstract class names have no prefix (e.g., `Abstract`) or suffix (e.g., `Base`); implementation classes use the abstract class name as a suffix.
-  For example, when the abstract class is `Card`, implementations are `AttackCard`, `DefenseCard`, etc.
-- Enum names use singular nouns in PascalCase. Bitwise enums marked with `[Flags]` use plural nouns instead.
-
 ## MonoBehaviour
 
 - The source file name must match the MonoBehaviour class name. Internal helper classes may live in the same file, but only one MonoBehaviour per file.
