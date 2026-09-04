@@ -80,7 +80,7 @@ Search the project's test code for existing tests closest to the bug scenario. T
 
 Use Explore agents to locate relevant test files and test cases.
 
-Launch the `test-designer` agent to design the reproduction test case — do not design it in the main context; the agent is pinned to Opus so test design stays on the stronger model even when the implementation model is faster. Use the following prompt structure:
+Launch the `test-designer` agent to design the reproduction test case — do not design it in the main context. Use the following prompt structure:
 
 ```
 ## Requirements

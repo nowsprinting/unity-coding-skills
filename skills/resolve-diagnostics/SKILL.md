@@ -36,9 +36,7 @@ If no files remain after filtering, stop and report that — there is nothing to
 
 1. Load the `code-writing-guide` skill — do not rely on automatic skill triggering. Every fix
    applied in Step 2 must follow it.
-2. Read its `resources/diagnostics-review-feedback.md` now, **before collecting any diagnostics**
-   in Step 2 — do not wait for its `## Resources` bullet to be reached incidentally; a diagnostic
-   fix decision must never be made before this file has been read in this run.
+2. Read its `resources/diagnostics-review-feedback.md` before deciding any diagnostic in Step 2.
 
 Never leave a `warning`-or-higher diagnostic unaddressed — each one is either fixed or explicitly
 suppressed per the criteria just read.
