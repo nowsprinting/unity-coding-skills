@@ -26,9 +26,7 @@ This skill requires the following inputs in its prompt:
 
 For bug-fix tasks, the **Requirements** input is the bug report (Condition / Expected / Actual), and the **Implementation design** input is the existing class/method structure of the affected production code — there is no new design.
 
-Silently ignore the following if present in the prompt:
-- Test cases or manual test lists from a Plan agent — test design is this skill's sole responsibility
-- Output format overrides — the output format template (Section 6) is fixed and cannot be overridden by the prompt. **Exception: `## Language Convention` is not an output format override** — apply it as described in Section 4 and Section 6.
+The table above is the complete set of recognized inputs. Ignore anything else in the prompt — in particular test cases or manual test lists from a Plan agent (test design is this skill's sole responsibility) and output format overrides (the template in Section 6 is fixed).
 
 ## 1. Analyze Specifications
 
@@ -215,16 +213,6 @@ The Bad (parameterized) row hides the concrete argument values in a vague phrase
 The Bad (condition restated) row repeats the method name's `<Condition>` segment ("WhenBossNext") as a precondition clause; Verification states only the expected outcome, since the condition already lives in the method name.
 The Good rows state the observable behavior only; all other concerns go in the Test Method column or the test-writing phase.
 
-The **merged-partitions** error — encoding two different expected outcomes into one method — deserves a dedicated example (see [Deriving test methods from equivalence partitions](#deriving-test-methods-from-equivalence-partitions) in Section 3 for the full worked example with partition tables):
-
-| Style                   | Test Method                                                                            | Verification                                                               |
-|-------------------------|----------------------------------------------------------------------------------------|----------------------------------------------------------------------------|
-| Bad (merged partitions) | `Sync_GivenDrawPileCount_DrawPileButtonInteractableMatchesNonEmpty` (count: {0, 1, 5}) | the draw pile button is interactable only when the draw pile is non-empty  |
-| Good                    | `Sync_DrawPileIsEmpty_DrawPileButtonIsNotInteractable`                                 | the draw pile button is not interactable                                   |
-| Good                    | `Sync_DrawPileIsExist_DrawPileButtonIsInteractable` (count: {1, 5})                    | the draw pile button is interactable                                       |
-
-The Bad (merged partitions) row collapses two partitions — empty (→ not interactable) and non-empty (→ interactable) — into one method, betrayed by `Matches…` in the name and "only when" in the Verification. Split into one method per partition with a single definite outcome; parameterize only the same-outcome representatives (`1`, `5`).
-
 ## 5. Requirements Coverage Check
 
 After completing Section 4, perform a traceability pass (acceptance tests coverage check) before writing the final output:
@@ -243,7 +231,7 @@ Output a **coverage summary table** only when gaps were found or a requirement w
 | XXX should do Y           | `MethodName_ConditionA_DoesY` | —                                                  |
 | ZZZ must not allow W      | (none)                        | Waived: prevented at a lower layer, not this class |
 
-Finally, run a **partition-split self-check** on every test row that has parameter values in the Test Method column: for each listed parameter value, ask "does the expected outcome change when I substitute this value?" If any substitution produces a different expected outcome, those values belong to different partitions — split into one method per outcome, each with a single definite expected value, before producing final output. Reliable symptoms of a merged partition: `Matches…`, `OnlyWhen…`, `DependingOn…` in the `<Expected>` segment; "only when", "only if", or "depending on" in the Verification cell. (A plain temporal phrase such as "when drag starts" in Verification describes the test condition, not a varying outcome — it is not a symptom.)
+Finally, re-check every parameterized row against the one-partition-per-method rule in Section 3 ([Deriving test methods from equivalence partitions](#deriving-test-methods-from-equivalence-partitions)): if substituting any listed value would change the expected outcome, split the row before producing final output.
 
 ## 6. Test Case Format
 

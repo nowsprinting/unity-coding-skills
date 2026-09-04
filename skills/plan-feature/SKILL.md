@@ -80,7 +80,7 @@ After Step 2, launch the `test-designer` agent using the following prompt struct
 **Rules for assembling the prompt:**
 - Under `Implementation Design`, include only the design output — **do NOT include any test cases or manual tests** the Plan agent may have produced. Test design is the `test-designer` agent's sole responsibility.
 - **Do NOT add output format specifications.** The `test-designer` agent's output format is self-contained; caller-supplied format overrides produce non-standard output.
-- **Always include `## Language Convention`.** Resolve the project language from `CLAUDE.md` (look for the language specified for test method names / code comments). If `CLAUDE.md` does not specify a language, default to English. The `## Language Convention` block is a recognized input, not an output format override.
+- **Always include `## Language Convention`.** Resolve the project language from `CLAUDE.md` (look for the language specified for test method names / code comments). If `CLAUDE.md` does not specify a language, default to English.
 
 The `test-designer` agent returns:
 - **Test Cases** across all layers (Editor tests, Unit tests, Integration tests, Visual verification tests, Manual tests) — ready to paste into the plan file as one block
@@ -121,7 +121,7 @@ Assemble the plan file with the following sections:
 
 1. **Context** — why this change is needed
 2. **Implementation Design** — from Step 2 Plan agent output
-3. **Test Cases** — pasted verbatim as one block from the `test-designer` agent output (all 5 layers: Editor tests, Unit tests, Integration tests, Visual verification tests, Manual tests). Do NOT rewrite, translate, or clean up the output — the `test-designer` agent already enforces the content restrictions defined in `test-designing-guide` (no framework attributes, no async/coroutine patterns, no rationale text, etc.).
+3. **Test Cases** — pasted verbatim as one block from the `test-designer` agent output (all 5 layers: Editor tests, Unit tests, Integration tests, Visual verification tests, Manual tests). Do not rewrite, translate, or clean up the output — the `test-designer` agent already applies the content restrictions in `test-designing-guide`.
 4. **Known Trade-offs** — from `TESTABILITY: WARN` issues (if any)
 5. **Development Workflow** — Read `${CLAUDE_SKILL_DIR}/assets/development-workflow-template.md` and paste its full contents verbatim as the body of this section in the plan file, then add any project-specific steps per `CLAUDE.md`
 

@@ -133,7 +133,7 @@ Project Unity version:
 - `didAwake` (bool) — `true` after `Awake()` has been called on this instance
 - `didStart` (bool) — `true` after `Start()` has been called on this instance
 
-**Awaitable — ALWAYS prefer over coroutines:**
+**Awaitable — prefer over coroutines:**
 - Use `async Awaitable` methods instead of `IEnumerator` coroutines
 - `Awaitable.NextFrameAsync(ct)` instead of `yield return null`
 - `Awaitable.EndOfFrameAsync(ct)` instead of `yield return new WaitForEndOfFrame()`

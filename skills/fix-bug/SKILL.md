@@ -47,7 +47,7 @@ When a step delegates to a subagent or another skill (`test-designer` in Step 2;
 
 ### Step 1: Clarify the Bug Report
 
-> **Do not read code files during this step.** You may only read specs and design docs.
+> Work from the user's report, specs, and design docs only — do not read code yet. Reading the implementation here biases "Expected" toward what the code does rather than what the spec says.
 
 Extract the following from the user's prompt:
 
