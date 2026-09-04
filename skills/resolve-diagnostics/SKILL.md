@@ -17,18 +17,16 @@ them to the solution's code style, then runs the tests.
 
 ## Input
 
-One or more file path arguments. Resolve them to a concrete set of files, then:
-
-- Keep only `.cs` files that belong to the current Unity solution — they are the only ones that
-  carry IDE diagnostics, and `reformat_file` requires solution membership.
-- Drop everything else (docs, `.meta`, `.asmdef`, assets, files outside the solution).
-- Normalize the remaining paths to project/solution-root-relative form, once, up front —
-  `lint_files`, `get_file_problems`, and `reformat_file` all expect that form.
+One or more file or directory path arguments. Resolve them with
+`${CLAUDE_SKILL_DIR}/scripts/resolve-targets.sh <unity-project-root> <path>...` — it prints the
+project-root-relative path of every `.cs` file in the solution, one per line, in the form
+`lint_files`, `get_file_problems`, and `reformat_file` expect, and reports each dropped path
+(docs, `.meta`, `.asmdef`, assets, files outside the solution) on stderr. Use that list as-is.
 
 If no path argument is given, use `AskUserQuestion` to ask the user for the targets. Do not derive
 targets from `git status` — that would silently widen the scope beyond what was requested.
 
-If no files remain after filtering, stop and report that — there is nothing to resolve.
+If the script exits with code 3, stop and report that — there is nothing to resolve.
 
 ## Workflow
 
