@@ -187,7 +187,7 @@ Assert.That(actual, Is.GreaterThan(0).And.LessThan(100));
 Assert.That(actual, Is.Not.Null);
 ```
 
-**Exceptions (synchronous methods only)**
+**Exceptions**
 
 ```csharp
 Assert.That(() => Foo.Bar(-1), Throws.TypeOf<ArgumentException>());
@@ -195,11 +195,7 @@ Assert.That(() => Foo.Bar(-1), Throws.TypeOf<ArgumentException>()
     .And.Message.EqualTo("Expected message"));
 ```
 
-Do NOT use `Assert.ThrowsAsync<T>`, `Assert.CatchAsync<T>`, or `Assert.That(async () => ..., Throws...)` — passing an `async` delegate to these freezes the Unity Editor. Use the try-catch pattern instead — see [Async Tests](#async-tests).
-
-**Delayed / Polling**
-
-Do NOT use `DelayedConstraint` (`Is.<constraint>().After(ms)`, e.g. `Assert.That(actual, Is.GreaterThan(2.0f).After(500))`) — for the same reason as above: it polls via `Thread.Sleep` on the calling thread with no yield point, freezing the Unity Editor for the delay duration. Poll explicitly through an awaited helper instead — see **Unknown duration** in [Anti-pattern: Fixed-time Waits](#anti-pattern-fixed-time-waits).
+For `async` methods, use the try-catch pattern — see [Async Tests](#async-tests).
 
 ## GC Allocation Constraint
 
@@ -212,7 +208,7 @@ Assert.That(() => sut.Foo(), Is.Not.AllocatingGCMemory());
 ```
 
 - **Must alias `UnityEngine.TestTools.Constraints.Is`** — it conflicts with `NUnit.Framework.Is`, so add the `using` alias.
-- Not usable on `async` methods — passing an `async` delegate freezes the Unity Editor (see [Async Tests](#async-tests)), and no alternative exists. Do not attempt to work around this; measure allocations only in a synchronous path, or not at all.
+- Only synchronous delegates are supported, and no async alternative exists. Do not attempt to work around this (e.g., `.Wait()` / `.GetAwaiter().GetResult()`); measure allocations only in a synchronous path, or not at all.
 - `Debug.Log` inside the delegate triggers a GC allocation and causes the assertion to fail.
 
 ## Comparers
@@ -327,7 +323,7 @@ private static Catalog CreateCatalog(int midCount) { ... }
 |--------------------------------------------------|--------------------------------------|---------------------------------------------------------|
 | `[SetUp]` / `[TearDown]`                         | Before / after each test method      | `async Task` supported (UTF v1.3+)                      |
 | `[UnitySetUp]` / `[UnityTearDown]`               | Before / after each test (coroutine) | Runs before `[SetUp]` / after `[TearDown]` respectively |
-| `[OneTimeSetUp]` / `[OneTimeTearDown]`           | Once per class                       | `async` NOT supported (causes editor freeze)            |
+| `[OneTimeSetUp]` / `[OneTimeTearDown]`           | Once per class                       | `async` NOT supported                                   |
 | `[UnityOneTimeSetUp]` / `[UnityOneTimeTearDown]` | Once per class (coroutine)           | UTF v1.5+                                               |
 
 Guidelines:
@@ -372,7 +368,7 @@ using NUnit.Framework;
 - `[TestCase]` and `[TestCaseSource]` work with async test methods
 - Do not use `Task.Delay` or arbitrary wait; use `await Awaitable.NextFrameAsync()` when only one frame is needed
 - For tests that await a state transition or other condition where a timeout may occur, add `[Timeout(milliseconds)]` so the test fails within a few seconds — this applies even in the RED phase
-- To assert that an async method throws, use try-catch — see the warning below for why:
+- To assert that an async method throws, use try-catch. Delegate-taking assertion overloads (`Assert.ThrowsAsync`, `Assert.That(async () => ..., Throws...)`, etc.) reject `async` delegates, and blocking on the `Task` (`.Wait()` / `.GetAwaiter().GetResult()`) is not a substitute:
 
 ```csharp
 try
@@ -387,22 +383,6 @@ catch (ArgumentException expectedException)
 ```
 
 `try`/`catch` is the one sanctioned exception to [No Control Flow in Tests](#no-control-flow-in-tests) — it is not in that section's prohibited list, and this is the only place this guide requires it.
-
-> [!WARNING]\
-> Passing an `async` delegate to any NUnit assertion overload that accepts one deadlocks the Unity Editor: the assertion blocks the main thread waiting for the `Task`, but the `Task`'s continuation needs that same, now-blocked, main thread to run. `[Timeout(milliseconds)]` does **not** rescue this — the test run never returns, and the Editor process must be killed.
-
-| Prohibited                                                  | Use instead                                                                       |
-|-------------------------------------------------------------|-----------------------------------------------------------------------------------|
-| `Assert.ThrowsAsync<T>` / `Assert.ThrowsAsync`              | try-catch (above)                                                                 |
-| `Assert.CatchAsync<T>` / `Assert.CatchAsync`                | try-catch (above)                                                                 |
-| `Assert.That(async () => ..., Throws...)`                   | try-catch (above)                                                                 |
-| `Assert.That(async () => ..., Is.Not.AllocatingGCMemory())` | no alternative exists — see [GC Allocation Constraint](#gc-allocation-constraint) |
-
-This does not affect the mandated forms below — only delegate-taking assertion overloads are affected, and only when the delegate itself is `async`:
-
-- The `async Task` test method itself is unaffected — it is the required shape for async tests.
-- `Assert.That(actualValue, constraint)` inside an async test is unaffected — the value is already materialized before the assertion runs.
-- `Assert.That(() => sut.Foo(), Throws.TypeOf<T>())` with a **synchronous** lambda remains correct — see **Exceptions (synchronous methods only)** above.
 
 ### Anti-pattern: Fixed-time Waits
 
