@@ -15,3 +15,6 @@ Review comments are also written from a general perspective. Consider each one c
 
 - If the suggestion fits, apply it.
 - If it does not fit (because the code intentionally takes a different approach), it is fine to decline. **Report the declined item to the user with the reason** — explain what the suggestion was and why it was not applied. If the surrounding code is doing something non-obvious or unconventional, also leave a "why not" code comment (see the "Why Not" Comments section in `coding-guideline.md`). This prevents the same suggestion from being raised again in future reviews and helps future readers (human or AI) understand the intent.
+- A suggestion to remove a test case (a test method, or a `TestCase` / `TestCaseSource` / `Values` entry) because it is a "duplicate of what another test already proves", is "subsumed" by it, or "cannot fail unless the other test also fails" is decided by whether the requirements or the specification name the case:
+  - **Not named**: apply the suggestion as usual.
+  - **Named** — an input, state, API, or scenario listed in the requirements, the design document, or the plan: decline it. Such a case is a specification document, not a coverage device, and it stays even when it exercises the same branch as a combined case.
