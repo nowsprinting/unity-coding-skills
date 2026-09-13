@@ -5,22 +5,26 @@ A [Claude Code](https://claude.ai/code) plugin for Unity development that enable
 Reliable tests give the agent a clear signal: green means done.
 This plugin provides the methodology, conventions, and tools to make that signal trustworthy.
 
-## Included Skills
+## Skills
 
 | Skill                      | Description                                                                                                    | Required                                                                                                                                                                                  |
 |----------------------------|----------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `code-writing-guide`       | Coding conventions and guidelines for Unity C# projects                                                        |                                                                                                                                                                                           |
-| `edit-scene`               | Creates and modifies `.unity` and `.prefab` files                                                              | [MCP server](https://www.jetbrains.com/help/rider/mcp-server.html) and [MCP Server Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |
+| `edit-scene`               | Creates and modifies `.unity` and `.prefab` files                                                              | [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html) and [MCP Server Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |
 | `fix-bug`                  | Diagnoses and fixes bugs using a test-first workflow (reproduce, diagnose, fix)                                |                                                                                                                                                                                           |
 | `plan-feature`             | Orchestrates the test-first planning workflow for feature implementation in plan mode                          |                                                                                                                                                                                           |
 | `refine-tests`             | Reviews existing test code for conformance to the test design and writing guides, then applies the refinements |                                                                                                                                                                                           |
-| `resolve-diagnostics`      | Resolves IDE diagnostics at `warning` or higher severity in the specified files, then reformats them           | [MCP server](https://www.jetbrains.com/help/rider/mcp-server.html)                                                                                                                        |
-| `run-tests`                | Running Unity tests via the `run_unity_tests` tool                                                             | [MCP server](https://www.jetbrains.com/help/rider/mcp-server.html) and [MCP Server Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |
+| `resolve-diagnostics`      | Resolves IDE diagnostics at `warning` or higher severity in the specified files, then reformats them           | [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html)                                                                                                                        |
+| `run-tests`                | Running Unity tests via the `run_unity_tests` tool                                                             | [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html) and [MCP Server Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |
 | `test-designing-guide`     | Design maintainable test cases; reduce redundant tests, tests without assertions, and unnecessary test doubles |                                                                                                                                                                                           |
 | `test-writing-guide`       | Conventions for writing Unity Test Framework test code                                                         | [Test Helper](https://github.com/nowsprinting/test-helper) and [UI Test Helper](https://github.com/nowsprinting/test-helper.ui) package                                                   |
 | `unity-yaml-editing-guide` | Guidelines for directly hand-editing Unity YAML asset files                                                    |                                                                                                                                                                                           |
 
-## Included Subagents
+> [!TIP]\
+> Some skills require the MCP servers or UPM packages listed in the table above.
+> If you use a different MCP server, tool, or package, please modify the skill accordingly.
+
+## Subagents
 
 | Agent                 | Description                                                                                                             |
 |-----------------------|-------------------------------------------------------------------------------------------------------------------------|
@@ -82,11 +86,26 @@ The `run-tests` and `edit-scene` skills require the JetBrains Rider built-in MCP
 > When Rider is earlier than 2026.2 and you are using other JetBrains IDEs simultaneously with Rider, port numbers are assigned in the order they are launched.
 > For example, if you launch Rider after IDEA, the port number for Rider will be `64343`.
 
-### 2. Enforcing coding rules via `.editorconfig`
+### 2. Install UTF Analyzers (strongly recommended)
 
-Any coding rules or Roslyn analyzer diagnostics you want Claude to respect should be set to `warning` or higher severity in `.editorconfig`.
+[UTF Analyzers](https://github.com/nowsprinting/test-framework.analyzers) diagnose Unity Test Framework API usages that freeze the Unity Editor (e.g., `Assert.ThrowsAsync`, `async` delegates in `Throws` constraints, `DelayedConstraint`) before tests run.
+Install either the [UPM package](https://openupm.com/packages/com.nowsprinting.test-framework.analyzers/) via OpenUPM or the [NuGet package](https://www.nuget.org/packages/UTFAnalyzers) via NuGetForUnity.
 
-For example, to prevent leaving unused types and members, add the following diagnostics:
+### 3. Enforcing coding rules via analyzers and inspections
+
+The skills resolve Roslyn analyzer and IDE inspection diagnostics at `warning` or higher severity during the refactoring phase.
+Therefore, any coding rule you want Claude to respect must be set to `warning` or higher severity in `.editorconfig` or `.globalconfig`.
+
+> [!TIP]\
+> You can find the open-source Roslyn analyzer version compatible with your project's Unity version in
+> [Which version of Roslyn analyzers should I use with Unity?](https://github.com/nowsprinting/which-version-of-roslyn-analyzers-should-i-use-with-unity).
+
+#### Settings examples for maintainability
+
+Code written by coding agents often has maintainability problems, such as leftover unused members and overly complex methods.
+The following settings help Claude avoid them.
+
+To prevent leaving unused types and members, add the following to `.editorconfig`:
 
 ```
 resharper_unused_type_local_highlighting = warning
@@ -95,16 +114,16 @@ resharper_unused_member_global_highlighting = warning
 resharper_unused_member_local_highlighting = warning
 ```
 
-> [!TIP]\
-> You can find the open-source Roslyn analyzer version compatible with your project's Unity version in
-> [Which version of Roslyn analyzers should I use with Unity?](https://github.com/nowsprinting/which-version-of-roslyn-analyzers-should-i-use-with-unity).
+To keep method complexity under control, install one of the following Rider plugins:
 
-> [!TIP]\
-> The following Rider plugins for measuring complexity are also useful:
-> - [CognitiveComplexity](https://plugins.jetbrains.com/plugin/12024-cognitivecomplexity)
-> - [CyclomaticComplexity](https://plugins.jetbrains.com/plugin/10395-cyclomaticcomplexity)
+- [CognitiveComplexity](https://plugins.jetbrains.com/plugin/12024-cognitivecomplexity) plugin
+- [CyclomaticComplexity](https://plugins.jetbrains.com/plugin/10395-cyclomaticcomplexity) plugin
 
-### 3. Ignoring temporary files via `.gitignore`
+> [!WARNING]\
+> In Rider 2026.2.1, there is an issue where the `get_file_problems` and `lint_files` tools fail to correctly return diagnostic messages from plugins.
+> see: [RIDER-142275](https://youtrack.jetbrains.com/issue/RIDER-142275)
+
+### 4. Untracking temporary files via `.gitignore`
 
 The skills place temporary editor script files under `Assets/UnityCodingSkills/`. Adding the following pattern to your project's `.gitignore` is recommended:
 
