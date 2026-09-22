@@ -53,7 +53,7 @@ Project Unity version:
 - Nullable reference types (to catch null dereferences at compile time): Add `-nullable:enable` to the csc.rsp file located directly under the `Assets/` or in the same directory as the assembly definition file.
 
 **Unity APIs:**
-- Add `[NonReorderable]` to serialized `List<T>` or array fields when Inspector reordering should be disabled
+- Apply `[NonReorderable]` to serialized `List<T>` or array fields when Inspector reordering should be disabled
 - Use `ProfilerRecorder` to sample performance counters (draw calls, SetPass) from runtime code
 
 ### Unity 2021.1+

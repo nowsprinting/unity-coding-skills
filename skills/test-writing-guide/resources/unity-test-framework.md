@@ -343,7 +343,7 @@ Guidelines:
 | `[Ignore("reason")]`                                               | Temporarily skip; reason shown in runner UI                                   |
 | `[Explicit("reason")]`                                             | Run only when explicitly selected in the runner                               |
 
-Attributes can be placed on assembly (`[assembly: Category("...")]`), class, or method.
+Attributes can be applied to assembly (`[assembly: Category("...")]`), class, or method.
 
 Assembly-level attributes go in an `AssemblyInfo.cs` file placed at the root directory of the assembly (the same directory as the `.asmdef` file):
 
@@ -367,7 +367,7 @@ using NUnit.Framework;
 - Use `[Test]` attribute with `async` keyword instead of `[UnityTest]` attribute
 - `[TestCase]` and `[TestCaseSource]` work with async test methods
 - Do not use `Task.Delay` or arbitrary wait; use `await Awaitable.NextFrameAsync()` when only one frame is needed
-- For tests that await a state transition or other condition where a timeout may occur, add `[Timeout(milliseconds)]` so the test fails within a few seconds — this applies even in the RED phase
+- For tests that await a state transition or other condition where a timeout may occur, apply `[Timeout(milliseconds)]` so the test fails within a few seconds — this applies even in the RED phase
 - To assert that an async method throws, use try-catch. Delegate-taking assertion overloads (`Assert.ThrowsAsync`, `Assert.That(async () => ..., Throws...)`, etc.) reject `async` delegates, and blocking on the `Task` (`.Wait()` / `.GetAwaiter().GetResult()`) is not a substitute:
 
 ```csharp
@@ -446,7 +446,7 @@ LogAssert.ignoreFailingMessages = true;
 
 When creating a Spy `MonoBehaviour` (placed under `Tests/Runtime/TestDoubles/`) to capture events such as `IPointerClickHandler.OnPointerClick`:
 
-- Add `[AddComponentMenu("/")]` (Unity 2021+) or `[AddComponentMenu("")]` (older Unity) so it does not appear in the editor's **Add Component** picker.
+- Apply `[AddComponentMenu("/")]` (Unity 2021+) or `[AddComponentMenu("")]` (older Unity) so it does not appear in the editor's **Add Component** picker.
 - Record invocations into public properties (call count, last arguments, etc.) and let the test read them directly. Do NOT log to `Debug.Log` and assert with `LogAssert` — that couples the test to Unity's global log handler and is harder to inspect than typed state.
 
 ```csharp

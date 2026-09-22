@@ -17,7 +17,7 @@ Guide for writing test code for Unity projects.
 
 - Before modifying any test file, check if the editor is in Play Mode. If it is, stop it using the `unity_play_control` tool first.
 - Never create `.meta` files. Unity editor creates them automatically.
-- When a test creates a `GameObject` or instantiates a prefab, add `[CreateScene]` to the test method (not required if `[LoadScene]` is already present).
+- When a test creates a `GameObject` or instantiates a prefab, apply `[CreateScene]` to the test method (not required if `[LoadScene]` is already present).
 - When adding a test seam to production code (e.g., an `internal` accessor or a virtual override point to support injection), always wrap it with `#if UNITY_INCLUDE_TESTS` … `#endif` so it is excluded from non-test builds:
     ```csharp
     #if UNITY_INCLUDE_TESTS
@@ -27,12 +27,12 @@ Guide for writing test code for Unity projects.
 
 ### Categories
 
-- When implementing tests designed as integration tests, add `[Category("Integration")]` to the test method.
-- When implementing tests designed as visual verification tests, add `[Category("VisualVerification")]` to the test method.
-- When implementing tests designed as acceptance tests (marked `(acceptance test)` in the test case design), add `[Category("Acceptance")]` to the test method.
-- For test methods that test the `internal` visibility method, add `[Category("Internal")]`.
-- For test methods that depend on animation timing or other timing-sensitive conditions that may cause instability on slow CPUs, add `[Category("IgnoreCI")]`.
-- For test methods that specify the `GameViewResolution` attribute, add `[Category("IgnoreCI")]`.
+- When implementing tests designed as integration tests, apply `[Category("Integration")]` to the test method.
+- When implementing tests designed as visual verification tests, apply `[Category("VisualVerification")]` to the test method.
+- When implementing tests designed as acceptance tests (marked `(acceptance test)` in the test case design), apply `[Category("Acceptance")]` to the test method.
+- For test methods that test the `internal` visibility method, apply `[Category("Internal")]`.
+- For test methods that depend on animation timing or other timing-sensitive conditions that may cause instability on slow CPUs, apply `[Category("IgnoreCI")]`.
+- For test methods that specify the `GameViewResolution` attribute, apply `[Category("IgnoreCI")]`.
 
 ### Multi-frame tests
 
@@ -118,8 +118,8 @@ When a decorative full-screen element should not block (e.g., a background image
 When implementing a visual verification test (a test designed to verify on-screen rendering via screenshot and image analysis):
 
 1. Take a screenshot using `[TakeScreenshot]` or `ScreenshotHelper.TakeScreenshotAsync()` (see `test-helper.md`).
-2. Add `[Description("After running this test, verify the screenshots from the following perspectives: <verification aspects>")]` to the test method. The verification aspects are taken directly from the **Image analysis by saved screenshot** column in the test case design. List only aspects suited to visual verification (legibility, contrast, positional relationships, typography, visual state representation, rendering quality) — do NOT list mechanically assertable facts such as a panel's `activeSelf` or exact text content; assert those in integration tests instead.
-3. Add `[Category("VisualVerification")]` to the test method.
+2. Apply `[Description("After running this test, verify the screenshots from the following perspectives: <verification aspects>")]` to the test method. The verification aspects are taken directly from the **Image analysis by saved screenshot** column in the test case design. List only aspects suited to visual verification (legibility, contrast, positional relationships, typography, visual state representation, rendering quality) — do NOT list mechanically assertable facts such as a panel's `activeSelf` or exact text content; assert those in integration tests instead.
+3. Apply `[Category("VisualVerification")]` to the test method.
 4. You can omit writing `Assert` statements.
 
 When a designed visual verification test shares its test condition with a designed layout assertion test, you may implement both as a single test method: take the screenshot in the layout assertion test, apply steps 2–3 to it, and keep the layout assertions (step 4 does not apply).

@@ -88,7 +88,7 @@ For each true duplicate pair, append a Finding to the Findings list from Step 2:
 
 Test through the same seam production code uses. A `[Category("Internal")]` test exercises an `internal` method directly. For each such test in the targets, append Findings via two passes. Overriding rule: **never trade coverage for a tidier seam; when in doubt, keep the test (and keep `internal`).**
 
-**Layer scope:** This step operates within the **unit test layer only**. Tests marked `[Category("Integration")]` or `[Category("VisualVerification")]` run under different execution contexts and are not candidates for a covering test — do not consider them when searching for a public-seam test that covers the same scenario.
+**Layer scope:** This step operates within the **unit test layer only**. Tests with `[Category("Integration")]` or `[Category("VisualVerification")]` applied run under different execution contexts and are not candidates for a covering test — do not consider them when searching for a public-seam test that covers the same scenario.
 
 **Pass 1 — classify each `[Category("Internal")]` test:**
 1. **A public-seam test already covers it** (from the test code alone): a separate **unit** test asserts the **same observable outcome** for an **equivalent scenario** through a **public** method → Finding: delete the internal test, keep the public-seam test (name both).

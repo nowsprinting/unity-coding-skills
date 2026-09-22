@@ -46,7 +46,7 @@ public void OneTimeSetUp() => LoadAssetAttribute.LoadAssets(this);
 | Set a custom resolution             | `[GameViewResolution(400, 200, "WQVGA")]` — wait one frame to apply if not using `[CreateScene]`/`[LoadScene]` |
 | Show or hide Gizmos                 | `[GizmosShowOnGameView(true)]` on the test method only                                                         |
 
-**When to add `[FocusGameView]`**: Add it at method scope on any test that includes UI-operation tests (using `GameObjectFinder`, click/drag operators, etc.). This avoids unintended GameView focus loss. Do not add it assembly-wide or on classes that test pure logic without UI interaction.
+**When to apply `[FocusGameView]`**: Apply it at method scope on any test that includes UI-operation tests (using `GameObjectFinder`, click/drag operators, etc.). This avoids unintended GameView focus loss. Do not apply it assembly-wide or to classes that test pure logic without UI interaction.
 
 ```csharp
 [TestFixture]

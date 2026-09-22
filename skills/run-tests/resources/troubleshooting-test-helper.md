@@ -6,7 +6,7 @@
 
 When the GameView resolution is too low, screenshots produced by `[TakeScreenshot]` may not have enough detail for pixel-level image analysis.
 
-Add `[GameViewResolution(960, 540, "540p")]` to the test method temporarily, re-run the tests, then remove the attribute. Do not commit resolution overrides to visual verification tests (see `test-helper.md` "Image-analysis screenshot tests").
+Apply `[GameViewResolution(960, 540, "540p")]` to the test method temporarily, re-run the tests, then remove the attribute. Do not commit resolution overrides to visual verification tests (see `test-helper.md` "Image-analysis screenshot tests").
 
 ```csharp
 [Test]
