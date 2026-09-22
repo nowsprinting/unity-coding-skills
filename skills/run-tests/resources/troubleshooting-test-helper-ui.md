@@ -28,7 +28,7 @@ GameObject (type=UnityEngine.UI.Button, text=START) is not found.
 
 #### Not reachable
 
-"Not reachable" means the `GameObject` is judged to be unreachable from the user's mouse or touch input. For example, `DefaultReachableStrategy` checks whether a raycast from `Camera.main` to the pivot position of the `GameObject` hits it.
+"Not reachable" means the `GameObject` is judged to be unreachable from the user's mouse or touch input. For example, `DefaultReachableStrategy` checks whether a raycast from `Camera.main` to the pivot position of the `GameObject` hits it (and retries at other points when partially hidden; see below).
 
 If `GameObject` is found that matches the specified name, path, or matcher but not reachable, throws a `TimeoutException` with the following message:
 
@@ -55,6 +55,10 @@ If the following message is printed, other object is hiding the pivot position o
 ```
 Not reachable to BehindButton(-2324), position=(320,240). Raycast hit other objects: [BlockScreen, FrontButton]
 ```
+
+When the object is only partially hidden, `DefaultReachableStrategy` retries automatically at unblocked points inside its visible rect, up to 5 raycasts in total including the pivot. With the verbose logger, one message is printed per missed raycast, so these messages can appear even when a retry succeeds and the object is reachable.
+This retry works only when both the target and the blocking object are uGUI elements (`RectTransform`); if either is a 2D/3D object hit through `PhysicsRaycaster`/`Physics2DRaycaster`, only the pivot position is checked.
+The solutions below apply when the object is fully hidden, off-screen, or a 2D/3D object.
 
 Solutions will be considered in the following order of priority:
 
@@ -221,6 +225,7 @@ Not reachable to BehindButton(-2324), position=(320,240). Raycast hit other obje
 ```
 
 The former output is when the object is off-screen, and the latter is when other objects hide the pivot position.
+For a partially hidden uGUI object, the latter may be printed once per retried point (see [Not reachable](#not-reachable)).
 The position to send the raycast can be arranged using annotation components such as `ScreenOffsetAnnotation`.
 
 #### No GameObjects that are operable

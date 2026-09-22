@@ -197,7 +197,7 @@ Use these extension points when the game uses a custom UI framework or requires 
 |-----------------|---------|-----------------|
 | `IsInteractable` function | Returns whether a `Component` is interactable. Default: true for uGUI components whose `interactable` property is true. | When you have non-uGUI components that need interactability checks |
 | `IIgnoreStrategy` | `IsIgnored` returns whether a `GameObject` should be skipped by Monkey. Default: true if `IgnoreAnnotation` is attached. | When you need name/path-based exclusion rules |
-| `IReachableStrategy` | `IsReachable` returns whether a `GameObject` is reachable from the user. Default: raycast from `Camera.main` to pivot. | When you need a different camera or randomized raycast point |
+| `IReachableStrategy` | `IsReachable` returns whether a `GameObject` is reachable from the user. Default: raycast from `Camera.main` to pivot; if a uGUI target is partially hidden by uGUI objects, retries at unblocked points inside its visible rect. | When you need a different camera or randomized raycast point |
 
 Pass custom strategies to the `GameObjectFinder` or `MonkeyConfig` constructors:
 
