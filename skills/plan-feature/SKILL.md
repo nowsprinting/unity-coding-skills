@@ -61,7 +61,7 @@ The Plan agent output should include **only**:
 
 ### Step 3: Test Case Design (test-designer Agent)
 
-After Step 2, launch the `test-designer` agent using the following prompt structure:
+After Step 2, launch the `test-designer` agent with an Opus-class or more capable model set in the `model` parameter, so test design stays on a strong model even when the main session runs on a faster one. Use the following prompt structure:
 
 ```
 ## Requirements
