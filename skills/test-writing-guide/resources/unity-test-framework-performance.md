@@ -16,7 +16,7 @@ Resolve the directory with the `run-tests` skill's `get-persistent-data-path.sh`
 
 ## `Measure.Method()` takes synchronous delegates only (3.5.0)
 
-There is no async overload, so `async`/`UniTask` APIs cannot go through it — and passing an `async` delegate to NUnit assertion overloads deadlocks the Editor (`unity-test-framework.md` → Async Tests). Sample manually with `Measure.Custom` instead; see **Measuring async allocations** below.
+There is no async overload, so `async`/`UniTask` APIs cannot go through it. Sample manually with `Measure.Custom` instead; see **Measuring async allocations** below.
 
 ## `.GC()` counts allocation events, not bytes (3.5.0)
 

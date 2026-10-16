@@ -153,7 +153,15 @@ The Unity Editor's main thread never yielded, so Unity Test Framework's own time
 Common causes:
 
 - An infinite loop, or a wait whose condition never becomes true, with **no** `yield return` / `await` reached inside the loop body. (A loop that does yield each iteration lets Unity Test Framework's own timeout fail just that one test instead — the run then continues and completes normally, which does not match this log pattern.)
-- An `async` delegate passed to an NUnit assertion overload that accepts one (`Assert.ThrowsAsync`, `Assert.CatchAsync`, `Is.Not.AllocatingGCMemory()`, …), or a `DelayedConstraint` (`.After(ms)`). [UTF Analyzers](https://github.com/nowsprinting/test-framework.analyzers) reports these as `UTF2001`–`UTF2005` before the run; if no diagnostic fired, check that the package is installed and its severity is `warning` or higher.
+- An `async` delegate passed to an NUnit assertion overload that accepts one (`Assert.ThrowsAsync`, `Assert.CatchAsync`, `Is.Not.AllocatingGCMemory()`, …), or a `DelayedConstraint` (`.After(ms)`).
+
+[UTF Analyzers](https://github.com/nowsprinting/test-framework.analyzers) reports many of these patterns before the run. Fetch the rule list from the **Diagnostics** section of its [README](https://github.com/nowsprinting/test-framework.analyzers/blob/master/README.md) instead of relying on memory — newer versions add rules. If the suspected test code matches a rule, find out why no diagnostic stopped it:
+
+1. **Installation and version** — look for `com.nowsprinting.test-framework.analyzers` in `Packages/manifest.json` (UPM; the resolved version is in `Packages/packages-lock.json`) or `UTFAnalyzers` in `Assets/packages.config` (NuGetForUnity). Compare the installed version with the [releases](https://github.com/nowsprinting/test-framework.analyzers/releases) to see whether the matching rule exists in it.
+2. **Suppression** — search `.editorconfig` and `.globalconfig` for `dotnet_diagnostic.UTF*.severity` entries that lower the rule's default severity, and the test code for `#pragma warning disable UTF*` or `[SuppressMessage]` naming a `UTF*` ID.
+3. **Current diagnostics** — run `get_file_problems` on the suspected test file to see whether the diagnostic fires now.
+
+Report the matching rule and the findings (not installed, outdated, or suppressed) to the user, and let the user decide whether to install, upgrade, or remove the suppression. Use `AskUserQuestion` only for what the files cannot settle.
 
 Check `Editor.log` for the test-framework lifecycle marker sequence:
 

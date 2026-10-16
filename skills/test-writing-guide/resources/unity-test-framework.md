@@ -75,7 +75,7 @@ public async Task MyTest()
 }
 ```
 
-`[TestCase]` and `[TestCaseSource]` work with `async Task`. They **cannot** be combined with `[UnityTest]`.
+`[TestCase]` and `[TestCaseSource]` work with `async Task`.
 
 ### Assertions: use the constraint model
 
@@ -208,7 +208,7 @@ Assert.That(() => sut.Foo(), Is.Not.AllocatingGCMemory());
 ```
 
 - **Must alias `UnityEngine.TestTools.Constraints.Is`** — it conflicts with `NUnit.Framework.Is`, so add the `using` alias.
-- Only synchronous delegates are supported, and no async alternative exists. Do not attempt to work around this (e.g., `.Wait()` / `.GetAwaiter().GetResult()`); measure allocations only in a synchronous path, or not at all.
+- No async alternative exists. Do not work around this by blocking on an async call inside the delegate (e.g., `.Wait()` / `.GetAwaiter().GetResult()`); measure allocations only in a synchronous path, or not at all.
 - `Debug.Log` inside the delegate triggers a GC allocation and causes the assertion to fail.
 
 ## Comparers
@@ -282,10 +282,6 @@ The following maps the test-designing-guide notation to NUnit attributes:
 - `[Pairwise]` on the method → pairwise coverage instead of full Cartesian; use when the test cases specify `(use pairwise)`
 - `[Sequential]` on the method → match parameters by index (not combinatorial); do NOT use in principle — use `[TestCase]` / `[TestCaseSource]` instead to make each combination explicit
 
-### Restrictions
-
-`[TestCase]`, `[TestCaseSource]`, `[Pairwise]`, `[Sequential]` **cannot** be combined with `[UnityTest]`; they **can** be combined with `async [Test]`.
-
 ## Object Creation Pattern
 
 Use a creation method for objects needed in tests:
@@ -323,7 +319,7 @@ private static Catalog CreateCatalog(int midCount) { ... }
 |--------------------------------------------------|--------------------------------------|---------------------------------------------------------|
 | `[SetUp]` / `[TearDown]`                         | Before / after each test method      | `async Task` supported (UTF v1.3+)                      |
 | `[UnitySetUp]` / `[UnityTearDown]`               | Before / after each test (coroutine) | Runs before `[SetUp]` / after `[TearDown]` respectively |
-| `[OneTimeSetUp]` / `[OneTimeTearDown]`           | Once per class                       | `async` NOT supported                                   |
+| `[OneTimeSetUp]` / `[OneTimeTearDown]`           | Once per class                       |                                                         |
 | `[UnityOneTimeSetUp]` / `[UnityOneTimeTearDown]` | Once per class (coroutine)           | UTF v1.5+                                               |
 
 Guidelines:
@@ -367,8 +363,7 @@ using NUnit.Framework;
 - Use `[Test]` attribute with `async` keyword instead of `[UnityTest]` attribute
 - `[TestCase]` and `[TestCaseSource]` work with async test methods
 - Do not use `Task.Delay` or arbitrary wait; use `await Awaitable.NextFrameAsync()` when only one frame is needed
-- For tests that await a state transition or other condition where a timeout may occur, apply `[Timeout(milliseconds)]` so the test fails within a few seconds — this applies even in the RED phase
-- To assert that an async method throws, use try-catch. Delegate-taking assertion overloads (`Assert.ThrowsAsync`, `Assert.That(async () => ..., Throws...)`, etc.) reject `async` delegates, and blocking on the `Task` (`.Wait()` / `.GetAwaiter().GetResult()`) is not a substitute:
+- To assert that an async method throws, use try-catch. Blocking on the `Task` (`.Wait()` / `.GetAwaiter().GetResult()`) is not a substitute:
 
 ```csharp
 try
@@ -393,7 +388,7 @@ Async tests often need to wait a little — e.g., after `SceneManager.LoadScene`
 Pick the wait that matches the situation:
 
 - **Known frame count** — `await Awaitable.NextFrameAsync()` on Unity 2023+. On older Unity, use `UniTask.NextFrame` / `UniTask.DelayFrame`, or write the test with `[UnityTest]` and `yield return null`.
-- **Waiting for a state transition** (e.g., "next turn") — Drive the wait off the game's state machine with `UniTask.WaitUntil` or `UnityEngine.WaitUntil` instead of guessing a duration. Extract the wait into a named helper method (e.g., `async Awaitable WaitForPlayerTurn()`) to make intent clear and allow reuse across tests. Always pair with `[Timeout(milliseconds)]` — a bug in the SUT can cause the condition to never become true, hanging the test indefinitely.
+- **Waiting for a state transition** (e.g., "next turn") — Drive the wait off the game's state machine with `UniTask.WaitUntil` or `UnityEngine.WaitUntil` instead of guessing a duration. Extract the wait into a named helper method (e.g., `async Awaitable WaitForPlayerTurn()`) to make intent clear and allow reuse across tests.
 - **Unknown duration** (UI interactions, asset loads, backend calls) — Poll state at a short interval through a helper. The UI Test Helper package (`test-helper.ui`) ships `GameObjectFinder`, which already does this.
 
 ## Preconditions: Assume
