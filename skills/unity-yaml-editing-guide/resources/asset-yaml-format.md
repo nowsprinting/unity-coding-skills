@@ -78,14 +78,14 @@ For `Material:` assets, the key structure is:
 
 ```yaml
 Material:
-  serializedVersion: 8          # migration version; do not change
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: <filename without extension>
   m_Shader: {fileID: <N>, guid: <32-hex>, type: 0}
-  m_Parent: {fileID: 0}         # setting to non-zero creates a Material Variant
+  m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []

@@ -13,7 +13,7 @@ Predefined callbacks that all `MonoBehaviour` script components can receive, tri
 | Function | When called |
 |----------|-------------|
 | `Awake()` | Once when the scene loads, for each object. Called even if the component is disabled. |
-| `OnEnable()` | Every time the object/component is enabled. After `SceneManager.sceneLoaded`, before `Start`. |
+| `OnEnable()` | Every time the object/component is enabled. Before `SceneManager.sceneLoaded` and `Start`. |
 | `Start()` | Once, before the first frame or physics update, only if the component is enabled. |
 
 **Critical ordering guarantee:** All `Awake` calls across all objects complete before any `Start` is called.  

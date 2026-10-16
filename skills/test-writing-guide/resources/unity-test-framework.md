@@ -236,6 +236,8 @@ For project-specific comparers (`FlipTexture2dEqualityComparer`, `XmlComparer`),
 
 Never use `if`, `switch`, `for`, `foreach`, `while`, or the ternary operator in test code. Tests must be straight-line single-pass code — control flow makes the expected outcome ambiguous and reduces trust in the test itself; a bug in a branch can hide behind a path that was never taken.
 
+Exception: a `while` loop that waits for a state transition is allowed. Even then, prefer extracting the loop into an async helper method and waiting on it from the test method with `await` (or `yield return`).
+
 ## Parameterized Tests
 
 Use `[TestCase]`, `[TestCaseSource]`, `[Values]`, `[ValueSource]` when Arrange differs but Act and Assert are the same.  

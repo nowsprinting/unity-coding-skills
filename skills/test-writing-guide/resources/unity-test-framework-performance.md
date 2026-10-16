@@ -41,4 +41,4 @@ On Unity's Mono runtime, sample managed heap growth with `GC.GetTotalMemory(fals
 
 Heap growth is a relative measure: every sample is a multiple of 4,096, and an allocation fitting in already-reserved space contributes 0. Compare medians between branches; never quote a sample as "this operation allocates N bytes".
 
-Finally, comparisons only hold when the workload is deterministic — pin any PRNG the code consumes (e.g. `new RandomWrapper(0)`, see `test-helper-ui.md`), and confirm the fixture actually exercises the path. An operation that silently no-ops still produces clean, meaningless numbers.
+Finally, comparisons only hold when the workload is deterministic — pin any PRNG the code consumes (e.g. `Random.InitState(42);`), and confirm the fixture actually exercises the path. An operation that silently no-ops still produces clean, meaningless numbers.

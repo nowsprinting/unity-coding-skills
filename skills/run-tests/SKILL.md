@@ -64,7 +64,7 @@ This applies to Editor runs (`run_unity_tests`) only. A standalone-player run wr
 
 ### If no TestResults.xml is found (exit code 3)
 
-`TestResults.xml` under `persistentDataPath` is written by the `com.unity.test-framework.performance` package's `RunFinished` callback, not by Unity Test Framework itself — UTF only writes a result XML for CLI/batchmode runs (to `<project-root>/TestResults-<ticks>.xml`), never for Test Runner window / MCP-driven runs. If that package isn't installed, fall back:
+Whether `TestResults.xml` is written under `persistentDataPath` depends on the project (e.g., the `com.unity.test-framework.performance` package's `RunFinished` callback writes it). If it is absent, fall back:
 
 - **Screenshot paths**: `[TakeScreenshot]`/`ScreenshotHelper` log `Save screenshot to <absolute path>` on every capture. Find the current log file (compare mtimes of `Editor.log` and `Editor-prev.log` — see `resources/troubleshooting-run-unity-tests.md` → "Editor.log vs Editor-prev.log"), then take the `Save screenshot to` lines that appear **after** the last `- Finished resetting the current domain` line (the lifecycle marker for the run you just triggered — same resource, "Tests launched but timed out" table).
 - **Verification aspects**: read the `[Description(...)]` attribute directly from the test's source file.

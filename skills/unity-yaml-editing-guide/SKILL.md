@@ -45,7 +45,7 @@ Guide for directly editing Unity YAML-serialized asset files for Unity projects.
 | int / enum | bare integer | `<Cost>k__BackingField: 1` |
 | float | plain decimal | `m_Glossiness: 0.5` |
 | ASCII string | unquoted | `m_Name: DryPrinciple` |
-| non-ASCII string | double-quoted, `\uXXXX` escapes | `"DRY原則"` |
+| non-ASCII string | double-quoted, `\uXXXX` escapes | `"DRY\u539F\u5247"` |
 | Vector3 | flow mapping | `{x: 0, y: 0, z: 0}` |
 | Quaternion | flow mapping | `{x: 0, y: 0, z: 0, w: 1}` |
 | Color | flow mapping | `{r: 1, g: 1, b: 1, a: 1}` |

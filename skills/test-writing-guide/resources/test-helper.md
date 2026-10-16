@@ -49,9 +49,9 @@ public void OneTimeSetUp() => LoadAssetAttribute.LoadAssets(this);
 **When to apply `[FocusGameView]`**: Apply it at method scope on any test that includes UI-operation tests (using `GameObjectFinder`, click/drag operators, etc.). This avoids unintended GameView focus loss. Do not apply it assembly-wide or to classes that test pure logic without UI interaction.
 
 ```csharp
-[TestFixture]
+[Test]
 [FocusGameView]
-public class MySceneTest { ... }
+public async Task ClickStartButton_LoadsGameScene() { ... }
 ```
 
 **CI resolution**: To fix the GameView resolution in CI, pass test-helper CLI arguments in Unity's startup parameters rather than hardcoding it in test code:

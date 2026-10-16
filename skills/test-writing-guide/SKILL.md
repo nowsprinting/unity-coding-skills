@@ -66,13 +66,13 @@ Reasons:
 
 Choose the implementation means by what the condition is about:
 
-- **Rect comparison** — `Is.WithinScreen` (within-screen bounds), `Is.FullyWithin(container)` (containment in a parent), `Is.Not.Overlapping` (overlap between elements)
+- **Rect comparison** — `Is.WithinScreen` (within-screen bounds), `Is.WithinContainer(container)` (containment in a parent), `Is.Not.Overlapping` (overlap between elements)
 - **Text overflow** — `Is.Not.TextOverflowing` (preferred/rendered size exceeds the rect, or characters are truncated)
 - **Raycast reachability** — `GameObjectFinder` with `reachable: true` (optionally with a paginator) proves the element is on screen and not covered by another element; use it when the condition is "the user can actually reach this element"
 
 Before asserting, settle layout with `Canvas.ForceUpdateCanvases()` then `await Awaitable.NextFrameAsync()` — the former rebuilds pending layout/graphic geometry (rect sizes, text metrics); the latter waits for a real render pass, which is what a raycast reachability check needs, since a newly activated/deactivated `Graphic`'s `CanvasRenderer.depth` stays unset until then and `GraphicRaycaster` silently skips any candidate whose `depth == -1` — `ForceUpdateCanvases()` alone does not assign it.
 
-See `test-helper.md` → **Layout constraints** for the constraint API (`Is.WithinScreen` / `Is.FullyWithin` / `Is.Not.Overlapping` / `Is.Not.TextOverflowing`).
+See `test-helper.md` → **Layout constraints** for the constraint API (`Is.WithinScreen` / `Is.WithinContainer` / `Is.Not.Overlapping` / `Is.Not.TextOverflowing`).
 
 #### Use GameObjectFinder instead of GameObject.Find
 
