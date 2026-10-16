@@ -25,7 +25,7 @@ This skill must be used **outside plan mode**. Before doing anything else, check
 
 ## Workflow
 
-**Recording implementation notes:** Notes for this run go in `/tmp/fix-bug-notes-$CLAUDE_CODE_SESSION_ID.md`. Immediately before your **first** append in this run — and only then — delete that file if it exists (usually it will not), so this run starts from an empty one: the session id is shared by every `/fix-bug` run in the session, so an earlier run abandoned before Step 9 would otherwise leak its notes into this one. Never delete it again afterwards, including when Step 3 sends you back to Step 1 or Step 2; those loops are part of the same run and their notes must survive.
+**Recording implementation notes:** Notes for this run go in `<scratchpad>/implementation-notes.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally). Immediately before your **first** append in this run — and only then — delete that file if it exists (usually it will not), so this run starts from an empty one: every `/fix-bug`, `/refine-tests`, and plan-file run in the session shares this file, so an earlier run abandoned before its Implementation Notes step would otherwise leak its notes into this one. Never delete it again afterwards, including when Step 3 sends you back to Step 1 or Step 2; those loops are part of the same run and their notes must survive.
 
 While working through Steps 1-8, whenever one of the following occurs, immediately append a line to that file — do not wait until the end to reconstruct these from memory:
 
@@ -35,10 +35,10 @@ While working through Steps 1-8, whenever one of the following occurs, immediate
 - You considered alternatives and chose one, and why → **Tradeoffs**
 - You modified or deleted test code that was already committed, and why → **Test changes**
 
-Append with `Bash` so the shell expands `$CLAUDE_CODE_SESSION_ID` — the `Write` tool cannot append and does not expand environment variables:
+Append with `Bash` — the `Write` tool cannot append:
 
 ```bash
-cat >> "/tmp/fix-bug-notes-$CLAUDE_CODE_SESSION_ID.md" <<'EOF'
+cat >> "<scratchpad>/implementation-notes.md" <<'EOF'
 - **Root cause**: <one line>
 EOF
 ```
@@ -171,6 +171,6 @@ Before applying the fix, check whether the affected area has adequate coverage f
 
 ### Step 9: Implementation Notes
 
-1. Resolve the notes file path with `Bash` (`echo "/tmp/fix-bug-notes-$CLAUDE_CODE_SESSION_ID.md"`), then `Read` the resolved literal path if it exists — the `Read` tool does not expand environment variables
+1. `Read` `<scratchpad>/implementation-notes.md` if it exists
 2. Report the entries to the user in chat under an `## Implementation Notes` heading — one bold sub-heading per category, each followed by a bullet list. Always include all six categories in this order: **Bug report clarifications**, **Root cause**, **Ruled out**, **Tradeoffs**, **Test changes**, **Open questions**. Write `- None` for any category with nothing recorded, and add any last-minute Open questions before finalizing. If the file was never created, report every category as "None"
 3. Delete the temporary notes file if it exists

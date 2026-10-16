@@ -29,7 +29,7 @@ If no path argument is given, use `AskUserQuestion` to ask the user for the targ
 
 ## Workflow
 
-**Recording implementation notes:** Notes for this run go in `/tmp/refine-tests-notes-$CLAUDE_CODE_SESSION_ID.md`. Immediately before your **first** append in this run — and only then — delete that file if it exists (usually it will not), so this run starts from an empty one: the session id is shared by every `/refine-tests` run in the session, so an earlier run abandoned before Step 7 would otherwise leak its notes into this one.
+**Recording implementation notes:** Notes for this run go in `<scratchpad>/implementation-notes.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally). Immediately before your **first** append in this run — and only then — delete that file if it exists (usually it will not), so this run starts from an empty one: every `/fix-bug`, `/refine-tests`, and plan-file run in the session shares this file, so an earlier run abandoned before its Implementation Notes step would otherwise leak its notes into this one.
 
 While working through Steps 5–6, whenever one of the following occurs, immediately append a line to that file — do not wait until the end to reconstruct these from memory:
 
@@ -38,10 +38,10 @@ While working through Steps 5–6, whenever one of the following occurs, immedia
 - You considered alternatives and chose one, and why → **Tradeoffs**
 - You changed production code — a method demoted to `private`, a dead test-only seam removed, or any other production edit — and why → **Production code changes**
 
-Append with `Bash` so the shell expands `$CLAUDE_CODE_SESSION_ID` — the `Write` tool cannot append and does not expand environment variables:
+Append with `Bash` — the `Write` tool cannot append:
 
 ```bash
-cat >> "/tmp/refine-tests-notes-$CLAUDE_CODE_SESSION_ID.md" <<'EOF'
+cat >> "<scratchpad>/implementation-notes.md" <<'EOF'
 - **Production code changes**: <one line>
 EOF
 ```
@@ -119,6 +119,6 @@ Pass 2 Findings change **production** code — record the file path + method exp
 
 ### Step 7: Implementation Notes
 
-1. `Read` `/tmp/refine-tests-notes-$CLAUDE_CODE_SESSION_ID.md` if it exists — if it was never created, every category is "None"
+1. `Read` `<scratchpad>/implementation-notes.md` if it exists — if it was never created, every category is "None"
 2. Report its entries to the user in chat under `## Implementation Notes` — one bold sub-heading per category, each followed by a bullet list. Always include all five categories in this order: **Design decisions**, **Deviations**, **Tradeoffs**, **Production code changes**, **Open questions**. Write `- None` for any category with nothing recorded, and add any last-minute Open questions before finalizing
 3. Delete the temporary notes file if it exists
