@@ -1,11 +1,9 @@
 ---
 name: resolve-diagnostics
 description: >-
-  Resolves IDE diagnostics (inspections and analyzer findings) at the `warning` or higher severity
-  level for a given set of files, then applies the solution's code style. Use this skill when a
-  workflow's refactoring step calls for resolving diagnostics, or when the user asks to fix
-  warnings, inspections, or static analysis findings in specific files.
-  Typically invoked as `/resolve-diagnostics <PATH>`.
+  Resolves IDE diagnostics (inspections and analyzer findings) at the `warning` or higher severity level for a given set of files.
+  Use this skill when a workflow's refactoring step calls for resolving diagnostics, or when the user asks to fix warnings,
+  inspections, or static analysis findings in specific files.
 argument-hint: "[file paths]"
 license: Unlicense
 metadata:

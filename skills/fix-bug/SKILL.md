@@ -99,7 +99,7 @@ Task type: bug-fix — design a reproduction test and regression tests per the r
 
 From the agent's output, take the test case marked `(reproduction test)`. Keep any regression test cases for Step 6 — do not implement them yet.
 
-Then load the `test-writing-guide` skill and implement the reproduction test. Place it near the similar tests found above.
+Then load the `test-writing-guide` and `code-writing-guide` skills — test code is code, so both guides apply; do not rely on automatic skill triggering — and implement the reproduction test. Place it near the similar tests found above.
 
 If an existing test is testing the wrong behavior (i.e., the test itself is buggy), rewrite
 that test to correctly reproduce the bug rather than adding a new one.

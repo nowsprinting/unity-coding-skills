@@ -2,7 +2,7 @@
 name: run-tests
 description: >-
   Provides guidelines for running Unity tests using the run_unity_tests tool.
-  Make sure to use this skill whenever running, executing, or re-running tests on the Unity editor.
+  Make sure to use this skill whenever running, executing, or re-running tests in the Unity Editor.
   This includes verifying implementations, debugging test failures, running specific test assemblies, or any task that involves the run_unity_tests tool.
   Also covers running Play Mode tests on the player for verifying player-only behavior (e.g., #if directives and code stripping).
   Also covers verifying `[Category("VisualVerification")]` tests after a run by analyzing the saved screenshots.
@@ -24,7 +24,7 @@ Before running tests, complete the following steps in order:
 1. If any code was modified, confirm compilation success using the `get_unity_compilation_result` tool before proceeding.
 2. To determine `assemblyNames` and `testMode` for a specific test class, run `${CLAUDE_SKILL_DIR}/scripts/resolve-test-target.sh <test-class-cs-path>`. The script prints `<assemblyName>\t<testMode>` (e.g. `MyGame.Tests\tPlayMode`). Skip this step when running an already-known assembly.
 
-Then use the `run_unity_tests` tool to run the tests on the Unity editor.
+Then use the `run_unity_tests` tool to run the tests in the Unity Editor.
 
 Test execution can take several minutes. Do not re-run while a test is in progress — always wait for it to complete or time out. If a timeout occurs, narrow down the tests using filter settings and re-run.
 

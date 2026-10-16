@@ -5,26 +5,26 @@ A [Claude Code](https://claude.ai/code) plugin for Unity development that enable
 Reliable tests give the agent a clear signal: green means done.
 This plugin provides the methodology, conventions, and tools to make that signal trustworthy.
 
-> [!TIP]\
+> [!IMPORTANT]\
 > This plugin relies on Claude Code-specific features, such as the bundled `/simplify` skill and frontmatter fields of skills and subagents.
 > If you use the skills with a different coding agent, please modify them accordingly.
 
 ## Skills
 
 | Skill                      | Description                                                                                                    | Required                                                                                                                                                                                      | User-invocable |
-|----------------------------|----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------|
+|----------------------------|----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------:|
 | `code-writing-guide`       | Coding conventions and guidelines for Unity C# projects                                                        |                                                                                                                                                                                               |                |
-| `edit-scene`               | Creates and modifies `.unity` and `.prefab` files                                                              | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html) and [Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin | ✅             |
-| `fix-bug`                  | Diagnoses and fixes bugs using a test-first workflow (reproduce, diagnose, fix)                                |                                                                                                                                                                                               | ✅             |
-| `plan-feature`             | Orchestrates the test-first planning workflow for feature implementation in plan mode                          |                                                                                                                                                                                               | ✅             |
-| `refine-tests`             | Reviews existing test code for conformance to the test design and writing guides, then applies the refinements |                                                                                                                                                                                               | ✅             |
-| `resolve-diagnostics`      | Resolves IDE diagnostics at `warning` or higher severity in the specified files, then reformats them           | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html)                                                                                                             | ✅             |
-| `run-tests`                | Running Unity tests via the `run_unity_tests` tool                                                             | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html) and [Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin | ✅             |
+| `edit-scene`               | Creates or modifies scene and prefab files using the `run_method_in_unity` tool                                | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html) and [Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |       ✅       |
+| `fix-bug`                  | Reproduces and fixes bugs using a test-first workflow                                                          |                                                                                                                                                                                               |       ✅       |
+| `plan-feature`             | Orchestrates the test-first planning workflow for feature implementation in plan mode                          |                                                                                                                                                                                               |       ✅       |
+| `refine-tests`             | Reviews existing test code for conformance to the test design and writing guides, then applies the refinements |                                                                                                                                                                                               |       ✅       |
+| `resolve-diagnostics`      | Resolves IDE diagnostics at `warning` or higher severity in the specified files                                | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html)                                                                                                             |       ✅       |
+| `run-tests`                | Runs Unity tests using the `run_unity_tests` tool                                                              | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html) and [Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |       ✅       |
 | `test-designing-guide`     | Design maintainable test cases; reduce redundant tests, tests without assertions, and unnecessary test doubles |                                                                                                                                                                                               |                |
 | `test-writing-guide`       | Conventions for writing Unity Test Framework test code                                                         | [Test Helper](https://github.com/nowsprinting/test-helper) and [UI Test Helper](https://github.com/nowsprinting/test-helper.ui) package                                                       |                |
 | `unity-yaml-editing-guide` | Guidelines for directly hand-editing Unity YAML asset files                                                    |                                                                                                                                                                                               |                |
 
-> [!TIP]\
+> [!IMPORTANT]\
 > Some skills require the JetBrains Rider built-in MCP server, IDE plugins, or UPM packages listed in the "Required" column above.
 > If you don't use Rider or these packages, please modify the skill accordingly.
 
@@ -41,7 +41,9 @@ This plugin provides the methodology, conventions, and tools to make that signal
 
 ## Usage
 
-### Test-first feature implementation planning
+The first two skills drive the whole development workflow; the rest are standalone skills for individual tasks.
+
+### Test-first feature planning
 
 ```bash
 /plan-feature <SPEC>
@@ -59,16 +61,57 @@ The created plan file includes the following:
   - Definition of Done
   - Safe refactoring to improve internal quality (uses `/simplify` skill and static analysis)
 
+Dependencies:
+
+```text
+plan-feature
+├── Plan (built-in subagent)
+├── test-designer (subagent)
+│   └── test-designing-guide
+└── Development workflow (written in the plan file)
+    ├── code-writing-guide
+    ├── run-tests
+    ├── simplify (built-in skill)
+    ├── failing-test-writer (subagent)
+    │   ├── code-writing-guide
+    │   ├── test-writing-guide
+    │   └── run-tests
+    ├── test-deduplicator (subagent)
+    │   ├── test-designing-guide
+    │   └── test-writing-guide
+    └── resolve-diagnostics
+        ├── code-writing-guide
+        └── run-tests
+```
+
 > [!IMPORTANT]\
 > This skill requires plan mode.
 
-### Bug fixes through reproduction testing
+### Bug fixing through reproduction tests
 
 ```bash
 /fix-bug <INCIDENT>
 ```
 
 Create, run, and verify tests to reproduce the bug, then fix it.
+
+Dependencies:
+
+```text
+fix-bug
+├── code-writing-guide
+├── test-writing-guide
+├── run-tests
+├── simplify (built-in skill)
+├── test-designer (subagent)
+│   └── test-designing-guide
+├── test-deduplicator (subagent)
+│   ├── test-designing-guide
+│   └── test-writing-guide
+└── resolve-diagnostics
+    ├── code-writing-guide
+    └── run-tests
+```
 
 > [!IMPORTANT]\
 > This skill must be used outside plan mode.
@@ -79,14 +122,60 @@ Create, run, and verify tests to reproduce the bug, then fix it.
 > [!NOTE]\
 > Depending on the incident, the root cause may be identified before writing a reproduction test. Under adjustment.
 
-### Refine existing test code for conformance to the test design and writing guides
+### Test code refinement
 
 ```bash
 /refine-tests <PATH>
 ```
 
+Dependencies:
+
+```text
+refine-tests
+├── code-writing-guide
+├── test-designing-guide
+├── test-writing-guide
+├── run-tests
+├── simplify (built-in skill)
+└── resolve-diagnostics
+    ├── code-writing-guide
+    └── run-tests
+```
+
 > [!NOTE]\
 > This skill is intended for use outside plan mode, but it can also be used from plan mode.
+
+### IDE diagnostics resolution
+
+```bash
+/resolve-diagnostics <PATH>
+```
+
+Resolves IDE diagnostics at `warning` or higher severity in the specified files.
+
+Dependencies:
+
+```text
+resolve-diagnostics
+├── code-writing-guide
+└── run-tests
+```
+
+### Running tests
+
+```bash
+/run-tests <CONDITION>
+```
+
+Runs tests in the Unity Editor or on the player.
+
+### Scene and prefab editing
+
+```bash
+/edit-scene <INSTRUCTION>
+```
+
+Creates or modifies scene and prefab files through a temporary editor script instead of hand-editing YAML.
 
 ## Installation
 
@@ -117,7 +206,8 @@ Commit the resulting `.claude/settings.json` to your repository.
 
 ### 1. MCP server configuration
 
-Some skills require the JetBrains Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html) and extension plugin.
+Some skills require the built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html) and the extension plugin in JetBrains Rider.
+Once configured in Rider, the built-in MCP Server and extension plugin work in other Unity projects without additional setup.
 
 1. Open **Settings > Tools > MCP Server**
 2. Turn on **Enable MCP Server**
@@ -139,9 +229,6 @@ Some skills require the JetBrains Rider built-in [MCP Server](https://www.jetbra
 > [!NOTE]\
 > When Rider is earlier than 2026.2 and you are using other JetBrains IDEs simultaneously with Rider, port numbers are assigned in the order they are launched.
 > For example, if you launch Rider after IDEA, the port number for Rider will be `64343`.
-
-> [!NOTE]\
-> Once configured in Rider, the Rider built-in MCP Server and extension plugin work in other Unity projects without additional setup.
 
 ### 2. Install UTF Analyzers (strongly recommended)
 
@@ -166,7 +253,7 @@ Therefore, any coding rule you want coding agents to respect must be set to `war
 > for the version compatible with your project's Unity version.
 
 Code written by coding agents often has maintainability problems, such as leftover unused members and overly complex methods.
-The following settings examples help coding agents avoid them.
+The following settings help coding agents avoid these issues.
 
 #### Example: Unused types and members
 

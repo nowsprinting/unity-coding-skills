@@ -106,7 +106,7 @@ Pass 2 Findings change **production** code — record the file path + method exp
 
 ### Step 5: Modify Tests
 
-1. Load the `test-writing-guide` skill — and the `code-writing-guide` skill if the Findings include production changes; do not rely on automatic skill triggering
+1. Load the `test-writing-guide` and `code-writing-guide` skills — test code is code, so both guides apply; do not rely on automatic skill triggering
 2. Apply the changes described in the Findings list from Steps 2–4 — test edits, plus any production visibility changes (a method demoted to `private`, or a dead test-only seam removed)
 3. Run tests with `/run-tests` and confirm **all pass**
 
