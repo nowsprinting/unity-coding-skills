@@ -125,6 +125,11 @@ Editor-side crashes, compilation errors, and `Debug.Log` output from the invoked
 | Windows | `%LOCALAPPDATA%\Unity\Editor\Editor.log` |
 | Linux   | `~/.config/unity3d/Editor.log`           |
 
+These are the global Editor log paths. Check the Editor version in `ProjectSettings/ProjectVersion.txt` (`m_EditorVersion`) first:
+
+- **Unity 6000.5 or later**: the default is the project-specific log `<project root>/Logs/Editor.log`. Read it first. A setting can switch the output back to the global Editor log, so if the project-specific log is missing or stale (its modification time predates the current Editor session), read the global Editor log above instead.
+- **Earlier than Unity 6000.5**: read only the global Editor log above.
+
 ## Diagnostic Workflow
 
 1. Check `errorMessage` first — validation and connection failures need no log investigation.

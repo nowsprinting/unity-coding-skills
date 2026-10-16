@@ -117,6 +117,11 @@ Editor-side crashes, domain reloads, compile errors, and test-framework lifecycl
 | Windows | `%LOCALAPPDATA%\Unity\Editor\Editor.log` |
 | Linux   | `~/.config/unity3d/Editor.log`           |
 
+These are the global Editor log paths. Check the Editor version in `ProjectSettings/ProjectVersion.txt` (`m_EditorVersion`) first:
+
+- **Unity 6000.5 or later**: the default is the project-specific log `<project root>/Logs/Editor.log`. Read it first. A setting can switch the output back to the global Editor log, so if the project-specific log is missing or stale (its modification time predates the current Editor session), read the global Editor log above instead.
+- **Earlier than Unity 6000.5**: read only the global Editor log above.
+
 ### Editor.log vs Editor-prev.log
 
 Unity's normal convention is `Editor.log` = current session, `Editor-prev.log` = previous session. This does not always hold — some setups (e.g., an Editor session attached to Rider/an IDE) have been observed writing the actively-updated log to `Editor-prev.log` while `Editor.log` sits stale from an earlier session. Before trusting either file, compare their modification times (`ls -la` on both) and read whichever is actually current; do not assume the filename tells you which one is live.
