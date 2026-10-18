@@ -217,12 +217,6 @@ Once configured in Rider, the built-in MCP Server and extension plugin work in o
 > [!IMPORTANT]\
 > JetBrains Rider 2026.2.1 or later is recommended.
 
-> [!IMPORTANT]\
-> On Rider 2026.2, when both the JetBrains and Rider MCP toolsets are enabled, they expose tools with the same name.
-> Prefer the tools provided by Rider, and disable the duplicates:
-> - Under the **Analysis** toolset: `get_file_problems`, `lint_files`
-> - Under the **Formatting** toolset: `reformat_file`
-
 > [!NOTE]\
 > The MCP server is registered under different names depending on your Rider version: `rider` on Rider 2026.2 or later, `jetbrains` on versions earlier than 2026.2.
 
