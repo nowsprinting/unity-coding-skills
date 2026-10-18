@@ -1,198 +1,97 @@
 ---
 name: test-designing-guide
 description: >-
-  Provides test design methodology for Unity projects. Use this skill whenever
-  designing test cases from requirements or specifications, including selecting
-  test techniques, deriving test cases, and formatting them. Even for small
-  features, load this skill to ensure test design rigor.
+  Test design knowledge for Unity projects: test layers, test techniques for
+  modeling specifications (equivalence partitioning, boundary value analysis,
+  state transitions, decision tables, error guessing), test case naming,
+  test case notation and output formats, and assessment of specifications.
+  Use this skill whenever designing test cases for a test target, such as a
+  screen or a class, from its specifications. Even for small features, load
+  this skill to ensure test design rigor.
 user-invocable: false
 license: Unlicense
 metadata:
   author: Koji Hasegawa
 ---
 
-Guide for designing test cases for Unity projects.
+Knowledge for designing the test cases of a test target (e.g., a screen, a class) from its specifications.
 
-## Inputs
+Out of scope:
 
-This skill requires the following inputs in its prompt:
+- Extracting test targets from a product spec and assembling the test specification — see the `test-design` skill
+- Writing test code — see the `test-writing-guide` skill
 
-| Input                     | Required | Description                                                                        |
-|---------------------------|----------|------------------------------------------------------------------------------------|
-| **Requirements**          | Required | The feature requirements to test against                                           |
-| **Implementation design** | Required | Class names, public method signatures, dependency interfaces, and design rationale |
-| **Existing code context** | Optional | File paths and class summaries of relevant existing code                           |
-| **Language convention**   | Optional | Project language for test names and prose output (from `CLAUDE.md`).               |
+## Test Layers
 
-For bug-fix tasks, the **Requirements** input is the bug report (Condition / Expected / Actual), and the **Implementation design** input is the existing class/method structure of the affected production code — there is no new design.
+A test target's layer follows the level the product spec writes it at — e.g., a UI operation is an integration test, an API contract a unit test.
 
-The table above is the complete set of recognized inputs. Ignore anything else in the prompt — in particular test cases or manual test lists from a Plan agent (test design is this skill's sole responsibility) and output format overrides (the template in Section 6 is fixed).
+- **Unit tests** — for specifications written as an **API contract**: a class or method's inputs, return values, state changes, raised events, or calls to its dependencies. This includes behavior driven by Unity's lifecycle (Awake, Start, Update, etc.) or UI events when the spec defines it per component. When the spec defines a class's collaboration with its dependencies, keep test density low and focus on those interactions. Specifications on asset content (asset file validation, cross-asset consistency) also belong here.
+- **Integration tests** — for specifications written as behavior of a **scene or prefab** (or a screen the player sees): UI operations, on-screen display, scene transitions, and behavior emerging from components and the assets they reference.
+  - Add the integration test method to the test class of the **primary class** when the spec names one; OR
+  - Create a new dedicated test class named after the scene, prefab, or screen otherwise.
+  - For the screen transitions, name the test target `ScreenTransition` (test class `ScreenTransitionTest`). When the project has several screen transition systems, prefix the name with the system, e.g., `EquipmentScreenTransitionTest`.
+  - When the **asset itself** is the SUT (file validation, cross-asset consistency), classify it as a **unit test**, not an integration test; integration tests assert the runtime behavior that emerges from a scene/prefab's linkage to its assets.
 
-## 1. Analyze Specifications
+## Test Techniques
 
-Read the requirements and identify testable specifications.
-If the specifications are unclear, use the AskUserQuestion tool to request clarification before proceeding.
-If the test target has low testability, flag it in the Testability Assessment (Section 7).
-
-## 2. Assign Test Targets to Layers
-
-For each test target, determine which layer it belongs to based on its nature and integration level:
-
-1. **Editor tests** — for Editor extension code (paths containing `/Editor/`), asset file validation, and cross-asset consistency checks.
-2. **Unit tests** — test runtime code whose execution is **initiated by a direct method call**. This includes tests that verify behavior driven by Unity's lifecycle (Awake, Start, Update, etc.) or UI events. Prioritize **least integrated** targets, testing them comprehensively; for highly integrated targets (where the SUT collaborates with dependent objects), keep test density low and focus on interactions between objects.
-3. **Integration tests** — test targets that are a **scene or prefab** (or an equivalent GameObject hierarchy assembled in test code), together with the interplay among its placed components (MonoBehaviour subclasses) and the assets they reference. Unit tests cover targets whose execution is initiated by a direct method call; integration tests cover behavior that only emerges from Unity's component wiring and asset linkage.
-   - Add the integration test method to the test class of the **primary class** involved; OR
-   - Create a new dedicated test class if there is no clear primary class (e.g., when the subject is a prefab or scene).
-   - Explicitly design integration tests **before** falling back to visual verification tests or manual tests; only drop to those layers when the behavior cannot be expressed as a functional assertion.
-   - When the **asset itself** is the SUT (file validation, cross-asset consistency), classify it as an **Editor test**, not an integration test; integration tests assert the runtime behavior that emerges from a scene/prefab's linkage to its assets.
-4. **Visual verification tests** — verify that actual on-screen rendering conforms to the intended design: positional relationships between elements, typography (font size, font style, and font family), text/background contrast and legibility, visual state representation (e.g., a disabled button looks grayed out), and rendering quality (no sprite distortion, ghosting, or unintended clipping). Take screenshots in the test code, and image analysis (see Section 4). A deterministic mid-point of an animation (e.g., an attack lunge at its peak, a fade-out at half time) can also be captured and verified here; only subjective motion feel belongs to manual tests. Design these **before** falling back to manual tests.
-5. **Manual tests** — reserved for items that **neither automated tests nor image analysis can verify** — i.e., items requiring human sensory judgment with no objective pass/fail criterion (e.g., game feel, animation polish, audio balance). Do NOT add manual tests for scenarios already covered by integration tests or visual verification tests, even if they seem "worth confirming by eye."
-
-**Note:** Never use Edit Mode tests for runtime code logic. Edit Mode and Play Mode test runners cannot execute simultaneously — splitting coverage for a single SUT between the two modes prevents running all tests at once. Play Mode tests can run on actual devices (player builds), which Editor tests cannot.
-
-## 3. Select Testing Techniques
+When modeling the specifications with a test technique reveals a gap or a contradiction in them, abort designing the test target: assess it as `ASSESSMENT: FAIL` and include the modeling result (e.g., the equivalence partition table, the decision table, the state transition diagram) in the [Assessment](#assessment), so the user can see where the spec breaks.
 
 **Prefer specification-based tests over structural (implementation-coupled) tests.** Structural tests break under refactoring and lose value fast. It's fine to write a structural test temporarily when you're unsure about an implementation, but plan to delete it once specification tests cover the same behavior.
 
-For each test target, select appropriate techniques:
+Select the techniques that fit the test target, and read the resource of each one you apply:
 
-- **Equivalence partitioning** — group inputs into valid/invalid partitions; one representative per partition. When an **invalid** equivalence partition exists but the spec does not define its behavior (e.g., what happens for negative input, out-of-range values, null), use the `AskUserQuestion` tool to confirm the expected behavior before deriving test cases. Do not guess or invent the behavior.
-- **Boundary value analysis** — test at the edges of each equivalence partition. Over-testing boundaries inflates the number of test cases and increases maintenance cost on every spec change. Mitigate this with parameterized tests that consolidate boundary cases into a single test method. When the spec doesn't differentiate behavior near edges (e.g., display color mapping), a representative per equivalence partition is sufficient and boundary testing can be skipped entirely.
-- **State transition testing** — if the target has a finite-state-machine (FSM); one test case covers only 0-switch coverage (covering every direct transition from state A to state B, with no intermediate states in between)
-- **Decision table testing** — if multiple conditions combine to produce different outcomes
-- **Error guessing** — experience-based; derive cases from failure patterns common in game development. Examples to consider: rapid button mashing, simultaneous button press, input during scene transition / loading, collision tunneling, random distribution bias or PRNG sequence looping, numeric overflow, network failure. Use this to surface implementation concerns that spec-based techniques don't reach.
+- **Equivalence partitioning** — for every input; group the values the spec says produce the same outcome → `resources/equivalence-partitioning.md`
+- **Boundary value analysis** — when the spec differentiates behavior at the edges of equivalence partitions → `resources/boundary-value-analysis.md`
+- **Decision table testing** — when a combination of multiple conditions produces different outcomes according to rules → `resources/decision-table-testing.md`
+- **Combinatorial testing** — when multiple data-driven parameters (factors) combine and the expected behavior itself stays the same, e.g., the selected character and equipment → `resources/combinatorial-testing.md`
+- **State transition testing** — when the target has a finite-state-machine (FSM), including screen transitions → `resources/state-transition-testing.md`
+- **Error guessing** — to surface failure patterns common in game development that spec-based techniques don't reach → `resources/error-guessing.md`
 
-### Deriving test methods from equivalence partitions
+Also read the following when they apply to the test target:
 
-The most common derivation error is merging partitions with **different** expected outcomes into one (parameterized) method, encoding the difference as a condition in the name/Verification (e.g. `..._InteractableMatchesNonEmpty`, "interactable is true *only when* non-empty"). One rule prevents it:
+- **Integration testing** — when the test target is an integration test → `resources/integration-testing.md`
+- **Testing randomness** — when the SUT consumes a pseudo-random number generator → `resources/testing-randomness.md`
+- **Reproduction tests** — when the request is to reproduce a reported bug → `resources/reproduction-tests.md`
 
-**One test method = one equivalence partition = one definite expected outcome.** Never parameterize the expected outcome. If the expected value changes with the input, the inputs belong to **different** partitions → **separate** test methods, each named after its own outcome.
+## Test Case Naming
 
-For each input variable:
-1. Partition the input domain into classes the spec says produce the **same** outcome.
-2. Emit **one method per partition**, named `..._<Partition>_<ThatPartitionsOutcome>`. The `<Expected>` segment is a concrete state/value (`IsInteractable`, `IsNotInteractable`), never a condition word (`Matches…`, `…WhenNonEmpty`, `DependingOn…`).
-3. Within one partition, consolidate multiple representatives (and that partition's boundary values) into **one parameterized** method — they share the outcome (see [Parameterized tests](#parameterized-tests)).
-
-**Worked example** — `drawPileButton.interactable` driven by the draw pile count:
-
-| Partition               | Representative values | Expected outcome          |
-|-------------------------|-----------------------|---------------------------|
-| Empty (`count == 0`)    | `0`                   | `interactable` is `false` |
-| Non-empty (`count ≥ 1`) | `1` (boundary), `5`   | `interactable` is `true`  |
-
-Two partitions, two outcomes → **two** methods (NOT one parameterized method over `{0, 1, 5}`):
-
-| Test Method                                                         | Verification                             |
-|---------------------------------------------------------------------|------------------------------------------|
-| `Sync_DrawPileIsEmpty_DrawPileButtonIsNotInteractable`              | the draw pile button is not interactable |
-| `Sync_DrawPileIsExist_DrawPileButtonIsInteractable` (count: {1, 5}) | the draw pile button is interactable     |
-
-The non-empty method keeps both `1` and `5` because they share the outcome `true`; `1` is the partition's boundary value, `5` an interior representative.
-
-**Boundary value analysis** locates where partitions meet. For a field valid in `1–99`: partitions `<1` / `1–99` / `>99`; boundaries `0, 1` and `99, 100`. Fold each partition's boundary representatives into that partition's parameterized method (e.g., valid partition over `{1, 99}`) — never one method per boundary. When the spec does not differentiate behavior near an edge, one representative per partition suffices and boundaries can be skipped entirely (per the Boundary value analysis technique above).
-
-### Parameterized tests
-
-When an equivalence partition includes multiple test cases — such as argument variations within the same partition or boundary values at the partition's edges — consolidate them into a single parameterized test. All cases must belong to the **same equivalence partition** and share the same expected outcome.
-
-**Specifying parameter name and values in the Test Method column** — write values after the method name:
-
-- **Bool parameter, all values**: `(flag: (bool))`
-- **Enum parameter, all values**: `(direction: (Direction))`
-- **Multiple parameters, all combinations (exhaustive)**: `(param1: {0, 1, 2}, param2: {3, 4, 5})` — when a param is `bool` or enum covering all its values, use the shorthand in place of the braces: `(flag: (bool), count: {0, 1, 5})`
-- **Multiple parameters, limited to specific combinations**: `({param1: 0, param2: 3}, {param1: 1, param2: 4})`
-- **Three or more parameters each with many values**: write `(use pairwise)` — the test-writing phase applies the pairwise (all-pairs) method to select a covering combination set
-
-Do NOT over-consolidate: keep separate rows for tests that belong to **different** equivalence partitions or produce **different** expected outcomes.
-
-### Invalid partition
-
-- **UI input validation** — test invalid inputs that a user can enter through the UI (e.g., out-of-range values in a numeric text field). These represent real failure paths at the system boundary and must be tested.
-- **Dependency error returns** — whether to test error/failure paths from a dependency depends on its origin:
-  - **Library or framework** (external, not owned by this project) → test it; use a stub to inject the error condition.
-  - **Game's own code** (another component in this project) → skip; trust internal code correctness.
-  - **Uncertain** → use `AskUserQuestion` to confirm with the user before designing test cases.
-
-### Testing randomness (PRNG-dependent SUT)
-
-When the SUT consumes a pseudo-random number generator (`UnityEngine.Random`, `System.Random`, etc.), choose one of these strategies based on what the spec actually pins down:
-
-- **Stub the PRNG** — when the spec defines a deterministic mapping from random output to behavior (e.g., "≥0.5 → heads, <0.5 → tails"). Replace the PRNG with a stub that returns canned values; assert exact outcomes.
-- **Range / bounds verification** — when only the output range is specified (e.g., random spawn coordinates within a region). Assert with `And`/`Range` constraints, or `Within`/custom comparer for tolerances. Combine with `Repeat` attribute so flakiness isn't masked by a single lucky run.
-- **Statistical-property verification** — when the spec is about distribution shape (RPG damage variance, drop rates). Sample the SUT in a loop, compute statistics (mean, variance, histogram bucket counts), and assert on those. The `test-helper` package (`com.nowsprinting.test-helper`) provides lightweight sampling helpers; reach for `MathNet.Numerics` only when you need rigorous statistics.
-- **Characteristic verification** — when the SUT generates procedural content (e.g., roguelike maze). Don't assert exact output; assert structural properties the spec requires — e.g., "the exit is reachable from the entrance via path-finding," plus any algorithm-specific invariants.
-
-### Integration test perspectives
-
-Verify from the user's perspective — assert on-screen display and UI interactions as much as possible. Avoid relying on internal state or property checks when user-visible behavior can be asserted instead.
-
-When the test target is a scene or prefab (or an equivalent GameObject hierarchy assembled in test code) with interplaying components and assets, consider the following test perspectives:
-
-- **Multi-frame event system interactions** — behaviors triggered by Unity's event system that unfold across multiple frames
-- **Scene transitions** — behaviors that span or depend on scene loading and unloading
-- **Asset linkage** — runtime behaviors that emerge when placed components load or reference assets (e.g., ScriptableObject data, referenced prefabs)
-- **UI operation sequences** — click, drag, and other player operations that advance game mechanics over one or more frames
-- **UI blocking** — verify that UI elements behind a modal dialog or overlay are unreachable (blocked from interaction); conversely, verify those elements are reachable when no overlay is present
-- **UI layout (layout assertion tests)** — verify that buttons, toggles, and other interactive elements and text components do not overlap each other or overflow their parent containers, and that text does not overflow, using deterministic assertions:
-  - A **layout assertion test** verifies a condition expressible as a deterministic assertion (e.g., "no overlap", "no overflow", "the element is reachable"); displayed content (card data, text length, item count) is a test *input*, and the pass criterion never varies with it. Contrast with **visual verification tests**, which verify conformance to a screen-specific design intent — positional relationships like "A is displayed to the right of B", color, and typography (font size, font style, font family) are design decisions likely to change, unsuited to strict assertions; legibility (text/background contrast) is impractical to assert.
-  - Any layout bug expressible as a geometric predicate warrants a deterministic integration test assertion — e.g., "the element is within screen bounds", "elements do not overlap", "text does not overflow its container". Design these as **integration tests only**; do NOT additionally design a visual verification test for the same geometric property. Font size and style are typographic **design** properties, not geometric predicates, so this rule does not apply to them — but a BestFit readability floor (auto-shrunk text must not fall below a minimum readable size) has a content-independent pass criterion and stays a layout assertion test.
-  - **One test method per condition, not per perspective**: do NOT split layout assertion perspectives (no overlap, no overflow, containment, reachability, BestFit floor) into one test method each. When perspectives share the same test condition (same scene/state/inputs/resolution), consolidate them into a **single test method**; the `<Expected>` segment may then be the generic `LayoutIsCorrect` (in the project language, e.g., `レイアウトが正しいこと`), and the Verification column lists every layout property verified (per the multi-property exception in Section 4).
-  - **Within-screen-bounds vs. within-container**: design a "within screen bounds" check only for a screen's top-level container (a dialog, popup, context menu, or other root panel whose position or size is computed dynamically) — that is the element actually at risk of clipping past the screen edge. Do NOT design a "within screen bounds" check for an element nested inside such a container; instead check it for containment in its **immediate parent container**. If every element already sits within a parent that is itself verified within the screen, each nested element is transitively within the screen too — a per-element screen-bounds check on top of that is redundant.
-  - Parameterizing a layout assertion test over all production assets (e.g., every card defined in the master data) also validates the content itself — a newly authored asset whose text overflows its view fails the test.
-  - Do NOT verify positional relationships between elements or on-screen positions (e.g., "A is displayed to the right of B") — approximate positions have no meaningful pass/fail criterion, and precise coordinate checks are brittle. Use visual verification tests for these instead — including coarse screen-region checks (e.g., "the version label is in the bottom-right region"). **Exception (only when the user explicitly instructs)**: a coarse screen-region predicate (e.g., "within the bottom-right region: below 10% of screen height and right of the horizontal center") becomes deterministic when the resolution is fixed as a test condition — design it as a layout assertion test (integration test). A single fixed resolution gives no confidence that the layout holds across screens, so parameterize over the expected resolutions (at least the largest and smallest supported resolutions and the widest and narrowest supported aspect ratios), one test case per resolution with the resolution in the `<Condition>` segment.
-
-### Reproduction tests (bug-fix tasks only)
-
-When the task type is bug-fix, additionally apply the following during technique selection:
-
-- **Reproduction test** — design one test case that directly triggers the reported bug. Apply error guessing and, if the SUT has state, state transition testing to identify the minimal trigger condition. This test must fail before the fix and pass after.
-- **Regression tests** — identify adjacent behavior the fix might disturb, and apply the same techniques (equivalence partitioning, boundary value analysis, etc.) to derive coverage for those areas.
-
-### Cover and modify (refactoring tasks only)
-
-For refactoring work, apply **cover and modify**: design regression coverage before changing the implementation. Treat every bug as an opportunity to grow the regression suite.
-
-## 4. Create Test Cases
-
-For each technique, derive coverage-aware test cases:
-
-**Language:** `<MethodName>` must always match the production method name exactly — never translate it. `<Condition>`, `<Expected>`, and the Verification column prose follow the project language from the **Language convention** input. If no language is specified, default to English.
+**Language:** `<MethodName>` must always match the production method name exactly — never translate it. `<Condition>` and `<Expected>` follow the project language (the language specified in `CLAUDE.md` for test method names / code comments). If no language is specified, default to English.
 
 - Use the naming convention based on whether the test target is a method:
-  - **Method target** — `<MethodName>_<Condition>_<Expected>`: all **Unit tests**, and **Editor tests whose target is a method** (Editor extension code under `/Editor/`).
-  - **Non-method target** — `<Condition>_<Expected>`: all **Integration tests** and **Visual verification tests** (multi-component interaction or on-screen rendering), and **Editor tests whose target is not a method** (asset file validation, cross-asset consistency checks — the SUT is an asset or set of assets). Do NOT include a method name. Do NOT add a feature-area or category prefix before `<Condition>` — the name starts directly with the condition (e.g., `OnVictoryForced_AllCardViewsAreFullyWithinHandArea`, not `Reward_OnVictoryForced_AllCardViewsAreFullyWithinHandArea`).
+  - **Method target** — `<MethodName>_<Condition>_<Expected>`: **Unit tests whose target is a method**.
+  - **Non-method target** — `<Condition>_<Expected>`: all **Integration tests** and **Visual verification tests** (multi-component interaction or on-screen rendering), and **Unit tests whose target is an asset** (asset file validation, cross-asset consistency checks — the SUT is an asset or set of assets). Do NOT include a method name. Do NOT add a feature-area or category prefix before `<Condition>` — the name starts directly with the condition (e.g., `OnVictoryForced_AllCardViewsAreFullyWithinHandArea`, not `Reward_OnVictoryForced_AllCardViewsAreFullyWithinHandArea`).
   - For **parameterized tests**, the `<Condition>` segment is the **equivalence partition name**, not an enumeration of individual argument values.
-  - The `<Expected>` segment names the **concrete resulting state or value** of that one partition (e.g. `IsNotInteractable`, `ReturnsFizz`), never a condition or comparison. **Exception**: a consolidated layout assertion test may use the generic `LayoutIsCorrect` (see Section 3, UI layout). Words like `Matches…`, `OnlyWhen…`, `DependingOn…`, `BasedOn…` in the name — or "only when / only if / depending on" in the Verification — signal that the outcome varies with input, meaning two partitions were merged into one method — split into one method per outcome (see [Deriving test methods from equivalence partitions](#deriving-test-methods-from-equivalence-partitions) in Section 3).
+  - The `<Expected>` segment names the **concrete resulting state or value** of that one partition (e.g. `IsNotInteractable`, `ReturnsFizz`), never a condition or comparison. **Exception**: a consolidated layout assertion test may use the generic `LayoutIsCorrect` (see [Integration testing](resources/integration-testing.md#perspectives), UI layout). Words like `Matches…`, `OnlyWhen…`, `DependingOn…`, `BasedOn…` in the name — or "only when / only if / depending on" in the verification description — signal that the outcome varies with input, meaning two partitions were merged into one method — split into one method per outcome (see [Deriving test methods from equivalence partitions](resources/equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)).
 - Do NOT create sequential IDs in test case names
-- Describe the verification clearly
-  - Verify one condition per test. **Exception**: when multiple properties of the state resulting from a transition must all be correct simultaneously, a single test may assert all of them together. In that case, list each property being verified in the Verification column. The same applies to a consolidated layout assertion test asserting multiple layout properties under one condition (see Section 3, UI layout).
-  - Test concerns separately
-- In the **Verification** column, state **which observable property or behavior** is checked and **what its expected value or state** is — this corresponds to the `Expected` segment of the test method name, not the `<Condition>` segment, which the method name already captures. Write from the information already available in the prompt (requirements and design inputs); abstract descriptions are acceptable — reading source to obtain more concrete identifiers is not required. Describe observable behavior only; do NOT include any of the following **anywhere in the test case output** — this prohibition applies to the Verification column, class header descriptions (text after `#### ClassName`), and any other field:
-  - Test framework attributes (`[Test]`, `[UnityTest]`, `[LoadScene]`, `[Category(...)]`, `[TakeScreenshot]`, etc.)
-  - Sync vs async / coroutine choice
-  - Construction details of test inputs (e.g., how to build `PointerEventData`, how to instantiate fixtures)
-  - The test's **precondition or arranged state** — anything that restates the `<Condition>` segment already encoded in the method name (e.g., for `..._WhenBossNext_...`, do NOT write "When the holder RunState has IsBossNext true, …" in Verification). State only the expected observable outcome.
-  - Assertion helper class names (e.g., `LayoutAssert`, `GameObjectFinder`)
-  - Exact private or serialized field names, or field-qualified member access (e.g., `drawPileButton.interactable`) whose owner is not present in the implementation design inputs — name the element descriptively instead (e.g., "the draw pile button is not interactable"). Exact identifiers are not required at design time; resolving the precise field name is a test-writing concern. You MAY name exactly: public framework API members (e.g., `CanvasGroup.blocksRaycasts`) and identifiers that appear in the design inputs.
-  - Rationale or intent text — why the test exists, what it proves about the design, or what the current (buggy) behavior is. Observable behavior only.
-  - Any other implementation/mechanism detail — those decisions belong to the test-writing phase
-- **Parameterized tests** — consolidate same-partition test cases into a single table row per [Parameterized tests](#parameterized-tests) in Section 3. Do NOT specify the framework mechanism (`TestCase`, `Values`, etc.) in the Test Method column — that's a test-writing decision.
+- Verify one condition per test. **Exception (multi-property)**: when multiple properties of the state resulting from a transition must all be correct simultaneously, a single test may assert all of them together. The same applies to a consolidated layout assertion test asserting multiple layout properties under one condition (see [Integration testing](resources/integration-testing.md#perspectives), UI layout).
+- Test concerns separately
+
+## Verification Column
+
+In the **Verification** column, state **which observable property or behavior** is checked and **what its expected value or state** is — this corresponds to the `<Expected>` segment of the test method name, not the `<Condition>` segment, which the method name already captures.
+Write the prose in the project language.
+Write from the information already available in the product spec; abstract descriptions are acceptable — reading source to obtain more concrete identifiers is not required.
+Describe observable behavior only; do NOT include any of the following **anywhere in the test case output** — this prohibition applies to the Verification column, class header descriptions (text after `#### ClassName`), and any other field:
+
+- Test framework attributes (`[Test]`, `[UnityTest]`, `[LoadScene]`, `[Category(...)]`, `[TakeScreenshot]`, etc.)
+- Sync vs async / coroutine choice
+- Construction details of test inputs (e.g., how to build `PointerEventData`, how to instantiate fixtures)
+- The test's **precondition or arranged state** — anything that restates the `<Condition>` segment already encoded in the method name (e.g., for `..._WhenBossNext_...`, do NOT write "When the holder RunState has IsBossNext true, …" in Verification). State only the expected observable outcome.
+- Assertion helper class names (e.g., `LayoutAssert`, `GameObjectFinder`)
+- Exact private or serialized field names, or field-qualified member access (e.g., `drawPileButton.interactable`) whose owner is not present in the product spec — name the element descriptively instead (e.g., "the draw pile button is not interactable"). Exact identifiers are not required at design time; resolving the precise field name is a test-writing concern. You MAY name exactly: public framework API members (e.g., `CanvasGroup.blocksRaycasts`) and identifiers that appear in the product spec.
+- Rationale or intent text — why the test exists, what it proves about the design, or what the current (buggy) behavior is. Observable behavior only.
+- Any other implementation/mechanism detail — those decisions belong to the test-writing phase
+
+Further notation rules:
+
+- When a single test asserts multiple properties (the multi-property exception in [Test Case Naming](#test-case-naming)), list each property being verified in the Verification column.
+- **Parameterized tests** — write each consolidated parameterized test as a single table row, with the parameter notation from [Parameterized tests](resources/equivalence-partitioning.md#parameterized-tests) in the Test Method column. Do NOT specify the framework mechanism (`TestCase`, `Values`, etc.) — that's a test-writing decision.
   - Example: `FizzBuzz_MultipleOfThree_ReturnsFizz` (n: 3, 6, 9) | `Returns "Fizz"`
-- If a test case uses a **spy** to verify interactions, note it in the Verification column: e.g., `(uses spy: <TargetDependency>)`. Do NOT note stubs or fakes — those are arrange/action concerns. xUTP definitions for reference:
+- If a test case uses a **spy** to verify an interaction the API spec defines, note it in the Verification column: e.g., `(uses spy: <TargetDependency>)`. Do NOT note stubs or fakes — those are arrange/action concerns. xUTP definitions for reference:
   - **Stub** — returns canned responses to isolate the SUT from a dependency. Arrange/action concern; do NOT mention in Verification.
   - **Spy** — records interactions (calls, arguments) for later verification. Note it in Verification.
   - **Fake** — a simplified but working implementation of a dependency. Arrange/action concern; do NOT mention in Verification.
-- For visual verifications (e.g., on-screen rendering, UI layout), save a screenshot during test execution and verify it via image analysis. For a Visual verification tests row, list the visual aspects in the **Image analysis by saved screenshot** column; when the screenshot is attached to a layout assertion test (see Placement priority below), append them to that row's Verification column as `(saves screenshot for image analysis: element positions within screen, no overlap between elements, correct visibility state, text/background contrast)`.
-  - **Placement priority**: (1) when a layout assertion test (see Section 3, UI layout) already exists — or is being designed — for the same test condition, attach the screenshot verification to that test case instead of creating a new one; (2) otherwise, add the visual verification test method to the same test class as the functional tests. Never create a dedicated visual verification test class.
-  - **Screenshot resolution**: By default, do not fix a specific resolution for screenshot tests — let them run at whatever resolution the test environment provides. Only fix a resolution when the test condition explicitly depends on it (e.g., verifying element positions at a stated viewport size).
-  - **Resolution as test condition**: When a test targets a specific resolution as part of its verification (e.g., layout at 960×540) — whether a screenshot test or a resolution-fixed layout assertion test (see Section 3, UI layout) — include the resolution in the `<Condition>` segment of the target method name — e.g., `At960x540_RendersVersionLabelAtBottomRight` (these tests use `<Condition>_<Expected>`, with no method name). This makes each resolution a distinct, independently runnable test case.
-  - **Visual aspects to verify in screenshots** — always include the following in the `(saves screenshot for image analysis: ...)` list when applicable:
-    - Element positions within screen, no overlap between elements, correct visibility state
-    - **Text/background contrast** — verify that text color has sufficient contrast against its background so text is clearly legible
-    - **Typography** — verify that font size, font style (bold/italic), and font family match the intended design and are consistent across equivalent elements; verify that glyphs actually render (no missing-glyph "tofu" boxes or blanks for characters the assigned font doesn't support)
-    - **Visual state representation** — when a UI state is communicated visually (a disabled button grayed out, a gauge's fill amount, a fading sprite's transparency), verify the rendering reflects that state
-    - **Rendering quality** — no sprite distortion (squashing/stretching), ghosting/afterimages, or unintended clipping
-  - **Aspect list scope**: list only aspects suited to visual verification. Facts that are mechanically assertable — a panel's active state, exact text content — belong in integration test assertions, not in the image-analysis aspect list.
+- **Screenshot verification** — for a Visual verification tests row, list the visual aspects (see [Visual aspects to verify](resources/integration-testing.md#visual-aspects-to-verify)) in the **Image analysis by saved screenshot** column. When the screenshot is attached to a layout assertion test, append them to that row's Verification column as `(saves screenshot for image analysis: text/background contrast, typography)`.
 
 ### Example: Verification — Bad vs. Good
 
@@ -213,96 +112,80 @@ The Bad (not parameterized) row hides the concrete argument values in a vague ph
 The Bad (condition restated) row repeats the method name's `<Condition>` segment ("WhenBossNext") as a precondition clause; Verification states only the expected outcome, since the condition already lives in the method name.
 The Good rows state the observable behavior only; all other concerns go in the Test Method column or the test-writing phase.
 
-## 5. Requirements Coverage Check
+## Output Format
 
-After completing Section 4, perform a traceability pass (acceptance tests coverage check) before writing the final output:
+Output the test cases of a test target as the blocks of its layer that have test cases, in this order (omit blocks with none), followed by its [Assessment](#assessment):
 
-1. Re-read the original user prompt and extract every stated requirement or behavior.
-2. For each requirement, identify which test case(s) designed in Section 4 cover it.
-   - **Requirements must be covered by a same-layer witness test**: the covering test must directly exercise the behavior the requirement describes — not a component that contributes to satisfying it. A requirement about on-screen display or user interaction must be covered by an **integration or visual verification test**; a unit test that only calls a method is not a same-layer witness for a UI-layer requirement. A requirement about method-level behavior may be witnessed by a unit test. If no same-layer test covers a requirement, record it as a gap and handle it in step 3.
-3. For any requirement with no covering test case:
-   - Add a test case, **or**
-   - Document explicitly why it is not tested (out of scope, untestable by design, etc.)
+- Unit tests: `### Unit tests`
+- Integration tests: `### Integration tests`, `### Visual verification tests` (integration tests verified by image analysis), `### Manual tests` (integration tests verified by a human)
 
-Output a **coverage summary table** only when gaps were found or a requirement was explicitly waived. Omit the table when all requirements are covered without exception.
-
-| Requirement (from prompt) | Covering test(s)              | Gap / Waiver reason                                |
-|---------------------------|-------------------------------|----------------------------------------------------|
-| XXX should do Y           | `MethodName_ConditionA_DoesY` | —                                                  |
-| ZZZ must not allow W      | (none)                        | Waived: prevented at a lower layer, not this class |
-
-Finally, re-check every parameterized row against the one-partition-per-method rule in Section 3 ([Deriving test methods from equivalence partitions](#deriving-test-methods-from-equivalence-partitions)): if substituting any listed value would change the expected outcome, split the row before producing final output.
-
-## 6. Test Case Format
-
-Output must contain the following blocks **in this order**:
-1. Test Cases — one block per layer, in this order:
-   - `### Editor tests`
-   - `### Unit tests`
-   - `### Integration tests`
-   - `### Visual verification tests`
-   - `### Manual tests`
-2. Testability Assessment (Section 7)
-
-> **Note:** All layers may contain `(none)` when no test cases apply to that layer.
-> Do NOT write "Edit Mode" or "Play Mode" in test case output — that is a test-writing concern, not a design concern.
+> **Note:** Do NOT write "Edit Mode" or "Play Mode" in test case output — that is a test-writing concern, not a design concern.
 
 Structure by layer:
-- **Editor tests / Unit tests / Integration tests / Visual verification tests**: `#### <ClassName>` → table
+- **Unit tests**: `#### <ClassName>` → table
+- **Integration tests / Visual verification tests**: `#### <ClassName>`, or the scene, prefab, or screen name when the spec names no primary class (see [Test Layers](#test-layers)) → table
 - **Manual tests**: no class/method section; uses a table of test cases with "Test perspectives / Verification method" column instead of "Verification"
   - Test perspectives — *what* behavioral aspects, conditions, or interactions are verified for this target. NOT a test technique name
 
 **Output markers** — annotations that flag test case categories; append to the specified field only, not the Verification column:
 
-- `(reproduction test)` — append to the **Test Method column** when the test reproduces a reported bug (see Section 3, Reproduction tests)
-- `(acceptance test)` — append to the **Test Method column** when the test is the **same-layer witness** (see Section 5) for a requirement stated in the prompt: it must directly exercise the behavior the requirement describes — not a component that contributes to satisfying it. A requirement about on-screen display or user interaction requires an integration or visual verification test; a requirement about method-level behavior may be witnessed by a unit test.
-- `(spec change)` — append to the **Test Method column** ONLY when updating an existing test whose **Verification (observable expected outcome) changes**. A change to the SUT signature/type that requires only arrange/action construction updates (e.g., wrapping `Foo`→`FooRef`) while the expected observable behavior stays identical is NOT a spec change — leave such tests **unmarked** (construction details are a test-writing concern per Section 4, not a design concern). Litmus test: **if the Verification column wording is unchanged, do NOT append `(spec change)`.**
+- `(reproduction test)` — append to the **Test Method column** when the test reproduces a reported bug (see [Reproduction tests](resources/reproduction-tests.md))
+- `(acceptance test)` — append to the **Test Method column** when the test is the **same-layer witness** for a specification stated in the product spec: it sits at the layer the specification is written at and directly exercises the behavior it describes.
+- `(spec change)` — append to the **Test Method column** ONLY when updating an existing test whose **Verification (observable expected outcome) changes**. A change to the SUT signature/type that requires only arrange/action construction updates (e.g., wrapping `Foo`→`FooRef`) while the expected observable behavior stays identical is NOT a spec change — leave such tests **unmarked** (construction details are a test-writing concern per [Verification Column](#verification-column), not a design concern). Litmus test: **if the Verification column wording is unchanged, do NOT append `(spec change)`.**
 
-Read the output format template for the project language and follow it exactly:
-- Japanese: `${CLAUDE_SKILL_DIR}/assets/output-format-ja.md`
-- All other languages (default): `${CLAUDE_SKILL_DIR}/assets/output-format.md`
+Read the output format template for the layer and follow it exactly (templates are in `${CLAUDE_SKILL_DIR}/assets/`):
 
-If the project language is neither Japanese nor English, use `output-format.md` as the structural reference and write `<Condition>`, `<Expected>`, and Verification prose in the project language.
+| Layer                                                      | Default                       | Japanese                         |
+|------------------------------------------------------------|-------------------------------|----------------------------------|
+| Unit tests                                                 | `unit-tests-format.md`        | `unit-tests-format-ja.md`        |
+| Integration tests, Visual verification tests, Manual tests | `integration-tests-format.md` | `integration-tests-format-ja.md` |
 
-## 7. Testability Assessment
+When no template exists for the project language, use the default one as the structural reference and write `<Condition>`, `<Expected>`, and the prose columns in the project language.
 
-After designing all test cases, evaluate and output a **Testability Assessment** at the end of your response.
+## Assessment
 
-Use one of the following labels:
+Assess whether the specifications of a test target can be tested as written, and assign one of the following labels.
+Record every issue found while designing — an unclear specification, a gap or contradiction, a behavior the spec leaves undefined — instead of guessing.
 
-| Label               | Meaning                                                                                                |
-|---------------------|--------------------------------------------------------------------------------------------------------|
-| `TESTABILITY: PASS` | All public methods are independently testable; test case count is realistic                            |
-| `TESTABILITY: WARN` | Localized concerns (e.g., too many test doubles, large integration tests, high FSM state combinations) |
-| `TESTABILITY: FAIL` | Fundamental testability issues that require design revision                                            |
+| Label              | Meaning                                                                                                                                     |
+|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| `ASSESSMENT: PASS` | Every specification has a deterministic pass/fail criterion at its layer; no gap or contradiction in the spec; test case count is realistic |
+| `ASSESSMENT: WARN` | Localized concerns (e.g., a large integration test, high FSM state combinations, a spec ambiguity the user resolved)                        |
+| `ASSESSMENT: FAIL` | Fundamental issues that require spec revision                                                                                               |
 
 **FAIL criteria** — flag FAIL if any of the following apply:
 
-- Unit test boundaries cannot be drawn (SUT is too large)
-- State is hidden and cannot be verified externally
+- The spec contradicts itself, or leaves a specification's expected outcome undefined
+- A specification has no deterministic pass/fail criterion and is not suited to manual tests — e.g., random behavior without a specified distribution, range, or structural property (see [Testing randomness](resources/testing-randomness.md))
+- An API spec leaves the outcome unobservable — e.g., state that changes but is exposed through no member, event, or dependency call
 - Combinatorial explosion: test case count grows faster than O(n) relative to the number of conditions
-- Dependencies cannot be injected (static/global coupling, `new` inside constructor, etc.)
 
-**Output format** for the assessment section:
+**Output format**:
 
 ```markdown
-### Testability Assessment
+### Assessment
 
-TESTABILITY: PASS
+ASSESSMENT: PASS
 
 ```
 
-or, for WARN/FAIL, include Testability Issues with specific problem locations and proposed remedies:
+or, for WARN/FAIL, include Issues with the affected specification and a proposed remedy; for FAIL, also include the modeling result:
 
 ```markdown
-### Testability Assessment
+### Assessment
 
-TESTABILITY: FAIL
+ASSESSMENT: FAIL
 
-#### Testability Issues
+#### Issues
 
-| Issue                                                  | Location             | Proposed Remedy                        |
-|--------------------------------------------------------|----------------------|----------------------------------------|
-| Hidden state: `_score` modified by private method only | `GameManager._score` | Expose via read-only property or event |
-| Static coupling: `Random.Range` called directly        | `CardSelector.Pick`  | Inject `IRandomSource` interface       |
+| Issue                                                         | Specification                 | Proposed Remedy                                  |
+|---------------------------------------------------------------|-------------------------------|--------------------------------------------------|
+| Contradiction: the button is both hidden and disabled at zero | "Draw button" in §2.1, §3.4   | Specify which one applies                        |
+| Undefined distribution: "rewards are random"                  | "Reward selection" in §4      | Specify the drop rates or the allowed reward set |
+
+#### Modeling result
+
+<the equivalence partition table, decision table, state transition diagram, etc. that revealed the issues>
 ```
+
+On `ASSESSMENT: FAIL`, abort designing the test target: output the Assessment only, without test cases.

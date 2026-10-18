@@ -1,4 +1,4 @@
-**Recording implementation notes:** Notes for this run go in `<scratchpad>/implementation-notes.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally). Immediately before your **first** append in this run — and only then — delete that file if it exists (usually it will not), so this run starts from an empty one: every `/fix-bug`, `/refine-tests`, and plan-file run in the session shares this file, so an earlier run abandoned before its Implementation Notes step would otherwise leak its notes into this one.
+**Recording implementation notes:** Notes for this run go in `<scratchpad>/implementation-notes.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally). Immediately before your **first** append in this run — and only then — delete that file if it exists (usually it will not), so this run starts from an empty one: every `/fix-bug` and plan-file run in the session shares this file, so an earlier run abandoned before its Implementation Notes step would otherwise leak its notes into this one.
 
 While working through Steps 1-4, whenever one of the following occurs, immediately append a line to that file — do not wait until the end to reconstruct these from memory:
 
@@ -15,7 +15,7 @@ cat >> "<scratchpad>/implementation-notes.md" <<'EOF'
 EOF
 ```
 
-When a step delegates to a subagent or another skill (`failing-test-writer` in Step 2; `test-deduplicator`, `/simplify`, and `/resolve-diagnostics` in Step 4), append the note yourself from what it returns — they do not write to this file.
+When a step delegates to a subagent or another skill (`failing-test-writer` in Step 2; `/simplify` and `/resolve-diagnostics` in Step 4), append the note yourself from what it returns — they do not write to this file.
 
 ### Step 1: Skeleton (Compilable)
 
@@ -38,11 +38,10 @@ When a step delegates to a subagent or another skill (`failing-test-writer` in S
 
 ### Step 4: Refactoring
 
-1. Launch `test-deduplicator` agent with: list of test files added or modified in Step 2
-2. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
-3. Run tests with `/run-tests` and confirm **all pass**
-4. Run `/resolve-diagnostics` with the files added or modified in Steps 1-3 — compute the list **after** the `test-deduplicator` agent and `/simplify` finish, so their edits are covered too
-5. Commit all remaining changes to git
+1. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
+2. Run tests with `/run-tests` and confirm **all pass**
+3. Run `/resolve-diagnostics` with the files added or modified in Steps 1-3 — compute the list **after** `/simplify` finishes, so its edits are covered too
+4. Commit all remaining changes to git
 
 ### Step 5: Implementation Notes
 

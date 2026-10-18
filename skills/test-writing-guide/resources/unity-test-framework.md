@@ -2,8 +2,8 @@
 
 ## Structure
 
-- Tests targeting `Editor/` code → `Tests/Editor/` (Edit Mode tests)
-- Tests targeting `Runtime/` code → `Tests/Runtime/` (Play Mode tests)
+- Tests targeting `Editor/` code, and tests validating assets → `Tests/Editor/` (Edit Mode tests)
+- Tests targeting `Runtime/` code → `Tests/Runtime/` (Play Mode tests) — never Edit Mode tests: Edit Mode and Play Mode test runners cannot execute simultaneously, so splitting coverage for a single SUT between the two modes prevents running all tests at once, and only Play Mode tests can run on actual devices (player builds)
 - Mirror the production code's directory structure within the test directory
 - Test doubles (stub, spy, mock, fake, and dummy) → `Tests/Runtime/TestDoubles/` (also usable from Edit Mode tests)
 - Test assistance utilities (creation method, custom assertion, etc.) → `Tests/Runtime/TestUtils/` (also usable from Edit Mode tests)
@@ -30,7 +30,7 @@ Examples:
 | Expected value       | `expected`                                                                                                                     |
 | Test double variable | Prefix with role: `stub`, `spy`, `mock`, `fake`, `dummy`                                                                       |
 
-- `<MethodName>` must always match the production method name exactly — never translate it. When the test target is not a single method — integration tests, visual verification tests, and Editor tests whose target is not a method (asset file validation, cross-asset consistency checks) — `<MethodName>` is omitted and the convention becomes `<Condition>_<Expected>`.
+- `<MethodName>` must always match the production method name exactly — never translate it. When the test target is not a single method — integration tests, visual verification tests, and unit tests whose target is an asset (asset file validation, cross-asset consistency checks) — `<MethodName>` is omitted and the convention becomes `<Condition>_<Expected>`.
 - `<Condition>` and `<Expected>` follow the project language specified in `CLAUDE.md`. If no language is specified, default to English.
 - Write `<Expected>` in active voice: `ReturnsTrue`, `ThrowsArgumentException`, `ReducesHpBy3`, etc. For exceptions, include the exception type: `ThrowsArgumentException`, not just `ThrowsException`.
 

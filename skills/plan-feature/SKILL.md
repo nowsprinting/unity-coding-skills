@@ -7,7 +7,7 @@ description: >-
   existing specification. Even if the user only says "plan this" or "how should
   we implement this", load this skill to ensure the full test-first planning
   workflow is followed.
-argument-hint: "[spec]"
+argument-hint: "<spec>"
 license: Unlicense
 metadata:
   author: Koji Hasegawa
@@ -57,50 +57,35 @@ The Plan agent output should include **only**:
 - File placement: the file path for each new or modified class, and the assembly (`.asmdef`) it belongs to — assembly boundaries drive test references and `InternalsVisibleTo`, so the implementer must not have to re-derive placement
 - Brief rationale for design decisions
 
-**Do NOT include** test cases, manual tests, or any test design and verification instructions — those are the sole responsibility of the `test-designer` agent in Step 3.
+**Do NOT include** test cases, manual tests, or any test design and verification instructions — those are the sole responsibility of `/test-design` in Step 3.
 
-### Step 3: Test Case Design (test-designer Agent)
+### Step 3: Test Case Design (/test-design)
 
-After Step 2, launch the `test-designer` agent with an Opus-class or more capable model set in the `model` parameter, so test design stays on a strong model even when the main session runs on a faster one. Use the following prompt structure:
+After Step 2, run the `/test-design` skill with output in the conversation — plan mode allows no file writes other than the plan file — and the following inputs:
 
-```
-## Requirements
-[feature requirements]
+- **Requirements**: the feature requirements
+- **Implementation design**: class names, public and internal method signatures, dependency interfaces, and design rationale from the Step 2 Plan agent — **do NOT include any test cases or manual tests** the Plan agent may have produced
+- **Existing code context**: relevant existing code structure from Step 1 Explore
 
-## Implementation Design
-[class names, public and internal method signatures, dependency interfaces, and design rationale from the Step 2 Plan agent]
+`/test-design` returns:
+- **Test Cases** per test target — ready to paste into the plan file as one block
+- **Assessment** per test target (`ASSESSMENT: PASS`, `WARN`, or `FAIL`); act on the worst label across targets
 
-## Existing Code Context
-[relevant existing code structure from Step 1 Explore]
+#### Handling the Assessment
 
-## Language Convention
-[project language for test names and prose, e.g., Japanese]
-```
-
-**Rules for assembling the prompt:**
-- Under `Implementation Design`, include only the design output — **do NOT include any test cases or manual tests** the Plan agent may have produced. Test design is the `test-designer` agent's sole responsibility.
-- **Do NOT add output format specifications.** The `test-designer` agent's output format is self-contained; caller-supplied format overrides produce non-standard output.
-- **Always include `## Language Convention`.** Resolve the project language from `CLAUDE.md` (look for the language specified for test method names / code comments). If `CLAUDE.md` does not specify a language, default to English.
-
-The `test-designer` agent returns:
-- **Test Cases** across all layers (Editor tests, Unit tests, Integration tests, Visual verification tests, Manual tests) — ready to paste into the plan file as one block
-- **Testability Assessment** (`TESTABILITY: PASS`, `WARN`, or `FAIL`)
-
-#### Handling the Testability Assessment
-
-| Result              | Action                                                                                         |
-|---------------------|------------------------------------------------------------------------------------------------|
-| `TESTABILITY: PASS` | Proceed to Step 4 (Review)                                                                     |
-| `TESTABILITY: WARN` | Proceed to Step 4; record the Testability Issues in the plan file's "Known Trade-offs" section |
-| `TESTABILITY: FAIL` | Loop back to Step 2 (see below); maximum **1 retry**                                           |
+| Result             | Action                                                                             |
+|--------------------|------------------------------------------------------------------------------------|
+| `ASSESSMENT: PASS` | Proceed to Step 4 (Review)                                                         |
+| `ASSESSMENT: WARN` | Proceed to Step 4; record the Issues in the plan file's "Known Trade-offs" section |
+| `ASSESSMENT: FAIL` | Loop back to Step 2 (see below); maximum **1 retry**                               |
 
 #### Loopback to Step 2 (on FAIL)
 
-1. Extract the "Testability Issues" table from the `test-designer` agent output
+1. Extract the "Issues" tables from the `/test-design` output
 2. Re-launch the Plan agent with:
    - The previous design output
-   - The Testability Issues
-   - Instruction: "Revise the design to address the Testability Issues listed below"
+   - The Issues
+   - Instruction: "Revise the design to address the Issues listed below"
 3. Re-run Step 3 with the revised design
 4. If still `FAIL` after one retry → **Abort** (see below)
 
@@ -113,7 +98,7 @@ Use `AskUserQuestion` to present the user with three options:
 
 ### Step 4: Review
 
-Read the critical files identified in the plan. Verify that the Plan agent's design and the `test-designer` agent's test cases are consistent with each other and with the user's intent.
+Read the critical files identified in the plan. Verify that the Plan agent's design and the `/test-design` test cases are consistent with each other and with the user's intent.
 
 ### Step 5: Write the Plan File
 
@@ -121,8 +106,8 @@ Assemble the plan file with the following sections:
 
 1. **Context** — why this change is needed
 2. **Implementation Design** — from Step 2 Plan agent output
-3. **Test Cases** — pasted verbatim as one block from the `test-designer` agent output (all 5 layers: Editor tests, Unit tests, Integration tests, Visual verification tests, Manual tests). Do not rewrite, translate, or clean up the output — the `test-designer` agent already applies the content restrictions in `test-designing-guide`.
-4. **Known Trade-offs** — from `TESTABILITY: WARN` issues (if any)
+3. **Test Cases** — pasted verbatim as one block from the `/test-design` output. Do not rewrite, translate, or clean up the output — `/test-design` already applies its content restrictions.
+4. **Known Trade-offs** — from `ASSESSMENT: WARN` issues (if any)
 5. **Development Workflow** — Read `${CLAUDE_SKILL_DIR}/assets/development-workflow-template.md` and paste its full contents verbatim as the body of this section in the plan file, then add any project-specific steps per `CLAUDE.md`
 
 ### Step 6: Call ExitPlanMode

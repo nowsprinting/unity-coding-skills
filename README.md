@@ -17,10 +17,10 @@ This plugin provides the methodology, conventions, and tools to make that signal
 | `edit-scene`               | Creates or modifies scene and prefab files using the `run_method_in_unity` tool                                | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html) and [Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |       ✅       |
 | `fix-bug`                  | Reproduces and fixes bugs using a test-first workflow                                                          |                                                                                                                                                                                               |       ✅       |
 | `plan-feature`             | Orchestrates the test-first planning workflow for feature implementation in plan mode                          |                                                                                                                                                                                               |       ✅       |
-| `refine-tests`             | Reviews existing test code for conformance to the test design and writing guides, then applies the refinements |                                                                                                                                                                                               |       ✅       |
 | `resolve-diagnostics`      | Resolves IDE diagnostics at `warning` or higher severity in the specified files                                | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html)                                                                                                             |       ✅       |
 | `run-tests`                | Runs Unity tests using the `run_unity_tests` tool                                                              | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html) and [Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |       ✅       |
-| `test-designing-guide`     | Design maintainable test cases; reduce redundant tests, tests without assertions, and unnecessary test doubles |                                                                                                                                                                                               |                |
+| `test-design`              | Creates test cases at the layer where each specification is written                                            |                                                                                                                                                                                               |       ✅       |
+| `test-designing-guide`     | Test design by modeling specifications with test techniques                                                    |                                                                                                                                                                                               |                |
 | `test-writing-guide`       | Conventions for writing Unity Test Framework test code                                                         | [Test Helper](https://github.com/nowsprinting/test-helper) and [UI Test Helper](https://github.com/nowsprinting/test-helper.ui) package                                                       |                |
 | `unity-yaml-editing-guide` | Guidelines for directly hand-editing Unity YAML asset files                                                    |                                                                                                                                                                                               |                |
 
@@ -36,12 +36,8 @@ This plugin provides the methodology, conventions, and tools to make that signal
 | Agent                 | Description                                                                                                             |
 |-----------------------|-------------------------------------------------------------------------------------------------------------------------|
 | `failing-test-writer` | Implements test code from the plan file's Test Cases table and confirms tests fail as expected (Step 2 of dev workflow) |
-| `test-deduplicator`   | Removes duplicate tests and merges parameterizable tests in modified test files (Step 4 of dev workflow)                |
-| `test-designer`       | Designs test cases during plan mode after class/method designs are produced, using the `test-designing-guide` skill     |
 
 ## Usage
-
-The first two skills drive the whole development workflow; the rest are standalone skills for individual tasks.
 
 ### Test-first feature planning
 
@@ -66,7 +62,7 @@ Dependencies:
 ```text
 plan-feature
 ├── Plan (built-in subagent)
-├── test-designer (subagent)
+├── test-design
 │   └── test-designing-guide
 └── Development workflow (written in the plan file)
     ├── code-writing-guide
@@ -76,9 +72,6 @@ plan-feature
     │   ├── code-writing-guide
     │   ├── test-writing-guide
     │   └── run-tests
-    ├── test-deduplicator (subagent)
-    │   ├── test-designing-guide
-    │   └── test-writing-guide
     └── resolve-diagnostics
         ├── code-writing-guide
         └── run-tests
@@ -86,6 +79,24 @@ plan-feature
 
 > [!IMPORTANT]\
 > This skill requires plan mode.
+
+### Test design
+
+```bash
+/test-design [PRODUCT SPEC]
+```
+
+Creates test cases at the layer where each specification is written — e.g., integration tests for UI operations, unit tests for an API specification — via test design by modeling specifications with test techniques in `test-designing-guide`.
+
+The `PRODUCT SPEC` can be a spec, a design, or an ADR, given as a file path or written directly; when omitted, it is read from the conversation.
+For a file path, the output goes to a Markdown file with a `-tests` suffix next to it; otherwise, to the conversation.
+
+Dependencies:
+
+```text
+test-design
+└── test-designing-guide
+```
 
 ### Bug fixing through reproduction tests
 
@@ -103,11 +114,8 @@ fix-bug
 ├── test-writing-guide
 ├── run-tests
 ├── simplify (built-in skill)
-├── test-designer (subagent)
+├── test-design
 │   └── test-designing-guide
-├── test-deduplicator (subagent)
-│   ├── test-designing-guide
-│   └── test-writing-guide
 └── resolve-diagnostics
     ├── code-writing-guide
     └── run-tests
@@ -121,29 +129,6 @@ fix-bug
 
 > [!NOTE]\
 > Depending on the incident, the root cause may be identified before writing a reproduction test. Under adjustment.
-
-### Test code refinement
-
-```bash
-/refine-tests <PATH>
-```
-
-Dependencies:
-
-```text
-refine-tests
-├── code-writing-guide
-├── test-designing-guide
-├── test-writing-guide
-├── run-tests
-├── simplify (built-in skill)
-└── resolve-diagnostics
-    ├── code-writing-guide
-    └── run-tests
-```
-
-> [!NOTE]\
-> This skill is intended for use outside plan mode, but it can also be used from plan mode.
 
 ### IDE diagnostics resolution
 
@@ -164,7 +149,7 @@ resolve-diagnostics
 ### Running tests
 
 ```bash
-/run-tests <CONDITION>
+/run-tests [CONDITION]
 ```
 
 Runs tests in the Unity Editor or on the player.

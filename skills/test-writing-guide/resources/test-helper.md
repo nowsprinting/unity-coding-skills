@@ -142,7 +142,7 @@ Requires test-helper **v1.6.2 or later**. These implement the recipes referenced
 
 `Overlapping` and `TextOverflowing` match when the defect is present, so the form you actually write is the negated one (`Is.Not.Overlapping`, `Is.Not.TextOverflowing`) — don't write `Is.Overlapping` meaning "no overlap".
 
-`WithinScreen` targets a screen's top-level, dynamically-positioned container (dialog, popup, context menu) — the one actually at risk of clipping past the screen edge. Elements nested inside it are checked against their **parent container** with `WithinContainer`, not against the screen again — see `test-designing-guide` → Integration test perspectives → UI layout.
+`WithinScreen` targets a screen's top-level, dynamically-positioned container (dialog, popup, context menu) — the one actually at risk of clipping past the screen edge. Elements nested inside it are checked against their **parent container** with `WithinContainer`, not against the screen again — see `test-designing-guide` → `resources/integration-testing.md` → Perspectives → UI layout.
 
 **Modifiers**
 

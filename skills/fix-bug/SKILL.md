@@ -6,7 +6,7 @@ description: >-
   investigate or fix a defect. Even if the user says "something's broken", "this isn't working",
   "fix this bug", or "why does X happen", load this skill to guide the full
   reproduce → diagnose → fix cycle.
-argument-hint: "[incident or failing-test-name]"
+argument-hint: "<incident or failing-test-name>"
 license: Unlicense
 metadata:
   author: Koji Hasegawa
@@ -25,7 +25,7 @@ This skill must be used **outside plan mode**. Before doing anything else, check
 
 ## Workflow
 
-**Recording implementation notes:** Notes for this run go in `<scratchpad>/implementation-notes.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally). Immediately before your **first** append in this run — and only then — delete that file if it exists (usually it will not), so this run starts from an empty one: every `/fix-bug`, `/refine-tests`, and plan-file run in the session shares this file, so an earlier run abandoned before its Implementation Notes step would otherwise leak its notes into this one. Never delete it again afterwards, including when Step 3 sends you back to Step 1 or Step 2; those loops are part of the same run and their notes must survive.
+**Recording implementation notes:** Notes for this run go in `<scratchpad>/implementation-notes.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally). Immediately before your **first** append in this run — and only then — delete that file if it exists (usually it will not), so this run starts from an empty one: every `/fix-bug` and plan-file run in the session shares this file, so an earlier run abandoned before its Implementation Notes step would otherwise leak its notes into this one. Never delete it again afterwards, including when Step 3 sends you back to Step 1 or Step 2; those loops are part of the same run and their notes must survive.
 
 While working through Steps 1-8, whenever one of the following occurs, immediately append a line to that file — do not wait until the end to reconstruct these from memory:
 
@@ -43,7 +43,7 @@ cat >> "<scratchpad>/implementation-notes.md" <<'EOF'
 EOF
 ```
 
-When a step delegates to a subagent or another skill (`test-designer` in Step 2; `test-deduplicator`, `/simplify`, and `/resolve-diagnostics` in Step 8), append the note yourself from what it returns — they do not write to this file.
+When a step delegates to a subagent or another skill (`/test-design` in Step 2; `/simplify` and `/resolve-diagnostics` in Step 8), append the note yourself from what it returns — they do not write to this file.
 
 ### Step 1: Clarify the Bug Report
 
@@ -80,24 +80,9 @@ Search the project's test code for existing tests closest to the bug scenario. T
 
 Use Explore agents to locate relevant test files and test cases.
 
-Launch the `test-designer` agent to design the reproduction test case — do not design it in the main context. Set an Opus-class or more capable model in the `model` parameter, so test design stays on a strong model even when the main session runs on a faster one. Use the following prompt structure:
+Run the `/test-design` skill with the bug report from Step 1 (Condition / Expected / Actual) and a request to design its reproduction test, with output in the conversation.
 
-```
-## Requirements
-[Bug report from Step 1: Condition / Expected / Actual.
-Task type: bug-fix — design a reproduction test and regression tests per the reproduction-tests section of the guide.]
-
-## Implementation Design
-[Existing class/method structure of the affected production code, from the Explore results — this is the design; there is no new design for a bug fix]
-
-## Existing Code Context
-[Nearby test files, test classes, and conventions found above]
-
-## Language Convention
-[Project language resolved from CLAUDE.md; default English]
-```
-
-From the agent's output, take the test case marked `(reproduction test)`. Keep any regression test cases for Step 6 — do not implement them yet.
+From its output, take the test case marked `(reproduction test)`. Keep any regression test cases for Step 6 — do not implement them yet.
 
 Then load the `test-writing-guide` and `code-writing-guide` skills — test code is code, so both guides apply; do not rely on automatic skill triggering — and implement the reproduction test. Place it near the similar tests found above.
 
@@ -139,13 +124,15 @@ With the reproduction confirmed, investigate the root cause:
 
 1. Trace through the code path triggered by the reproduction test
 2. Identify the specific line(s) or logic responsible for the bug
-3. Formulate a fix
+3. Write a unit-level reproduction test that calls the suspected code directly (per `test-writing-guide`), and run it with `/run-tests` to verify it **fails** — this confirms the suspected cause before changing the production code, and pins the defect at the unit layer where the Step 2 test cannot locate it. If it passes, the suspect is wrong: delete the test, record it under **Ruled out**, and return to item 1. Skip this item when the cause lies outside code a unit test can call (e.g., scene/prefab wiring or asset settings)
+4. Commit the unit-level reproduction test, for the same reason as Step 4
+5. Formulate a fix
 
 ### Step 6: Regression Test Coverage
 
 Before applying the fix, check whether the affected area has adequate coverage for adjacent behavior:
 
-1. Start from the regression test cases the `test-designer` agent produced in Step 2 (if Step 2 ran)
+1. Start from the regression test cases `/test-design` produced in Step 2 (if Step 2 ran)
 2. Read the test files for the affected production code
 3. Identify behaviors that could regress from the change but are not currently tested
 4. If gaps exist, add regression tests (per `test-writing-guide`) and run them — they must **pass**
@@ -157,17 +144,16 @@ Before applying the fix, check whether the affected area has adequate coverage f
 2. Apply the fix formulated in Step 5 to the production code
 3. Run all affected tests using `/run-tests`
 4. Confirm:
-   - The reproduction test now **passes** (bug is fixed)
+   - The reproduction tests from Step 2 and Step 5 now **pass** (bug is fixed)
    - All regression tests still **pass**
 5. Commit production code fix to git (includes regression tests from Step 6 and any unavoidable changes to the reproduction test)
 
 ### Step 8: Refactoring
 
-1. Launch `test-deduplicator` agent with: list of test files added or modified in this iteration
-2. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
-3. Re-run tests using `/run-tests` command to confirm they still pass
-4. Run `/resolve-diagnostics` with the files added or modified in this iteration — compute the list **after** the `test-deduplicator` agent and `/simplify` finish, so their edits are covered too
-5. Commit all remaining changes to git
+1. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
+2. Re-run tests using `/run-tests` command to confirm they still pass
+3. Run `/resolve-diagnostics` with the files added or modified in this iteration — compute the list **after** `/simplify` finishes, so its edits are covered too
+4. Commit all remaining changes to git
 
 ### Step 9: Implementation Notes
 
