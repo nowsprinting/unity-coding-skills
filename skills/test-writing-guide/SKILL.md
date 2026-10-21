@@ -29,7 +29,7 @@ Guide for writing test code for Unity projects.
 
 - When implementing tests designed as integration tests, apply `[Category("Integration")]` to the test method.
 - When implementing tests designed as visual verification tests, apply `[Category("VisualVerification")]` to the test method.
-- When implementing tests designed as acceptance tests (marked `(acceptance test)` in the test case design), apply `[Category("Acceptance")]` to the test method.
+- When implementing tests designed as acceptance tests (marked `(acceptance test)` in the test design), apply `[Category("Acceptance")]` to the test method.
 - For test methods that test the `internal` visibility method, apply `[Category("Internal")]`.
 - For test methods that depend on animation timing or other timing-sensitive conditions that may cause instability on slow CPUs, apply `[Category("IgnoreCI")]`.
 - For test methods that specify the `GameViewResolution` attribute, apply `[Category("IgnoreCI")]`.
@@ -57,7 +57,7 @@ Assert.That(battleState.Enemies[0].Hp, Is.LessThan(hpBefore));
 
 #### Layout assertion tests: verify UI layout with deterministic assertions
 
-When a layout requirement is expressible as a deterministic assertion (*the element is within the screen, elements do not overlap, text does not overflow its container*), write it as a **layout assertion test** (an integration test), not a visual verification test. Displayed content (card data, text length, item count) is a test *input*: the pass criterion never varies with it. Leave to visual verification what does not suit a strict assertion: color, positional relationships like "A is to the right of B", on-screen position, and typography (font size, font style, font family) are design intent likely to change, and legibility (text/background contrast) is impractical to assert.
+When a layout specification is expressible as a deterministic assertion (*the element is within the screen, elements do not overlap, text does not overflow its container*), write it as a **layout assertion test** (an integration test), not a visual verification test. Displayed content (card data, text length, item count) is a test *input*: the pass criterion never varies with it. Leave to visual verification what does not suit a strict assertion: color, positional relationships like "A is to the right of B", on-screen position, and typography (font size, font style, font family) are visual design likely to change, and legibility (text/background contrast) is impractical to assert.
 Reasons:
 
 - **Deterministic pass/fail**: boolean assertions run unattended in CI without a human reading screenshots.

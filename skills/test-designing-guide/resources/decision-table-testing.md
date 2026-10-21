@@ -1,6 +1,6 @@
 # Decision Table Testing
 
-Apply when a combination of multiple conditions produces different outcomes according to rules the spec defines — e.g., the damage multiplier determined by attribute affinity and a critical hit.
+Apply when a combination of multiple conditions produces different outcomes according to rules the specification defines — e.g., the damage multiplier determined by attribute affinity and a critical hit.
 Unlike [combinatorial testing](combinatorial-testing.md), where every combination expects the same behavior, the expected outcome here changes with the combination.
 
 - **Conditions** — partition each condition per [equivalence partitioning](equivalence-partitioning.md); its equivalence partitions are the values the condition takes in the table.

@@ -1,11 +1,11 @@
 # Equivalence Partitioning
 
-Group the values of each input into equivalence partitions the spec says produce the same outcome; each equivalence partition needs at least one representative.
+Group the values of each input into equivalence partitions the specification says produce the same outcome; each equivalence partition needs at least one representative.
 A **valid equivalence partition** produces a normal outcome; an **invalid equivalence partition** results in an error — e.g., `0` and negative numbers in FizzBuzz.
 
-When the spec defines no behavior for an equivalence partition, valid or invalid, it is a gap in the spec: do not guess or invent the behavior, but abort designing the test target and include the equivalence partition table as the modeling result (see [Test Techniques](../SKILL.md#test-techniques)).
+When the specification defines no behavior for an equivalence partition, valid or invalid, it is a gap in the specification: do not guess or invent the behavior, but abort designing the test target and include the equivalence partition table as the modeling result (see [Test Techniques](../SKILL.md#test-techniques)).
 
-Add an equivalence partition beyond every upper and lower limit, even when the spec states only the range within them — e.g., `HP < 0`, `HP > MaxHP`, `EXP > Next` (the experience needed for the next level). Such a value often arises from a calculation rather than a direct input: damage exceeding the remaining HP, experience gained beyond the next level. Whether it is a valid or an invalid equivalence partition depends on the spec — `EXP > Next` is a valid equivalence partition, since it produces a level up.
+Add an equivalence partition beyond every upper and lower limit, even when the specification states only the range within them — e.g., `HP < 0`, `HP > MaxHP`, `EXP > Next` (the experience needed for the next level). Such a value often arises from a calculation rather than a direct input: damage exceeding the remaining HP, experience gained beyond the next level. Whether it is a valid or an invalid equivalence partition depends on the specification — `EXP > Next` is a valid equivalence partition, since it produces a level up.
 
 ## Deriving test methods from equivalence partitions
 
@@ -14,7 +14,7 @@ The most common derivation error is merging equivalence partitions with **differ
 **One test method = one equivalence partition = one definite expected outcome.** Never parameterize the expected outcome. If the expected value changes with the input, the inputs belong to **different** equivalence partitions → **separate** test methods, each named after its own outcome.
 
 For each input variable:
-1. Partition the input domain into equivalence partitions the spec says produce the **same** outcome.
+1. Partition the input domain into equivalence partitions the specification says produce the **same** outcome.
 2. Emit **one method per equivalence partition**, named `..._<Partition>_<ThatPartitionsOutcome>`. The `<Expected>` segment is a concrete state/value (`IsInteractable`, `IsNotInteractable`), never a condition word (`Matches…`, `…WhenNonEmpty`, `DependingOn…`).
 3. Within one equivalence partition, consolidate multiple representatives (and that equivalence partition's boundary values) into **one parameterized** method — they share the outcome (see [Parameterized tests](#parameterized-tests)).
 
@@ -50,10 +50,10 @@ Do NOT over-consolidate: keep separate rows for tests that belong to **different
 
 ## Invalid equivalence partition
 
-The expected outcome of an invalid equivalence partition is the error the spec defines — e.g., an exception thrown, an error message shown, or the input rejected.
+The expected outcome of an invalid equivalence partition is the error the specification defines — e.g., an exception thrown, an error message shown, or the input rejected.
 
 - **UI input validation** — test invalid inputs that a user can enter through the UI (e.g., out-of-range values in a numeric text field). These represent real failure paths at the system boundary and must be tested.
-- **Dependency error returns** — when the spec defines a dependency's error/failure path, whether to test it depends on the dependency's origin:
+- **Dependency error returns** — when the specification defines a dependency's error/failure path, whether to test it depends on the dependency's origin:
   - **Library or framework** (external, not owned by this project) → test it; use a stub to inject the error condition.
   - **Game's own code** (another component in this project) → skip; trust internal code correctness.
   - **Uncertain** → record it as an issue (an unclear specification) in the [Assessment](../SKILL.md#assessment) instead of designing test cases.

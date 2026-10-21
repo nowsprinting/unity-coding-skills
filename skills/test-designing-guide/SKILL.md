@@ -18,34 +18,35 @@ Knowledge for designing the test cases of a test target (e.g., a screen, a class
 
 Out of scope:
 
-- Extracting test targets from a product spec and assembling the test specification — see the `test-design` skill
+- Extracting test targets from a specification and assembling the test design document — see the `design-tests` skill
 - Writing test code — see the `test-writing-guide` skill
 
 ## Test Layers
 
-A test target's layer follows the level the product spec writes it at — e.g., a UI operation is an integration test, an API contract a unit test.
+A test target's layer follows its subject: a class or an asset is a unit test, a scene or a prefab an integration test.
+The external specification of a game usually describes a scene or a screen, so it lands in integration tests; when the external specification is an API itself (e.g., a package), it lands in unit tests only, with no integration tests.
 
-- **Unit tests** — for specifications written as an **API contract**: a class or method's inputs, return values, state changes, raised events, or calls to its dependencies. This includes behavior driven by Unity's lifecycle (Awake, Start, Update, etc.) or UI events when the spec defines it per component. When the spec defines a class's collaboration with its dependencies, keep test density low and focus on those interactions. Specifications on asset content (asset file validation, cross-asset consistency) also belong here.
-- **Integration tests** — for specifications written as behavior of a **scene or prefab** (or a screen the player sees): UI operations, on-screen display, scene transitions, and behavior emerging from components and the assets they reference.
-  - Add the integration test method to the test class of the **primary class** when the spec names one; OR
+- **Unit tests** — for specifications whose subject is a **class or an asset**, written as an **API contract**: a class or method's inputs, return values, state changes, raised events, or calls to its dependencies. This includes behavior driven by Unity's lifecycle (Awake, Start, Update, etc.) or UI events when the specification defines it per component. When the specification defines a class's collaboration with its dependencies, keep test density low and focus on those interactions. Specifications on asset content (asset file validation, cross-asset consistency) also belong here.
+- **Integration tests** — for specifications whose subject is a **scene or prefab** (or a screen the player sees): UI operations, on-screen display, scene transitions, and behavior emerging from components and the assets they reference.
+  - Add the integration test method to the test class of the **primary class** when the specification names one; OR
   - Create a new dedicated test class named after the scene, prefab, or screen otherwise.
   - For the screen transitions, name the test target `ScreenTransition` (test class `ScreenTransitionTest`). When the project has several screen transition systems, prefix the name with the system, e.g., `EquipmentScreenTransitionTest`.
   - When the **asset itself** is the SUT (file validation, cross-asset consistency), classify it as a **unit test**, not an integration test; integration tests assert the runtime behavior that emerges from a scene/prefab's linkage to its assets.
 
 ## Test Techniques
 
-When modeling the specifications with a test technique reveals a gap or a contradiction in them, abort designing the test target: assess it as `ASSESSMENT: FAIL` and include the modeling result (e.g., the equivalence partition table, the decision table, the state transition diagram) in the [Assessment](#assessment), so the user can see where the spec breaks.
+When modeling the specifications with a test technique reveals a gap or a contradiction in them, abort designing the test target: assess it as `ASSESSMENT: FAIL` and include the modeling result (e.g., the equivalence partition table, the decision table, the state transition diagram) in the [Assessment](#assessment), so the user can see where the specification breaks.
 
 **Prefer specification-based tests over structural (implementation-coupled) tests.** Structural tests break under refactoring and lose value fast. It's fine to write a structural test temporarily when you're unsure about an implementation, but plan to delete it once specification tests cover the same behavior.
 
 Select the techniques that fit the test target, and read the resource of each one you apply:
 
-- **Equivalence partitioning** — for every input; group the values the spec says produce the same outcome → `resources/equivalence-partitioning.md`
-- **Boundary value analysis** — when the spec differentiates behavior at the edges of equivalence partitions → `resources/boundary-value-analysis.md`
+- **Equivalence partitioning** — for every input; group the values the specification says produce the same outcome → `resources/equivalence-partitioning.md`
+- **Boundary value analysis** — when the specification differentiates behavior at the edges of equivalence partitions → `resources/boundary-value-analysis.md`
 - **Decision table testing** — when a combination of multiple conditions produces different outcomes according to rules → `resources/decision-table-testing.md`
 - **Combinatorial testing** — when multiple data-driven parameters (factors) combine and the expected behavior itself stays the same, e.g., the selected character and equipment → `resources/combinatorial-testing.md`
 - **State transition testing** — when the target has a finite-state-machine (FSM), including screen transitions → `resources/state-transition-testing.md`
-- **Error guessing** — to surface failure patterns common in game development that spec-based techniques don't reach → `resources/error-guessing.md`
+- **Error guessing** — to surface failure patterns common in game development that specification-based techniques don't reach → `resources/error-guessing.md`
 
 Also read the following when they apply to the test target:
 
@@ -70,7 +71,7 @@ Also read the following when they apply to the test target:
 
 In the **Verification** column, state **which observable property or behavior** is checked and **what its expected value or state** is — this corresponds to the `<Expected>` segment of the test method name, not the `<Condition>` segment, which the method name already captures.
 Write the prose in the project language.
-Write from the information already available in the product spec; abstract descriptions are acceptable — reading source to obtain more concrete identifiers is not required.
+Write from the information already available in the specification; abstract descriptions are acceptable — reading source to obtain more concrete identifiers is not required.
 Describe observable behavior only; do NOT include any of the following **anywhere in the test case output** — this prohibition applies to the Verification column, class header descriptions (text after `#### ClassName`), and any other field:
 
 - Test framework attributes (`[Test]`, `[UnityTest]`, `[LoadScene]`, `[Category(...)]`, `[TakeScreenshot]`, etc.)
@@ -78,16 +79,16 @@ Describe observable behavior only; do NOT include any of the following **anywher
 - Construction details of test inputs (e.g., how to build `PointerEventData`, how to instantiate fixtures)
 - The test's **precondition or arranged state** — anything that restates the `<Condition>` segment already encoded in the method name (e.g., for `..._WhenBossNext_...`, do NOT write "When the holder RunState has IsBossNext true, …" in Verification). State only the expected observable outcome.
 - Assertion helper class names (e.g., `LayoutAssert`, `GameObjectFinder`)
-- Exact private or serialized field names, or field-qualified member access (e.g., `drawPileButton.interactable`) whose owner is not present in the product spec — name the element descriptively instead (e.g., "the draw pile button is not interactable"). Exact identifiers are not required at design time; resolving the precise field name is a test-writing concern. You MAY name exactly: public framework API members (e.g., `CanvasGroup.blocksRaycasts`) and identifiers that appear in the product spec.
-- Rationale or intent text — why the test exists, what it proves about the design, or what the current (buggy) behavior is. Observable behavior only.
-- Any other implementation/mechanism detail — those decisions belong to the test-writing phase
+- Exact private or serialized field names, or field-qualified member access (e.g., `drawPileButton.interactable`) whose owner is not present in the specification — name the element descriptively instead (e.g., "the draw pile button is not interactable"). Exact identifiers are not required at design time; resolving the precise field name is a test-writing concern. You MAY name exactly: public framework API members (e.g., `CanvasGroup.blocksRaycasts`) and identifiers that appear in the specification.
+- Rationale or intent text — why the test exists, which requirement it serves, or what the current (buggy) behavior is. Observable behavior only.
+- Any other detail of how the test is built — those decisions belong to the test-writing phase
 
 Further notation rules:
 
 - When a single test asserts multiple properties (the multi-property exception in [Test Case Naming](#test-case-naming)), list each property being verified in the Verification column.
 - **Parameterized tests** — write each consolidated parameterized test as a single table row, with the parameter notation from [Parameterized tests](resources/equivalence-partitioning.md#parameterized-tests) in the Test Method column. Do NOT specify the framework mechanism (`TestCase`, `Values`, etc.) — that's a test-writing decision.
   - Example: `FizzBuzz_MultipleOfThree_ReturnsFizz` (n: 3, 6, 9) | `Returns "Fizz"`
-- If a test case uses a **spy** to verify an interaction the API spec defines, note it in the Verification column: e.g., `(uses spy: <TargetDependency>)`. Do NOT note stubs or fakes — those are arrange/action concerns. xUTP definitions for reference:
+- If a test case uses a **spy** to verify an interaction the API specification defines, note it in the Verification column: e.g., `(uses spy: <TargetDependency>)`. Do NOT note stubs or fakes — those are arrange/action concerns. xUTP definitions for reference:
   - **Stub** — returns canned responses to isolate the SUT from a dependency. Arrange/action concern; do NOT mention in Verification.
   - **Spy** — records interactions (calls, arguments) for later verification. Note it in Verification.
   - **Fake** — a simplified but working implementation of a dependency. Arrange/action concern; do NOT mention in Verification.
@@ -119,19 +120,19 @@ Output the test cases of a test target as the blocks of its layer that have test
 - Unit tests: `### Unit tests`
 - Integration tests: `### Integration tests`, `### Visual verification tests` (integration tests verified by image analysis), `### Manual tests` (integration tests verified by a human)
 
-> **Note:** Do NOT write "Edit Mode" or "Play Mode" in test case output — that is a test-writing concern, not a design concern.
+> **Note:** Do NOT write "Edit Mode" or "Play Mode" in test case output — that is a test-writing concern, not a test design concern.
 
 Structure by layer:
 - **Unit tests**: `#### <ClassName>` → table
-- **Integration tests / Visual verification tests**: `#### <ClassName>`, or the scene, prefab, or screen name when the spec names no primary class (see [Test Layers](#test-layers)) → table
+- **Integration tests / Visual verification tests**: `#### <ClassName>`, or the scene, prefab, or screen name when the specification names no primary class (see [Test Layers](#test-layers)) → table
 - **Manual tests**: no class/method section; uses a table of test cases with "Test perspectives / Verification method" column instead of "Verification"
   - Test perspectives — *what* behavioral aspects, conditions, or interactions are verified for this target. NOT a test technique name
 
 **Output markers** — annotations that flag test case categories; append to the specified field only, not the Verification column:
 
 - `(reproduction test)` — append to the **Test Method column** when the test reproduces a reported bug (see [Reproduction tests](resources/reproduction-tests.md))
-- `(acceptance test)` — append to the **Test Method column** when the test is the **same-layer witness** for a specification stated in the product spec: it sits at the layer the specification is written at and directly exercises the behavior it describes.
-- `(spec change)` — append to the **Test Method column** ONLY when updating an existing test whose **Verification (observable expected outcome) changes**. A change to the SUT signature/type that requires only arrange/action construction updates (e.g., wrapping `Foo`→`FooRef`) while the expected observable behavior stays identical is NOT a spec change — leave such tests **unmarked** (construction details are a test-writing concern per [Verification Column](#verification-column), not a design concern). Litmus test: **if the Verification column wording is unchanged, do NOT append `(spec change)`.**
+- `(acceptance test)` — append to the **Test Method column** when the input explicitly states requirements and the test directly verifies a specification that realizes one of them. Without stated requirements, mark no test as an acceptance test.
+- `(spec change)` — append to the **Test Method column** ONLY when updating an existing test whose **Verification (observable expected outcome) changes**. A change to the SUT signature/type that requires only arrange/action construction updates (e.g., wrapping `Foo`→`FooRef`) while the expected observable behavior stays identical is NOT a spec change — leave such tests **unmarked** (construction details are a test-writing concern per [Verification Column](#verification-column), not a test design concern). Litmus test: **if the Verification column wording is unchanged, do NOT append `(spec change)`.**
 
 Read the output format template for the layer and follow it exactly (templates are in `${CLAUDE_SKILL_DIR}/assets/`):
 
@@ -145,19 +146,21 @@ When no template exists for the project language, use the default one as the str
 ## Assessment
 
 Assess whether the specifications of a test target can be tested as written, and assign one of the following labels.
-Record every issue found while designing — an unclear specification, a gap or contradiction, a behavior the spec leaves undefined — instead of guessing.
+Record every issue found while designing — an undefined, ambiguous, or contradictory specification — instead of guessing.
 
-| Label              | Meaning                                                                                                                                     |
-|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| `ASSESSMENT: PASS` | Every specification has a deterministic pass/fail criterion at its layer; no gap or contradiction in the spec; test case count is realistic |
-| `ASSESSMENT: WARN` | Localized concerns (e.g., a large integration test, high FSM state combinations, a spec ambiguity the user resolved)                        |
-| `ASSESSMENT: FAIL` | Fundamental issues that require spec revision                                                                                               |
+| Label              | Meaning                                                                                                                        |
+|--------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| `ASSESSMENT: PASS` | Every specification has a deterministic pass/fail criterion at its layer; none of the FAIL criteria apply                      |
+| `ASSESSMENT: WARN` | Localized concerns (e.g., a large integration test, high FSM state combinations, an ambiguous specification the user resolved) |
+| `ASSESSMENT: FAIL` | Fundamental issues that require revising the specification                                                                     |
 
 **FAIL criteria** — flag FAIL if any of the following apply:
 
-- The spec contradicts itself, or leaves a specification's expected outcome undefined
-- A specification has no deterministic pass/fail criterion and is not suited to manual tests — e.g., random behavior without a specified distribution, range, or structural property (see [Testing randomness](resources/testing-randomness.md))
-- An API spec leaves the outcome unobservable — e.g., state that changes but is exposed through no member, event, or dependency call
+- **Undefined specification** — the expected outcome of a behavior is not stated, or an API specification leaves it unobservable (e.g., state that changes but is exposed through no member, event, or dependency call)
+- **Ambiguous specification** — a stated behavior has no deterministic pass/fail criterion and is not suited to manual tests, e.g.:
+  - A requirement given without the specification that realizes it ("defeating an enemy feels satisfying")
+  - Random behavior without a specified distribution, range, or structural property (see [Testing randomness](resources/testing-randomness.md))
+- **Contradictory specification** — two specifications demand incompatible outcomes
 - Combinatorial explosion: test case count grows faster than O(n) relative to the number of conditions
 
 **Output format**:
@@ -178,10 +181,10 @@ ASSESSMENT: FAIL
 
 #### Issues
 
-| Issue                                                         | Specification                 | Proposed Remedy                                  |
-|---------------------------------------------------------------|-------------------------------|--------------------------------------------------|
-| Contradiction: the button is both hidden and disabled at zero | "Draw button" in §2.1, §3.4   | Specify which one applies                        |
-| Undefined distribution: "rewards are random"                  | "Reward selection" in §4      | Specify the drop rates or the allowed reward set |
+| Issue                                                                       | Specification               | Proposed Remedy                                  |
+|-----------------------------------------------------------------------------|-----------------------------|--------------------------------------------------|
+| Contradictory specification: the button is both hidden and disabled at zero | "Draw button" in §2.1, §3.4 | Specify which one applies                        |
+| Ambiguous specification: "rewards are random" with no distribution          | "Reward selection" in §4    | Specify the drop rates or the allowed reward set |
 
 #### Modeling result
 

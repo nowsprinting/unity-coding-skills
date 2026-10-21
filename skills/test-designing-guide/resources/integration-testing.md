@@ -30,7 +30,7 @@ Choose the verification method of each test case in this order:
 ### Visual verification
 
 Visual verification tests are integration tests verified by image analysis of a screenshot saved during test execution, instead of assertions.
-They verify that actual on-screen rendering conforms to the intended design: positional relationships between elements, typography, text/background contrast and legibility, visual state representation, and rendering quality.
+They verify that actual on-screen rendering conforms to the intended visual design: positional relationships between elements, typography, text/background contrast and legibility, visual state representation, and rendering quality.
 A deterministic mid-point of an animation (e.g., an attack lunge at its peak, a fade-out at half time) can also be captured and verified here; only subjective motion feel belongs to manual tests.
 
 - **Placement priority**: (1) when a layout assertion test already exists — or is being designed — for the same test condition, attach the screenshot verification to that test case instead of creating a new one; (2) otherwise, add the visual verification test method to the same test class as the functional tests. Never create a dedicated visual verification test class.
@@ -42,7 +42,7 @@ A deterministic mid-point of an animation (e.g., an attack lunge at its peak, a 
 Always verify the following in screenshot image analysis when applicable:
 
 - **Text/background contrast** — verify that text color has sufficient contrast against its background so text is clearly legible
-- **Typography** — verify that font size, font style (bold/italic), and font family match the intended design and are consistent across equivalent elements; verify that glyphs actually render (no missing-glyph "tofu" boxes or blanks for characters the assigned font doesn't support)
+- **Typography** — verify that font size, font style (bold/italic), and font family match the intended visual design and are consistent across equivalent elements; verify that glyphs actually render (no missing-glyph "tofu" boxes or blanks for characters the assigned font doesn't support)
 - **Visual state representation** — when a UI state is communicated visually (a disabled button grayed out, a gauge's fill amount, a fading sprite's transparency), verify the rendering reflects that state
 - **Rendering quality** — no sprite distortion (squashing/stretching), ghosting/afterimages, or unintended clipping
 

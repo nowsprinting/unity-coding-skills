@@ -14,12 +14,12 @@ This plugin provides the methodology, conventions, and tools to make that signal
 | Skill                      | Description                                                                                                    | Required                                                                                                                                                                                      | User-invocable |
 |----------------------------|----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------:|
 | `code-writing-guide`       | Coding conventions and guidelines for Unity C# projects                                                        |                                                                                                                                                                                               |                |
+| `design-tests`             | Designs tests from a specification and produces the test design document                                       |                                                                                                                                                                                               |       ✅       |
 | `edit-scene`               | Creates or modifies scene and prefab files using the `run_method_in_unity` tool                                | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html) and [Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |       ✅       |
 | `fix-bug`                  | Reproduces and fixes bugs using a test-first workflow                                                          |                                                                                                                                                                                               |       ✅       |
 | `plan-feature`             | Orchestrates the test-first planning workflow for feature implementation in plan mode                          |                                                                                                                                                                                               |       ✅       |
 | `resolve-diagnostics`      | Resolves IDE diagnostics at `warning` or higher severity in the specified files                                | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html)                                                                                                             |       ✅       |
 | `run-tests`                | Runs Unity tests using the `run_unity_tests` tool                                                              | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html) and [Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |       ✅       |
-| `test-design`              | Creates test cases at the layer where each specification is written                                            |                                                                                                                                                                                               |       ✅       |
 | `test-designing-guide`     | Test design by modeling specifications with test techniques                                                    |                                                                                                                                                                                               |                |
 | `test-writing-guide`       | Conventions for writing Unity Test Framework test code                                                         | [Test Helper](https://github.com/nowsprinting/test-helper) and [UI Test Helper](https://github.com/nowsprinting/test-helper.ui) package                                                       |                |
 | `unity-yaml-editing-guide` | Guidelines for directly hand-editing Unity YAML asset files                                                    |                                                                                                                                                                                               |                |
@@ -62,7 +62,7 @@ Dependencies:
 ```text
 plan-feature
 ├── Plan (built-in subagent)
-├── test-design
+├── design-tests
 │   └── test-designing-guide
 └── Development workflow (written in the plan file)
     ├── code-writing-guide
@@ -83,18 +83,18 @@ plan-feature
 ### Test design
 
 ```bash
-/test-design [PRODUCT SPEC]
+/design-tests [SPECIFICATION]
 ```
 
-Creates test cases at the layer where each specification is written — e.g., integration tests for UI operations, unit tests for an API specification — via test design by modeling specifications with test techniques in `test-designing-guide`.
+Creates test cases at the layer of each specification's subject — e.g., integration tests for a scene or prefab, unit tests for a class's API — via test design by modeling specifications with test techniques in `test-designing-guide`.
 
-The `PRODUCT SPEC` can be a spec, a design, or an ADR, given as a file path or written directly; when omitted, it is read from the conversation.
+The `SPECIFICATION` can be stated in any document — a requirements document, a software design document, an ADR, or a bug report — given as a file path or written directly; when omitted, it is read from the conversation.
 For a file path, the output goes to a Markdown file with a `-tests` suffix next to it; otherwise, to the conversation.
 
 Dependencies:
 
 ```text
-test-design
+design-tests
 └── test-designing-guide
 ```
 
@@ -114,7 +114,7 @@ fix-bug
 ├── test-writing-guide
 ├── run-tests
 ├── simplify (built-in skill)
-├── test-design
+├── design-tests
 │   └── test-designing-guide
 └── resolve-diagnostics
     ├── code-writing-guide

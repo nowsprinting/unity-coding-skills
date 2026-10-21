@@ -43,11 +43,11 @@ cat >> "<scratchpad>/implementation-notes.md" <<'EOF'
 EOF
 ```
 
-When a step delegates to a subagent or another skill (`/test-design` in Step 2; `/simplify` and `/resolve-diagnostics` in Step 8), append the note yourself from what it returns — they do not write to this file.
+When a step delegates to a subagent or another skill (`/design-tests` in Step 2; `/simplify` and `/resolve-diagnostics` in Step 8), append the note yourself from what it returns — they do not write to this file.
 
 ### Step 1: Clarify the Bug Report
 
-> Work from the user's report, specs, and design docs only — do not read code yet. Reading the implementation here biases "Expected" toward what the code does rather than what the spec says.
+> Work from the user's report and the documents that state the specification (external specification, software design) only — do not read code yet. Reading the implementation here biases "Expected" toward what the code does rather than what the specification says.
 
 Extract the following from the user's prompt:
 
@@ -63,7 +63,7 @@ Also determine the **report type**:
 - **Existing test failure** — the user reports that an existing test is failing. The specific failing test method need not be known at this stage; note the scope (class name, scene name, or test assembly) from the prompt. **Step 2 is skipped** — proceed directly to Step 3.
 - **Behavioral bug** — the user describes unexpected runtime behavior with no mention of a failing test. Proceed normally through Step 2.
 
-Also check the relevant documentation (specs, design docs) for consistency with the
+Also check the relevant documentation (external specification, software design) for consistency with the
 user's bug report. If the documentation and the report conflict, use `AskUserQuestion`
 to clarify with the user which is correct. If the docs contain errors or are missing
 relevant information, add them to the list of files to be modified in this bug fix.
@@ -80,7 +80,7 @@ Search the project's test code for existing tests closest to the bug scenario. T
 
 Use Explore agents to locate relevant test files and test cases.
 
-Run the `/test-design` skill with the bug report from Step 1 (Condition / Expected / Actual) and a request to design its reproduction test, with output in the conversation.
+Run the `/design-tests` skill with the bug report from Step 1 (Condition / Expected / Actual) and a request to design its reproduction test, with output in the conversation.
 
 From its output, take the test case marked `(reproduction test)`. Keep any regression test cases for Step 6 — do not implement them yet.
 
@@ -132,7 +132,7 @@ With the reproduction confirmed, investigate the root cause:
 
 Before applying the fix, check whether the affected area has adequate coverage for adjacent behavior:
 
-1. Start from the regression test cases `/test-design` produced in Step 2 (if Step 2 ran)
+1. Start from the regression test cases `/design-tests` produced in Step 2 (if Step 2 ran)
 2. Read the test files for the affected production code
 3. Identify behaviors that could regress from the change but are not currently tested
 4. If gaps exist, add regression tests (per `test-writing-guide`) and run them — they must **pass**
