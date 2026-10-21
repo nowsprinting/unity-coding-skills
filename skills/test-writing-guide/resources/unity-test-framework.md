@@ -22,7 +22,7 @@ Examples:
 | Target               | Convention                                                                                                                     |
 |----------------------|--------------------------------------------------------------------------------------------------------------------------------|
 | Test assembly        | `<ProductionAssembly>.Tests`                                                                                                   |
-| Test namespace       | Same as the production class under test                                                                                        |
+| Test namespace       | Same as the production class under test; `<RootNamespace>.Scenes` for a Scene file, `<RootNamespace>.Prefabs` for a Prefab     |
 | Test class           | `<ClassName>Test` — e.g., `CharacterControllerTest`                                                                            |
 | Test method          | `<MethodName>_<Condition>_<Expected>` — e.g., `TakeDamage_WhenHealthIsZero_ReturnsZero` or `TakeDamage_HPが0のとき_ゼロを返す` |
 | System under test    | `sut`                                                                                                                          |
@@ -30,6 +30,7 @@ Examples:
 | Expected value       | `expected`                                                                                                                     |
 | Test double variable | Prefix with role: `stub`, `spy`, `mock`, `fake`, `dummy`                                                                       |
 
+- `<RootNamespace>` is the `rootNamespace` of the assembly that defines the component classes used in the Scene or Prefab; the Scene or Prefab itself belongs to no assembly. When those classes span several assemblies (excluding Unity's and third-party ones), use the one that none of the others references. If a test class for the same Scene or Prefab already exists, add tests to it. If more than one assembly remains, pick the one whose `rootNamespace` existing Scene or Prefab tests already use; ask the user only when none do.
 - `<MethodName>` must always match the production method name exactly — never translate it. When the test target is not a single method — integration tests, visual verification tests, and unit tests whose target is an asset (asset file validation, cross-asset consistency checks) — `<MethodName>` is omitted and the convention becomes `<Condition>_<Expected>`.
 - `<Condition>` and `<Expected>` follow the project language specified in `CLAUDE.md`. If no language is specified, default to English.
 - Write `<Expected>` in active voice: `ReturnsTrue`, `ThrowsArgumentException`, `ReducesHpBy3`, etc. For exceptions, include the exception type: `ThrowsArgumentException`, not just `ThrowsException`.
