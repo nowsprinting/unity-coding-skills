@@ -56,9 +56,10 @@ Extract only targets the specification describes; do NOT derive targets at a lev
 When the input includes a software design, the classes and signatures it fixes are specifications, and are valid targets.
 
 Extract all the screen transitions as a single test target, whatever form the specification gives them in — a screen transition diagram, a sequence, a use case, or button operations written per screen.
-The behavior within each screen, including the dialogs opened from it, stays in that screen's target; dialogs are not part of the screen transitions.
 
 Assign each specification to exactly one test target, so that targets designed in parallel do not produce duplicate test cases.
+When the subject of one test target contains the subjects of others — e.g., a screen contains the classes placed on it, and the screen transitions contain the screens — assign the behavior within a contained target to that target, and leave the container only the behavior that combines them.
+Record the test targets each target contains.
 
 ### Step 2: Design Each Test Target
 
@@ -72,7 +73,7 @@ Instruct each subagent to load the `test-designing-guide` skill — do not rely 
 5. Assess the target (Assessment)
 6. Write the test cases and the Assessment in the output format (Output Format)
 
-Give each subagent the test target with its assigned specifications, the requirements they realize if any, and the input — its file path, or the full text when it was written directly or taken from the conversation — and have it return its output verbatim.
+Give each subagent the test target with its assigned specifications and the requirements they realize if any, the test targets it contains with their assigned specifications if any, and the input — its file path, or the full text when it was written directly or taken from the conversation — and have it return its output verbatim.
 A subagent cannot ask the user, so it records every question as an issue in the Assessment.
 
 When a target's Assessment raises an issue — an ambiguous, undefined, or contradictory specification — ask the user via `AskUserQuestion`, presenting the Issues together with the modeling result, then design that target again with the answer.

@@ -33,6 +33,13 @@ The external specification of a game usually describes a scene or a screen, so i
   - For the screen transitions, name the test target `ScreenTransition` (test class `ScreenTransitionTest`). When the project has several screen transition systems, prefix the name with the system, e.g., `EquipmentScreenTransitionTest`.
   - When the **asset itself** is the SUT (file validation, cross-asset consistency), classify it as a **unit test**, not an integration test; integration tests assert the runtime behavior that emerges from a scene/prefab's linkage to its assets.
 
+## Contained Test Targets
+
+A test target may contain other test targets, each designed from its own specification: e.g., a screen contains the classes placed on it, and the screen transitions contain the screens.
+The container's test cases cover the behavior that emerges from combining its contained targets — e.g., the wiring between a screen and its classes, or the transitions between screens.
+A contained target's specifications belong to that target's own test cases; when a container's test case passes through a contained target, give each input the contained target's specification governs one representative value instead of its equivalence partitions and boundary values.
+A part of the subject without a specification of its own, e.g., a class no specification describes, is not a contained target; test its behavior as part of the container.
+
 ## Test Techniques
 
 When modeling the specifications with a test technique reveals a gap or a contradiction in them, abort designing the test target: assess it as `ASSESSMENT: FAIL` and include the modeling result (e.g., the equivalence partition table, the decision table, the state transition diagram) in the [Assessment](#assessment), so the user can see where the specification breaks.
@@ -41,7 +48,7 @@ When modeling the specifications with a test technique reveals a gap or a contra
 
 Select the techniques that fit the test target, and read the resource of each one you apply:
 
-- **Equivalence partitioning** — for every input; group the values the specification says produce the same outcome → `resources/equivalence-partitioning.md`
+- **Equivalence partitioning** — for every input except those a contained target governs (see [Contained Test Targets](#contained-test-targets)); group the values the specification says produce the same outcome → `resources/equivalence-partitioning.md`
 - **Boundary value analysis** — when the specification differentiates behavior at the edges of equivalence partitions → `resources/boundary-value-analysis.md`
 - **Decision table testing** — when a combination of multiple conditions produces different outcomes according to rules → `resources/decision-table-testing.md`
 - **Combinatorial testing** — when multiple data-driven parameters (factors) combine and the expected behavior itself stays the same, e.g., the selected character and equipment → `resources/combinatorial-testing.md`

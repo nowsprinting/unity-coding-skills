@@ -50,6 +50,10 @@ A test whose subject is a scene or a prefab, verifying the behavior that emerges
 **Unit test**:
 A test whose subject is a class or an asset, verified through its API or content. An external specification given as an API is tested at this layer.
 
+**Contained test target**:
+A test target whose subject lies within another test target's subject, e.g., a class placed on a screen, or a screen within the screen transitions. The container's tests cover only the behavior that combines its contained test targets.
+_Avoid_: Component (a Unity component), child target
+
 ### Code
 
 **Implementation**:
