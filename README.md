@@ -50,6 +50,7 @@ The created plan file includes the following:
 - Layered-designed test cases to reduce redundant tests, tests without assertions, and unnecessary test doubles:
   - Editor tests (Edit Mode tests for editor extensions and validate assets)
   - Unit tests (Play Mode tests for runtime code)
+  - Validators for the data of ScriptableObject assets
   - Integration tests including UI operation and layout assertions
   - Visual verification tests using image analysis
 - Test-first development workflow

@@ -1,6 +1,6 @@
 ### Integration tests
 
-#### <ClassName, or scene/prefab/screen name>
+#### <ClassName, or scene/prefab/screen name>Test
 
 | Test Method              | Verification                                |
 |--------------------------|---------------------------------------------|
@@ -8,7 +8,7 @@
 
 ### Visual verification tests
 
-#### <ClassName, or scene/prefab/screen name>
+#### <ClassName, or scene/prefab/screen name>Test
 
 | Test Method              | Image analysis by saved screenshot                                                                                      |
 |--------------------------|-------------------------------------------------------------------------------------------------------------------------|

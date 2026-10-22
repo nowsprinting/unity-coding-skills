@@ -3,6 +3,7 @@
 ## Structure
 
 - Tests targeting `Editor/` code, and tests validating assets → `Tests/Editor/` (Edit Mode tests)
+- Validators → `Tests/Editor/`
 - Tests targeting `Runtime/` code → `Tests/Runtime/` (Play Mode tests) — never Edit Mode tests: Edit Mode and Play Mode test runners cannot execute simultaneously, so splitting coverage for a single SUT between the two modes prevents running all tests at once, and only Play Mode tests can run on actual devices (player builds)
 - Mirror the production code's directory structure within the test directory
 - Test doubles (stub, spy, mock, fake, and dummy) → `Tests/Runtime/TestDoubles/` (also usable from Edit Mode tests)
@@ -23,7 +24,7 @@ Examples:
 |----------------------|--------------------------------------------------------------------------------------------------------------------------------|
 | Test assembly        | `<ProductionAssembly>.Tests`                                                                                                   |
 | Test namespace       | Same as the production class under test; `<RootNamespace>.Scenes` for a Scene file, `<RootNamespace>.Prefabs` for a Prefab     |
-| Test class           | `<ClassName>Test` — e.g., `CharacterControllerTest`                                                                            |
+| Test class           | `<ClassName>Test` — e.g., `CharacterControllerTest`; `<ClassName>Validator` for a validator — e.g., `CardValidator`            |
 | Test method          | `<MethodName>_<Condition>_<Expected>` — e.g., `TakeDamage_WhenHealthIsZero_ReturnsZero` or `TakeDamage_HPが0のとき_ゼロを返す` |
 | System under test    | `sut`                                                                                                                          |
 | Measured value       | `actual`                                                                                                                       |
@@ -31,7 +32,8 @@ Examples:
 | Test double variable | Prefix with role: `stub`, `spy`, `mock`, `fake`, `dummy`                                                                       |
 
 - `<RootNamespace>` is the `rootNamespace` of the assembly that defines the component classes used in the Scene or Prefab; the Scene or Prefab itself belongs to no assembly. When those classes span several assemblies (excluding Unity's and third-party ones), use the one that none of the others references. If a test class for the same Scene or Prefab already exists, add tests to it. If more than one assembly remains, pick the one whose `rootNamespace` existing Scene or Prefab tests already use; ask the user only when none do.
-- `<MethodName>` must always match the production method name exactly — never translate it. When the test target is not a single method — integration tests, visual verification tests, and unit tests whose target is an asset (asset file validation, cross-asset consistency checks) — `<MethodName>` is omitted and the convention becomes `<Condition>_<Expected>`.
+- A validator's namespace is the namespace of the `ScriptableObject` class it validates.
+- `<MethodName>` must always match the production method name exactly — never translate it. When the test target is not a single method — integration tests, visual verification tests, validators, and unit tests whose target is an asset (asset file validation, cross-asset consistency checks) — `<MethodName>` is omitted and the convention becomes `<Condition>_<Expected>`. A validator covering every asset of its class drops `<Condition>_` as well.
 - `<Condition>` and `<Expected>` follow the project language specified in `CLAUDE.md`. If no language is specified, default to English.
 - Write `<Expected>` in active voice: `ReturnsTrue`, `ThrowsArgumentException`, `ReducesHpBy3`, etc. For exceptions, include the exception type: `ThrowsArgumentException`, not just `ThrowsException`.
 
@@ -244,6 +246,11 @@ Exception: a `while` loop that waits for a state transition is allowed. Even the
 Use `[TestCase]`, `[TestCaseSource]`, `[Values]`, `[ValueSource]` when Arrange differs but Act and Assert are the same.  
 Use `[ParametrizedIgnore]` to exclude specific combinations.
 
+Choose the attributes by where the test cases come from:
+
+- Rules derived by equivalence partitioning or a decision table → `[TestCase]` / `[TestCaseSource]`: each rule is one explicit case.
+- Data derived by combinatorial testing → `[Values]` / `[ValueSource]`: NUnit generates the combinations from the values of each parameter.
+
 ### TestCase / TestCaseSource
 
 Use `[TestCase]` when the design specifies `({defence: Fire, attack: Water}, {defence: Water, attack: Wood})` — limited to specific combinations. Each tuple becomes one `[TestCase]` attribute:
@@ -254,13 +261,14 @@ Use `[TestCase]` when the design specifies `({defence: Fire, attack: Water}, {de
 public void GetDamageFactor_WeaknessAttribute_Returns2x(Element defence, Element attack) { ... }
 ```
 
-Use `TestCaseData` with `.SetName(...)` to give test cases readable names when using `[TestCaseSource]`:
+Use `TestCaseData` with `.SetName(...)` to give test cases readable names when using `[TestCaseSource]`.
+Start the name with `{m}`, the placeholder for the method name: a name set with `SetName` replaces the method name in the test's full name, so test methods sharing a source would otherwise report the same full name for a case.
 
 ```csharp
 private static TestCaseData[] s_cases =
 {
-    new TestCaseData(Element.Fire, Element.Water).SetName("火←水"),
-    new TestCaseData(Element.Water, Element.Wood).SetName("水←木"),
+    new TestCaseData(Element.Fire, Element.Water).SetName("{m}(water to fire)"),
+    new TestCaseData(Element.Water, Element.Wood).SetName("{m}(wood to water)"),
 };
 
 [TestCaseSource(nameof(s_cases))]
@@ -284,6 +292,33 @@ The following maps the test-designing-guide notation to NUnit attributes:
 - Multiple `[Values]` parameters produce the **full Cartesian product** by default
 - `[Pairwise]` on the method → pairwise coverage instead of full Cartesian; use when the test cases specify `(use pairwise)`
 - `[Sequential]` on the method → match parameters by index (not combinatorial); do NOT use in principle — use `[TestCase]` / `[TestCaseSource]` instead to make each combination explicit
+
+### Validators
+
+A `#### <ClassName>Validator` section in the test design runs each test method on the project's assets of that `ScriptableObject` class.
+Implement validators as Edit Mode tests under `Tests/Editor/`: `AssetDatabase`, which finds and loads the assets, is Editor-only.
+The test design gives no parameter notation: read the assets to select from the method name's `<Condition>` segment — e.g., `AttackCard_AttackIsGreaterThanZero` selects the attack cards, i.e., the `Card` assets whose `Type` is `Attack` — and a method name without `<Condition>` covers every asset of the class.
+Supply the assets with `[TestCaseSource]`, naming each `TestCaseData` after its asset file, and load each asset in the test:
+
+```csharp
+private static IEnumerable<TestCaseData> AttackCards => AssetDatabase
+    .FindAssets("t:Card", new[] { "Assets/MyGame/Data" })
+    .Select(AssetDatabase.GUIDToAssetPath)
+    .Where(path => AssetDatabase.LoadAssetAtPath<Card>(path).Type == CardType.Attack)
+    .Select(path => new TestCaseData(path).SetName($"{{m}}({Path.GetFileName(path)})"));
+
+[TestCaseSource(nameof(AttackCards))]
+public void AttackCard_AttackIsGreaterThanZero(string path)
+{
+    var sut = AssetDatabase.LoadAssetAtPath<Card>(path);
+    Assert.That(sut.Attack, Is.GreaterThan(0));
+}
+```
+
+- Prefer `[TestCaseSource]` with `SetName` over `[ValueSource]`: a `[ValueSource]` case is named after the whole path argument, which buries the asset name in the test results.
+- In an interpolated string, escape the `{m}` placeholder as `{{m}}` (see [TestCase / TestCaseSource](#testcase--testcasesource)).
+- Select the assets in the source (`.Where(...)`), not with `if` in the test (see [No Control Flow in Tests](#no-control-flow-in-tests)).
+- Limit `FindAssets` to the folders holding the game's data, so test assets under `Tests/` are not validated.
 
 ## Object Creation Pattern
 

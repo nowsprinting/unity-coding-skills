@@ -54,6 +54,10 @@ A test whose subject is a class or an asset, verified through its API or content
 A test target whose subject lies within another test target's subject, e.g., a class placed on a screen, or a screen within the screen transitions. The container's tests cover only the behavior that combines its contained test targets.
 _Avoid_: Component (a Unity component), child target
 
+**Validator**:
+A test whose subject is the project's assets of a `ScriptableObject` class, verifying that the data each holds satisfies the class's specification.
+_Avoid_: Unit test (for the data of a `ScriptableObject` class)
+
 ### Code
 
 **Implementation**:

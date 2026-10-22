@@ -23,15 +23,18 @@ Out of scope:
 
 ## Test Layers
 
-A test target's layer follows its subject: a class or an asset is a unit test, a scene or a prefab an integration test.
+A test target's layer follows its subject: a class or an asset is a unit test, the data of a `ScriptableObject` class a validator, a scene or a prefab an integration test.
 The external specification of a game usually describes a scene or a screen, so it lands in integration tests; when the external specification is an API itself (e.g., a package), it lands in unit tests only, with no integration tests.
 
-- **Unit tests** — for specifications whose subject is a **class or an asset**, written as an **API contract**: a class or method's inputs, return values, state changes, raised events, or calls to its dependencies. This includes behavior driven by Unity's lifecycle (Awake, Start, Update, etc.) or UI events when the specification defines it per component. When the specification defines a class's collaboration with its dependencies, keep test density low and focus on those interactions. Specifications on asset content (asset file validation, cross-asset consistency) also belong here.
+- **Unit tests** — for specifications whose subject is a **class or an asset**, written as an **API contract**: a class or method's inputs, return values, state changes, raised events, or calls to its dependencies. This includes behavior driven by Unity's lifecycle (Awake, Start, Update, etc.) or UI events when the specification defines it per component. When the specification defines a class's collaboration with its dependencies, keep test density low and focus on those interactions. Specifications on the content of assets other than `ScriptableObject` data (asset file validation, cross-asset consistency) also belong here.
+- **Validators** — for specifications that constrain the data of a `ScriptableObject` class, e.g., "an attack card's attack is greater than 0". The project holds the data as the class's assets, so the subject is those assets; a test that creates its own instance checks only the values the test sets, while a violation lies in the assets authored in the project.
+  - The specification's condition selects the assets, and the test case asserts its expected outcome on every selected asset.
+  - Specifications of the class's methods stay unit tests.
 - **Integration tests** — for specifications whose subject is a **scene or prefab** (or a screen the player sees): UI operations, on-screen display, scene transitions, and behavior emerging from components and the assets they reference.
   - Add the integration test method to the test class of the **primary class** when the specification names one; OR
   - Create a new dedicated test class named after the scene, prefab, or screen otherwise.
   - For the screen transitions, name the test target `ScreenTransition` (test class `ScreenTransitionTest`). When the project has several screen transition systems, prefix the name with the system, e.g., `EquipmentScreenTransitionTest`.
-  - When the **asset itself** is the SUT (file validation, cross-asset consistency), classify it as a **unit test**, not an integration test; integration tests assert the runtime behavior that emerges from a scene/prefab's linkage to its assets.
+  - When the **asset itself** is the SUT (file validation, cross-asset consistency), classify it as a **unit test** (a **validator** for `ScriptableObject` data), not an integration test; integration tests assert the runtime behavior that emerges from a scene/prefab's linkage to its assets.
 
 ## Contained Test Targets
 
@@ -67,8 +70,9 @@ Also read the following when they apply to the test target:
 
 - Use the naming convention based on whether the test target is a method:
   - **Method target** — `<MethodName>_<Condition>_<Expected>`: **Unit tests whose target is a method**.
-  - **Non-method target** — `<Condition>_<Expected>`: all **Integration tests** and **Visual verification tests** (multi-component interaction or on-screen rendering), and **Unit tests whose target is an asset** (asset file validation, cross-asset consistency checks — the SUT is an asset or set of assets). Do NOT include a method name. Do NOT add a feature-area or category prefix before `<Condition>` — the name starts directly with the condition (e.g., `OnVictoryForced_AllCardViewsAreFullyWithinHandArea`, not `Reward_OnVictoryForced_AllCardViewsAreFullyWithinHandArea`).
+  - **Non-method target** — `<Condition>_<Expected>`: all **Integration tests** and **Visual verification tests** (multi-component interaction or on-screen rendering), **Unit tests whose target is an asset** (asset file validation, cross-asset consistency checks — the SUT is an asset or set of assets), and **Validators**. Do NOT include a method name. Do NOT add a feature-area or category prefix before `<Condition>` — the name starts directly with the condition (e.g., `OnVictoryForced_AllCardViewsAreFullyWithinHandArea`, not `Reward_OnVictoryForced_AllCardViewsAreFullyWithinHandArea`).
   - For **parameterized tests**, the `<Condition>` segment is the **equivalence partition name**, not an enumeration of individual argument values.
+  - For **Validators**, the `<Condition>` segment names the assets the specification's condition selects, e.g., `AttackCard_AttackIsGreaterThanZero`; when the specification covers every asset of the class, the name is `<Expected>` alone, e.g., `NameIsNotEmpty`.
   - The `<Expected>` segment names the **concrete resulting state or value** of that one partition (e.g. `IsNotInteractable`, `ReturnsFizz`), never a condition or comparison. **Exception**: a consolidated layout assertion test may use the generic `LayoutIsCorrect` (see [Integration testing](resources/integration-testing.md#perspectives), UI layout). Words like `Matches…`, `OnlyWhen…`, `DependingOn…`, `BasedOn…` in the name — or "only when / only if / depending on" in the verification description — signal that the outcome varies with input, meaning two partitions were merged into one method — split into one method per outcome (see [Deriving test methods from equivalence partitions](resources/equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)).
 - Do NOT create sequential IDs in test case names
 - Verify one condition per test. **Exception (multi-property)**: when multiple properties of the state resulting from a transition must all be correct simultaneously, a single test may assert all of them together. The same applies to a consolidated layout assertion test asserting multiple layout properties under one condition (see [Integration testing](resources/integration-testing.md#perspectives), UI layout).
@@ -122,17 +126,18 @@ The Good rows state the observable behavior only; all other concerns go in the T
 
 ## Output Format
 
-Output the test cases of a test target as the blocks of its layer that have test cases, in this order (omit blocks with none), followed by its [Assessment](#assessment):
+Output the test cases of a test target as the blocks of its layers that have test cases, in this order (omit blocks with none), followed by its [Assessment](#assessment):
 
 - Unit tests: `### Unit tests`
-- Integration tests: `### Integration tests`, `### Visual verification tests` (integration tests verified by image analysis), `### Manual tests` (integration tests verified by a human)
+- Validators: `### Validators`
+- Integration tests (including visual verification tests and manual tests): `### Integration tests`, `### Visual verification tests`, `### Manual tests` — one layer, split into blocks by the means of verification: assertions, image analysis, and a human
 
 > **Note:** Do NOT write "Edit Mode" or "Play Mode" in test case output — that is a test-writing concern, not a test design concern.
 
 Structure by layer:
-- **Unit tests**: `#### <ClassName>` → table
-- **Integration tests / Visual verification tests**: `#### <ClassName>`, or the scene, prefab, or screen name when the specification names no primary class (see [Test Layers](#test-layers)) → table
-- **Manual tests**: no class/method section; uses a table of test cases with "Test perspectives / Verification method" column instead of "Verification"
+- **Unit tests**: `#### <ClassName>Test` → table
+- **Validators**: `#### <ClassName>Validator` → table
+- **Integration tests** (including visual verification tests and manual tests): `#### <ClassName>Test`, or the scene, prefab, or screen name followed by `Test` when the specification names no primary class (see [Test Layers](#test-layers)) → table; manual tests have no class/method section and use a table of test cases with a "Test perspectives / Verification method" column instead of "Verification"
   - Test perspectives — *what* behavioral aspects, conditions, or interactions are verified for this target. NOT a test technique name
 
 **Output markers** — annotations that flag test case categories; append to the specified field only, not the Verification column:
@@ -143,10 +148,11 @@ Structure by layer:
 
 Read the output format template for the layer and follow it exactly (templates are in `${CLAUDE_SKILL_DIR}/assets/`):
 
-| Layer                                                      | Default                       | Japanese                         |
-|------------------------------------------------------------|-------------------------------|----------------------------------|
-| Unit tests                                                 | `unit-tests-format.md`        | `unit-tests-format-ja.md`        |
-| Integration tests, Visual verification tests, Manual tests | `integration-tests-format.md` | `integration-tests-format-ja.md` |
+| Layer                                                                    | Default                       | Japanese                         |
+|--------------------------------------------------------------------------|-------------------------------|----------------------------------|
+| Unit tests                                                               | `unit-tests-format.md`        | `unit-tests-format-ja.md`        |
+| Validators                                                               | `validators-format.md`        | `validators-format-ja.md`        |
+| Integration tests (including visual verification tests and manual tests) | `integration-tests-format.md` | `integration-tests-format-ja.md` |
 
 When no template exists for the project language, use the default one as the structural reference and write `<Condition>`, `<Expected>`, and the prose columns in the project language.
 
