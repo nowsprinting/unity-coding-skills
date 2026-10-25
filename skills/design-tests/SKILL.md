@@ -70,7 +70,7 @@ Instruct each subagent to load the `test-designing-guide` skill — do not rely 
 1. Determine the target's layer (Test Layers)
 2. Model its specifications with test techniques, and derive test cases from the results (Test Techniques)
 3. Name the test cases (Test Case Naming) and write their Verification column (Verification Column)
-4. Re-check every parameterized row against the one-partition-per-method rule (`resources/equivalence-partitioning.md`, Deriving test methods from equivalence partitions): if substituting any listed value would change the expected outcome, split the row
+4. Re-check every parameterized row against the one-partition-per-method rule (`resources/equivalence-partitioning.md`, Deriving test methods from equivalence partitions): if substituting any listed value would change the expected result, split the row
 5. Assess the target (Assessment)
 6. Write the test cases and the Assessment in the output format (Output Format)
 

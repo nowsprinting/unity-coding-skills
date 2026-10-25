@@ -27,7 +27,7 @@ Derive test cases from the specification, never from the implementation: a test 
 Read only the following code, and no method bodies of production code:
 
 - **Existing tests** — when the specification of a test target with tests changes, or a bug report asks for a [reproduction test](resources/reproduction-tests.md), the signatures of the test target's test classes and test methods, with the attributes that give a parameterized test its arguments, to mark the test cases they already implement (see the [output markers](#output-format))
-- **Production code** — for unit tests, the signatures and XML documentation comments of the test target's members, to judge whether a test case can observe the actual outcome (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); for a class the input's software design introduces, read the signatures it fixes instead
+- **Production code** — for unit tests, the signatures and XML documentation comments of the test target's members, to judge whether a test case can observe the actual result (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); for a class the input's software design introduces, read the signatures it fixes instead
 
 ## Test Layers
 
@@ -36,7 +36,7 @@ The external specification of a game usually describes a scene or a screen, so i
 
 - **Unit tests** — for specifications whose subject is a **class or an asset**, written as an **API contract**: a class or method's inputs, return values, state changes, raised events, or calls to its dependencies. This includes behavior driven by Unity's lifecycle (Awake, Start, Update, etc.) or UI events when the specification defines it per component. When the specification defines a class's collaboration with its dependencies, keep test density low and focus on those interactions. Specifications on the content of assets other than `ScriptableObject` data (asset file validation, cross-asset consistency) also belong here.
 - **Validators** — for specifications that constrain the data of a `ScriptableObject` class, e.g., "an attack card's attack is greater than 0". The project holds the data as the class's assets, so the subject is those assets; a test that creates its own instance checks only the values the test sets, while a violation lies in the assets authored in the project.
-  - The specification's condition selects the assets, and the test case asserts its expected outcome on every selected asset.
+  - The specification's condition selects the assets, and the test case asserts its expected result on every selected asset.
   - Specifications of the class's methods stay unit tests.
   - The folder the specification places the data in is the validator's selection scope: state it in the class description per the output format, not as a test case, since a test checking an asset's location against the scope that selected it always passes. When the specification states no location, record it as an issue in the Assessment.
   - A table listing each asset's concrete values (e.g., a master data table) is the source the assets are authored from, not a constraint on them: a test comparing an asset with it only transcribes the table a second time. Derive validators from the constraints the specification states — value ranges, relations between fields, required references — and design no test case that compares an asset's values or the list of assets with such a table.
@@ -72,7 +72,7 @@ Select the techniques that fit the test target, and read the resource of each on
 - **Equivalence partitioning** — for every input except those a contained target governs (see [Contained Test Targets](#contained-test-targets)); group the values the specification says produce the same outcome → `resources/equivalence-partitioning.md`
 - **Boundary value analysis** — when the specification differentiates behavior at the edges of equivalence partitions → `resources/boundary-value-analysis.md`
 - **Decision table testing** — when a combination of multiple conditions produces different outcomes according to rules → `resources/decision-table-testing.md`
-- **Combinatorial testing** — when multiple data-driven parameters (factors) combine and the expected behavior itself stays the same, e.g., the selected character and equipment → `resources/combinatorial-testing.md`
+- **Combinatorial testing** — when multiple data-driven parameters (factors) combine and the expected result itself stays the same, e.g., the selected character and equipment → `resources/combinatorial-testing.md`
 - **State transition testing** — when the target has a finite-state-machine (FSM), including screen transitions → `resources/state-transition-testing.md`
 - **Error guessing** — to surface failure patterns common in game development that specification-based techniques don't reach → `resources/error-guessing.md`
 
@@ -138,18 +138,18 @@ Further notation rules:
 The Bad (mechanism) row leaks the test-writing mechanism (attribute choice, sync invocation, exact assertion form).
 The Bad (rationale) row leaks why the test exists and what the current behavior is — none of that belongs in Verification; `(reproduction test)` goes in the Test Method column instead.
 The Bad (not parameterized) row hides the concrete argument values in a vague phrase in Verification; they belong in the Test Method column as named parameters, e.g. `(phase: {Defeat, Victory})`.
-The Bad (condition restated) row repeats the method name's `<Condition>` segment ("WhenBossNext") as a precondition clause; Verification states only the expected outcome, since the condition already lives in the method name.
+The Bad (condition restated) row repeats the method name's `<Condition>` segment ("WhenBossNext") as a precondition clause; Verification states only the expected result, since the condition already lives in the method name.
 The Good rows state the observable behavior only; all other concerns go in the Test Method column or the test-writing phase.
 
 ## Unverifiable, Undefined, and Ambiguous Test Cases
 
 Design a test case even when it cannot be verified as specified, and mark it instead of guessing, so the user sees every place the specification needs revising:
 
-- **Unverifiable** — in a unit test, the test cannot observe the actual outcome through the test target's API: a return value, a field or property of the instance, a raised event, or a call to a dependency a spy records. Judge it from what [Reading Code](#reading-code) allows; a `private` member is not observable. Write `**unverifiable**` in front of the expected outcome in the Verification column.
+- **Unverifiable** — in a unit test, the test cannot observe the actual result through the test target's API: a return value, a field or property of the instance, a raised event, or a call to a dependency a spy records. Judge it from what [Reading Code](#reading-code) allows; a `private` member is not observable. Write `**unverifiable**` in front of the expected result in the Verification column.
   - Example: `Attack_HpIsPositive_ReducesHpByDamage` | **unverifiable** the remaining HP is reduced by the damage
-- **Undefined** — the specification states no expected outcome for the test case: e.g., an equivalence partition, a decision table combination, or a state transition table cell it leaves empty. End the method name with `_UNDEFINED` in place of `<Expected>`, and write `**undefined**` in the Verification column.
+- **Undefined** — the specification states no expected result for the test case: e.g., an equivalence partition, a decision table combination, or a state transition table cell it leaves empty. End the method name with `_UNDEFINED` in place of `<Expected>`, and write `**undefined**` in the Verification column.
   - Example: `Attack_HpIsNegative_UNDEFINED` | **undefined**
-- **Ambiguous** — the specification states an expected outcome that admits more than one reading, so it gives no deterministic pass/fail criterion: e.g., "attack +2" while a buff multiplies attack, without stating whether the addition comes before or after the multiplication; random behavior without a specified distribution, range, or structural property (see [Testing randomness](resources/testing-randomness.md)). The author of a specification rarely notices its own ambiguity, so state the reason. End the method name with `_AMBIGUOUS` in place of `<Expected>`, and write `**ambiguous**` followed by the reason in the Verification column.
+- **Ambiguous** — the specification states an expected result that admits more than one reading, so it gives no deterministic pass/fail criterion: e.g., "attack +2" while a buff multiplies attack, without stating whether the addition comes before or after the multiplication; random behavior without a specified distribution, range, or structural property (see [Testing randomness](resources/testing-randomness.md)). The author of a specification rarely notices its own ambiguity, so state the reason. End the method name with `_AMBIGUOUS` in place of `<Expected>`, and write `**ambiguous**` followed by the reason in the Verification column.
   - Example: `GetAttack_AttackUpWithMultiplyingBuff_AMBIGUOUS` | **ambiguous** whether "attack +2" applies before or after the multiplying buff
   - In integration tests, a sensory outcome that neither an assertion nor image analysis can verify, e.g., "defeating an enemy feels satisfying", is not ambiguous: design it as a [manual test](resources/integration-testing.md#manual-tests), where a human judges it and the Verification column may stay subjective. Unit tests have no such escalation: an ambiguous specification at the unit test layer is always ambiguous.
 
@@ -174,8 +174,8 @@ Structure by layer:
 - `(acceptance test)` — append to the **Test Method column** when the input explicitly states requirements and the test directly verifies a specification that realizes one of them. Without stated requirements, mark no test as an acceptance test.
 - `(reproduction test)` — append to the **Test Method column** when the test reproduces a reported bug (see [Reproduction tests](resources/reproduction-tests.md))
 - `(existing)` — append to the **Test Method column** when an existing test implements the test case and needs no change.
-- `(test fix)` — append to the **Test Method column** when an existing test implements the test case but disagrees with a specification that has not changed, e.g., its name, arguments, or expected outcome is wrong.
-- `(spec change)` — append to the **Test Method column** when an existing test implements the test case and the change of the specification affects it: its expected outcome, its arguments, or its construction (e.g., wrapping `Foo`→`FooRef` in the SUT's signature).
+- `(test fix)` — append to the **Test Method column** when an existing test implements the test case but disagrees with a specification that has not changed, e.g., its name, arguments, or expected result is wrong.
+- `(spec change)` — append to the **Test Method column** when an existing test implements the test case and the change of the specification affects it: its expected result, its arguments, or its construction (e.g., wrapping `Foo`→`FooRef` in the SUT's signature).
 
 A test case without `(existing)`, `(test fix)`, or `(spec change)` is a new test.
 Write the markers in English whatever the project language.

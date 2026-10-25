@@ -40,6 +40,10 @@ _Avoid_: Design (unqualified)
 The document that records a test design and the assessment of each test target.
 _Avoid_: Test specification
 
+**Expected result**:
+The observable behavior a test case predicts from the specification, compared with the actual result the test target produces; an assertion, image analysis, or a human checks it.
+_Avoid_: Expected outcome, expected behavior; expected value (the value an assertion compares, in test code)
+
 **Acceptance test**:
 A test that verifies the part of a specification that realizes an explicitly stated requirement. Without a stated requirement, no test is an acceptance test.
 _Avoid_: Same-layer witness

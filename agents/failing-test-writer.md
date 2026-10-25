@@ -31,7 +31,7 @@ metadata:
 
 ## Rules
 
-- Tests must compile and run — but **must fail** at the end of this step. That is the expected outcome of Test First. **Exception**: tests marked `(test fix)` or `(spec change)` whose expected outcome stays the same may pass — only their name, arguments, or construction changed.
+- Tests must compile and run — but **must fail** at the end of this step. That is what Test First expects. **Exception**: tests marked `(test fix)` or `(spec change)` whose expected result stays the same may pass — only their name, arguments, or construction changed.
 - Do NOT implement any production code — test code only.
 - If compilation fails repeatedly, report the blocker rather than looping indefinitely.
 
@@ -39,8 +39,8 @@ metadata:
 
 If tests pass when they should fail:
 
-- **Tests marked `(test fix)` or `(spec change)` whose expected outcome stays the same** — a pass is expected. Output `STATUS: OK`.
-- **All other cases** — including `(reproduction test)` marked tests, tests whose expected outcome changed, and all new tests — output `STATUS: NG`.
+- **Tests marked `(test fix)` or `(spec change)` whose expected result stays the same** — a pass is expected. Output `STATUS: OK`.
+- **All other cases** — including `(reproduction test)` marked tests, tests whose expected result changed, and all new tests — output `STATUS: NG`.
 
 ## Output
 

@@ -16,9 +16,9 @@ Add an equivalence partition beyond every upper and lower limit, even when the s
 
 ## Deriving test methods from equivalence partitions
 
-The most common derivation error is merging equivalence partitions with **different** expected outcomes into one (parameterized) method, encoding the difference as a condition in the name/Verification (e.g. `..._InteractableMatchesNonEmpty`, "interactable is true *only when* non-empty"). One rule prevents it:
+The most common derivation error is merging equivalence partitions with **different** expected results into one (parameterized) method, encoding the difference as a condition in the name/Verification (e.g. `..._InteractableMatchesNonEmpty`, "interactable is true *only when* non-empty"). One rule prevents it:
 
-**One test method = one equivalence partition = one definite expected outcome.** Never parameterize the expected outcome. If the expected value changes with the input, the inputs belong to **different** equivalence partitions → **separate** test methods, each named after its own outcome.
+**One test method = one equivalence partition = one definite expected result.** Never parameterize the expected result. If the expected result changes with the input, the inputs belong to **different** equivalence partitions → **separate** test methods, each named after its own outcome.
 
 For each input variable:
 1. Partition the input domain into equivalence partitions the specification says produce the **same** outcome.
@@ -27,7 +27,7 @@ For each input variable:
 
 **Worked example** — `drawPileButton.interactable` driven by the draw pile count:
 
-| Equivalence partition   | Representative values | Expected outcome          |
+| Equivalence partition   | Representative values | Expected result           |
 |-------------------------|-----------------------|---------------------------|
 | Empty (`count == 0`)    | `0`                   | `interactable` is `false` |
 | Non-empty (`count ≥ 1`) | `1` (boundary), `5`   | `interactable` is `true`  |
@@ -43,7 +43,7 @@ The non-empty method keeps both `1` and `5` because they share the outcome `true
 
 ## Parameterized tests
 
-When multiple test cases share the same expected outcome — such as the representative and the boundary values of the same equivalence partition, decision table rules sharing an outcome, or [combinations of parameters](combinatorial-testing.md) — consolidate them into a single parameterized test.
+When multiple test cases share the same expected result — such as the representative and the boundary values of the same equivalence partition, decision table rules sharing an outcome, or [combinations of parameters](combinatorial-testing.md) — consolidate them into a single parameterized test.
 
 **Specifying parameter name and values in the Test Method column** — write values after the method name:
 
@@ -53,11 +53,11 @@ When multiple test cases share the same expected outcome — such as the represe
 - **Multiple parameters, limited to specific combinations**: `({param1: 0, param2: 3}, {param1: 1, param2: 4})`
 - **Multiple parameters, pairwise combinations**: write `(use pairwise)` — the test-writing phase applies the pairwise (all-pairs) method to select a covering combination set; when to use it, see [combinatorial testing](combinatorial-testing.md)
 
-Do NOT over-consolidate: keep separate rows for tests that belong to **different** equivalence partitions or produce **different** expected outcomes.
+Do NOT over-consolidate: keep separate rows for tests that belong to **different** equivalence partitions or produce **different** expected results.
 
 ## Invalid equivalence partition
 
-The expected outcome of an invalid equivalence partition is the error the specification defines — e.g., an exception thrown, an error message shown, or the input rejected.
+The expected result of an invalid equivalence partition is the error the specification defines — e.g., an exception thrown, an error message shown, or the input rejected.
 
 - **UI input validation** — test invalid inputs that a user can enter through the UI (e.g., out-of-range values in a numeric text field). These represent real failure paths at the system boundary and must be tested.
 - **Dependency error returns** — when the specification defines a dependency's error/failure path, whether to test it depends on the dependency's origin:

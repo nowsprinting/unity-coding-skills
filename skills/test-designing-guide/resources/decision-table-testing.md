@@ -1,7 +1,7 @@
 # Decision Table Testing
 
 Apply when a combination of multiple conditions produces different outcomes according to rules the specification defines — e.g., the damage multiplier determined by attribute affinity and a critical hit.
-Unlike [combinatorial testing](combinatorial-testing.md), where every combination expects the same behavior, the expected outcome here changes with the combination.
+Unlike [combinatorial testing](combinatorial-testing.md), where every combination expects the same behavior, the expected result here changes with the combination.
 
 - **Conditions** — partition each condition per [equivalence partitioning](equivalence-partitioning.md); its equivalence partitions are the values the condition takes in the table.
 - **Rules** — each rule (column) is a combination of the conditions' equivalence partitions and its outcome. When a condition does not affect a rule's outcome, mark it as "don't care" and merge the rules that differ only in it.

@@ -1,6 +1,6 @@
 # Combinatorial Testing
 
-Apply when multiple data-driven parameters (factors) combine and the expected behavior itself stays the same — e.g., the selected character and equipment.
+Apply when multiple data-driven parameters (factors) combine and the expected result itself stays the same — e.g., the selected character and equipment.
 Unlike [decision table testing](decision-table-testing.md), where rules map each combination of conditions to a different outcome, every combination here expects the same behavior; the test cases look for combinations whose interaction breaks it.
 
 - **Levels** — the values of each parameter. For a numeric parameter, partition its values per [equivalence partitioning](equivalence-partitioning.md) and take one representative per equivalence partition as its levels.
