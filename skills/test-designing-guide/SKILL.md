@@ -55,6 +55,14 @@ A part of the subject without a specification of its own, e.g., a class no speci
 
 ## Test Techniques
 
+Before selecting the techniques, list from the specifications the inputs, states, and outputs of the test target, since a value that does not pass through an argument or a return value is easy to miss:
+
+- **Inputs** — direct inputs (arguments, UI operations) and indirect inputs (return values of dependencies, random numbers, time, assets the target references, the order of Unity's lifecycle events)
+- **States** — the states the target holds across operations, e.g., flags and remaining counts, even when the specification does not describe them as an FSM
+- **Outputs** — direct outputs (return values, on-screen display) and indirect outputs (raised events, calls to dependencies, saved data, logs)
+
+The inputs and states drive the techniques: e.g., equivalence partitioning for each input, state transition testing for the states. An output without a means to observe it marks its test cases unverifiable, and a combination of inputs and states with no specified output marks its test case undefined. Include the list in the modeling result only when the [Assessment](#assessment) is `ASSESSMENT: WARN` or `ASSESSMENT: FAIL`.
+
 When modeling the specifications with a test technique reveals a gap or a contradiction in them, do not guess the outcome: design the test case of a gap as undefined (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)), design no test case for a contradiction, and include the modeling result (e.g., the equivalence partition table, the decision table, the state transition diagram) in the [Assessment](#assessment), so the user can see where the specification breaks.
 
 **Prefer specification-based tests over structural (implementation-coupled) tests.** Structural tests break under refactoring and lose value fast. It's fine to write a structural test temporarily when you're unsure about an implementation, but plan to delete it once specification tests cover the same behavior.
