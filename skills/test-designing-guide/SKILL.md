@@ -113,6 +113,21 @@ If no language is specified, default to English.
   The same applies to a consolidated layout assertion test asserting multiple layout properties under one condition (see [Integration testing](resources/integration-testing.md#perspectives), UI layout).
 - Test concerns separately
 
+## Parameterized Tests
+
+When multiple test cases share the same expected result — such as the representative and the boundary values of the same equivalence partition, decision table rules sharing an outcome, or [combinations of parameters](resources/combinatorial-testing.md) — consolidate them into a single parameterized test.
+Do NOT over-consolidate: keep separate rows for tests that belong to **different** equivalence partitions or produce **different** expected results (see [Deriving test methods from equivalence partitions](resources/equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)).
+
+Write each parameterized test as a single table row, with its parameter names and values after the method name in the Test Method column.
+Do NOT specify the framework mechanism (`TestCase`, `Values`, etc.) — that's a test-writing decision.
+
+- **Bool parameter, all values**: `(flag: (bool))`
+- **Enum parameter, all values**: `(direction: (Direction))`
+- **Multiple parameters, all combinations (exhaustive)**: `(param1: {0, 1, 2}, param2: {3, 4, 5})` — when a parameter is `bool` or enum covering all its values, use the shorthand in place of the braces: `(flag: (bool), count: {0, 1, 5})`
+- **Multiple parameters, limited to specific combinations**: `({param1: 0, param2: 3}, {param1: 1, param2: 4})`
+
+Example: `IsValidLevel_WithinRange_ReturnsTrue` (level: {1, 50, 99}) | `Returns true`
+
 ## Verification Column
 
 In the **Verification** column, state **which observable property or behavior** is checked and **what its expected value or state** is — this corresponds to the `<Expected>` segment of the test method name, not the `<Condition>` segment, which the method name already captures.
@@ -135,9 +150,6 @@ Describe observable behavior only; do NOT include any of the following **anywher
 Further notation rules:
 
 - When a single test asserts multiple properties (the multi-property exception in [Test Case Naming](#test-case-naming)), list each property being verified in the Verification column.
-- **Parameterized tests** — write each consolidated parameterized test as a single table row, with the parameter notation from [Parameterized tests](resources/equivalence-partitioning.md#parameterized-tests) in the Test Method column.
-  Do NOT specify the framework mechanism (`TestCase`, `Values`, etc.) — that's a test-writing decision.
-  - Example: `IsValidLevel_WithinRange_ReturnsTrue` (level: {1, 50, 99}) | `Returns true`
 - If a test case uses a **spy** to verify an interaction the API specification defines, note it in the Verification column: e.g., `(uses spy: <TargetDependency>)`.
   Do NOT note stubs or fakes — those are arrange/action concerns. xUTP definitions for reference:
   - **Stub** — returns canned responses to isolate the SUT from a dependency.

@@ -21,7 +21,7 @@ When the specification does not say what the round trip preserves, the test case
 ## Inputs
 
 Since the output has one equivalence partition, partition the original by its own kinds, as for the levels of [combinatorial testing](combinatorial-testing.md): e.g., empty and non-empty collections, `null` fields, the bounds of a value, multi-byte characters.
-Consolidate the representatives into one [parameterized test](equivalence-partitioning.md#parameterized-tests).
+Consolidate the representatives into one [parameterized test](../SKILL.md#parameterized-tests).
 
 ## Test Methods
 

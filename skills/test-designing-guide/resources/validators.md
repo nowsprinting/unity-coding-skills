@@ -35,7 +35,7 @@ Name a test method `<Condition>_<Expected>`, with the precondition as `<Conditio
 A property without a precondition is named `<Expected>` alone, e.g., `NameIsNotEmpty`.
 
 The asset is the input of every test case; state it in the Notes, never in the parameter notation.
-When one property applies to several fields of the same asset, e.g., the stats before and after an upgrade, consolidate them with the [parameterized test](equivalence-partitioning.md#parameterized-tests) notation, e.g., `AttackCard_DamageIsGreaterThanZero (stats: {Base, Upgraded})`.
+When one property applies to several fields of the same asset, e.g., the stats before and after an upgrade, consolidate them with the [parameterized test](../SKILL.md#parameterized-tests) notation, e.g., `AttackCard_DamageIsGreaterThanZero (stats: {Base, Upgraded})`.
 
 ## Selection Scope
 

@@ -15,7 +15,7 @@ Since the output has one equivalence partition, partition the input by its own k
 
 ## Combinations per Layer
 
-In integration tests, as a principle, cover every combination of the levels of any two parameters with the pairwise (all-pairs) method; append `by pairwise` to the [parameterized test](equivalence-partitioning.md#parameterized-tests) notation, e.g., `(character: (Character), weapon: {Sword, Bow}, by pairwise)`, and the test-writing phase selects a covering combination set.
+In integration tests, as a principle, cover every combination of the levels of any two parameters with the pairwise (all-pairs) method; append `by pairwise` to the [parameterized test](../SKILL.md#parameterized-tests) notation, e.g., `(character: (Character), weapon: {Sword, Bow}, by pairwise)`, and the test-writing phase selects a covering combination set.
 
 In unit tests, cover all combinations, never pairwise; write the levels of each parameter in the parameterized test notation, e.g., `(character: (Character), weapon: {Sword, Bow})`.
 

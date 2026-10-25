@@ -15,7 +15,7 @@ When a condition does not affect a rule's outcome, mark it as "don't care" and m
 ## Test Methods
 
 Cover every rule.
-Rules with different outcomes become separate test methods (one method = one outcome, per [Deriving test methods from equivalence partitions](equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)); rules sharing an outcome may be consolidated into one [parameterized test](equivalence-partitioning.md#parameterized-tests).
+Rules with different outcomes become separate test methods (one method = one outcome, per [Deriving test methods from equivalence partitions](equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)); rules sharing an outcome may be consolidated into one [parameterized test](../SKILL.md#parameterized-tests).
 
 ## Gaps and Contradictions
 

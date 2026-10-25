@@ -30,7 +30,7 @@ For each input variable:
 1. Partition the input domain into equivalence partitions the specification says produce the **same** outcome.
 2. Emit **one method per equivalence partition**, named `..._<Partition>_<ThatPartitionsOutcome>`.
    The `<Expected>` segment is a concrete state/value (`IsInteractable`, `IsNotInteractable`), never a condition word (`Matches…`, `…WhenNonEmpty`, `DependingOn…`).
-3. Within one equivalence partition, consolidate its representative and its boundary values into **one parameterized** method — they share the outcome (see [Parameterized tests](#parameterized-tests)).
+3. Within one equivalence partition, consolidate its representative and its boundary values into **one parameterized** method — they share the outcome (see [Parameterized Tests](../SKILL.md#parameterized-tests)).
 
 **Worked example** — `drawPileButton.interactable` driven by the draw pile count:
 
@@ -47,19 +47,6 @@ Two equivalence partitions, two outcomes → **two** methods (NOT one parameteri
 | `Sync_DrawPileIsNotEmpty_DrawPileButtonIsInteractable` (count: {1, 5}) | the draw pile button is interactable     |
 
 The non-empty method keeps both `1` and `5` because they share the outcome `true`; `1` is the equivalence partition's boundary value, `5` its representative — a prime number, since the equivalence partition has no upper bound.
-
-## Parameterized tests
-
-When multiple test cases share the same expected result — such as the representative and the boundary values of the same equivalence partition, decision table rules sharing an outcome, or [combinations of parameters](combinatorial-testing.md) — consolidate them into a single parameterized test.
-
-**Specifying parameter name and values in the Test Method column** — write values after the method name:
-
-- **Bool parameter, all values**: `(flag: (bool))`
-- **Enum parameter, all values**: `(direction: (Direction))`
-- **Multiple parameters, all combinations (exhaustive)**: `(param1: {0, 1, 2}, param2: {3, 4, 5})` — when a parameter is `bool` or enum covering all its values, use the shorthand in place of the braces: `(flag: (bool), count: {0, 1, 5})`
-- **Multiple parameters, limited to specific combinations**: `({param1: 0, param2: 3}, {param1: 1, param2: 4})`
-
-Do NOT over-consolidate: keep separate rows for tests that belong to **different** equivalence partitions or produce **different** expected results.
 
 ## Invalid equivalence partition
 

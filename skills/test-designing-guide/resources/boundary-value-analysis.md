@@ -9,7 +9,7 @@ Equivalence partitioning adds an equivalence partition beyond every upper and lo
 
 ## Test Methods
 
-Boundary values follow the derivation rules of equivalence partitioning (one method per equivalence partition): fold each equivalence partition's boundary values into that equivalence partition's [parameterized test](equivalence-partitioning.md#parameterized-tests) (e.g., the valid equivalence partition over `{1, 99}`) — never one method per boundary.
+Boundary values follow the derivation rules of equivalence partitioning (one method per equivalence partition): fold each equivalence partition's boundary values into that equivalence partition's [parameterized test](../SKILL.md#parameterized-tests) (e.g., the valid equivalence partition over `{1, 99}`) — never one method per boundary.
 
 ## When to Skip
 
