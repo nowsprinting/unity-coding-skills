@@ -243,8 +243,7 @@ Exception: a `while` loop that waits for a state transition is allowed. Even the
 
 ## Parameterized Tests
 
-Use `[TestCase]`, `[TestCaseSource]`, `[Values]`, `[ValueSource]` when Arrange differs but Act and Assert are the same.  
-Use `[ParametrizedIgnore]` to exclude specific combinations.
+Use `[TestCase]`, `[TestCaseSource]`, `[Values]`, `[ValueSource]` when Arrange differs but Act and Assert are the same.
 
 Choose the attributes by where the test cases come from:
 
@@ -290,6 +289,7 @@ The following maps the test-designing-guide notation to NUnit attributes:
 
 - `[Values]` with no argument on a `bool` parameter generates `true` and `false`; on an enum parameter, it generates all defined values
 - Multiple `[Values]` parameters produce the **full Cartesian product** by default
+- `[ParametrizedIgnore]` on the method → exclude specific combinations
 - `[Pairwise]` on the method → pairwise coverage instead of full Cartesian; use when the test cases specify `(use pairwise)`
 - `[Sequential]` on the method → match parameters by index (not combinatorial); do NOT use in principle — use `[TestCase]` / `[TestCaseSource]` instead to make each combination explicit
 
@@ -320,36 +320,12 @@ public void AttackCard_AttackIsGreaterThanZero(string path)
 - Select the assets in the source (`.Where(...)`), not with `if` in the test (see [No Control Flow in Tests](#no-control-flow-in-tests)).
 - Limit `FindAssets` to the selection scope the test design names, so test assets under `Tests/` are not validated.
 
-## Object Creation Pattern
+## Setup test fixture
 
-Use a creation method for objects needed in tests:
-
-```csharp
-private SomeClass CreateSystemUnderTest() { ... }
-```
-
-Even when holding the instance in a private field for `TearDown` cleanup, always use the return value of the creation method inside test methods.
-
-When multiple test methods in a class share the same scene setup, create a test scene file and load it with `[LoadScene]` instead of repeating the setup in each test. Scene files are typically 1:1 with the test class, so name the file after the test class (e.g., `CharacterControllerTest.unity`). Place it under `Tests/Scenes/`. Use the `edit-scene` skill to create the scene file.
-
-### Default Parameter Values
-
-Give a creation-method parameter a default so that tests state only the values their outcome depends on. A default therefore declares "this value does not matter here" — pick one that actually reads that way.
-
-- Use a **neutral** value: `0`, `null`, `false`, empty string/collection. A domain-plausible default (e.g. `hp = 79`) breaks the declaration — it silently feeds a meaningful value into every test that omits the argument, and no reader can tell it apart from a deliberate Arrange choice. Same reason [Lifecycle Hooks](#lifecycle-hooks) keeps assertion-relevant values out of `[SetUp]`.
-- If no neutral value works — `0`/`null` breaks the object graph or crashes something downstream — then nothing can mean "does not matter", so **give no default at all**. Make the parameter required so every call site states its own value. Substituting a different "safe" value just hides the same problem behind a less obvious number.
-
-A parameter no assertion can depend on (e.g. a display name used only for logging) genuinely does not matter, so a descriptive placeholder such as `"TestEnemy"` is fine in place of `null` — but default to neutral, and deviate only when you can state why the value is provably inert.
-
-```csharp
-// Do NOT do this — 79/80 reads as an intentional Arrange choice; 2 silently hides that 0 throws
-private RunState CreateRunState(int hp = 79, int maxHp = 80) { ... }
-private static Catalog CreateCatalog(int midCount = 2) { ... }
-
-// Do this — neutral where a "does not matter" value exists; required where none does
-private RunState CreateRunState(int hp = 0, int maxHp = 0) { ... }
-private static Catalog CreateCatalog(int midCount) { ... }
-```
+When multiple test methods in a class share the same scene setup, create a test scene file and load it with `[LoadScene]` instead of repeating the setup in each test.
+Scene files are typically 1:1 with the test class, so name the file after the test class (e.g., `CharacterControllerTest.unity`).
+Place it under `Tests/Scenes/`.
+Use the `edit-scene` skill to create the scene file.
 
 ## Lifecycle Hooks
 
@@ -365,6 +341,7 @@ Guidelines:
 - `[TearDown]` owns resource release (e.g., `Object.DontDestroyOnLoad` objects that can't be cleaned by scene reload).
 - In nested classes, only the `[SetUp]` / `[TearDown]` defined in the **same class** as the test method runs — the outer class's hooks do not run.
 - Avoid over-centralizing setup; values that affect assertion validity should stay visible inside the test method itself — a reader must understand the test without scrolling to `[SetUp]`; burying assertion-relevant values there makes correctness harder to judge.
+- `[SetUp]` and `[TearDown]` also work with `async Task`; `[OneTimeSetUp]` and `[OneTimeTearDown]` do not, so use `[UnityOneTimeSetUp]` and `[UnityOneTimeTearDown]` instead
 - `[LoadScene]` and `[CreateScene]` (Test Helper) run after `[OneTimeSetUp]` and before `[SetUp]`.
 
 ## Test Selection Attributes

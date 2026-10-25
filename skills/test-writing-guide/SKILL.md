@@ -40,6 +40,36 @@ Guide for writing test code for Unity projects.
 - For test methods that depend on animation timing or other timing-sensitive conditions that may cause instability on slow CPUs, apply `[Category("IgnoreCI")]`.
 - For test methods that specify the `GameViewResolution` attribute, apply `[Category("IgnoreCI")]`.
 
+### Neutral Values
+
+Give every value the test's outcome does not depend on — an argument of the SUT, a field of an object passed to the SUT, the default of a creation-method parameter — a value that declares "this value does not matter here":
+
+- Use a **neutral** value: `0`, `null`, `false`, empty string/collection. A domain-plausible value (e.g. `hp = 79`) reads as a deliberate Arrange choice, and no reader can tell it apart from a value the outcome depends on.
+- If no neutral value works — `0`/`null` breaks the object graph or crashes something downstream — then nothing can mean "does not matter", so the test states the value it needs. Substituting a different "safe" value just hides the same problem behind a less obvious number.
+
+A value no assertion can depend on (e.g. a display name used only for logging) genuinely does not matter, so a descriptive placeholder such as `"TestEnemy"` is fine in place of `null` — but default to neutral, and deviate only when you can state why the value is provably inert.
+
+### Object Creation Pattern
+
+Use a creation method for objects needed in tests:
+
+```csharp
+private SomeClass CreateSystemUnderTest() { ... }
+```
+
+Give a creation-method parameter a default so that tests state only the values their outcome depends on, and pick it per [Neutral Values](#neutral-values).
+If no neutral value works, **give no default at all**: make the parameter required so every call site states its own value.
+
+```csharp
+// Do NOT do this — 79/80 reads as an intentional Arrange choice; 2 silently hides that 0 throws
+private RunState CreateRunState(int hp = 79, int maxHp = 80) { ... }
+private static Catalog CreateCatalog(int midCount = 2) { ... }
+
+// Do this — neutral where a "does not matter" value exists; required where none does
+private RunState CreateRunState(int hp = 0, int maxHp = 0) { ... }
+private static Catalog CreateCatalog(int midCount) { ... }
+```
+
 ### Multi-frame tests
 
 When a game mechanic across frames (e.g., playing a card and waiting for its resolution), wait for the step to finish before asserting — not at a fixed frame count.
@@ -90,6 +120,8 @@ Reasons:
 - **Blocking check**: `reachable: true` (default) naturally catches elements hidden behind a modal or overlay — which is often the bug being caught
 - **Actionable failures**: throws `TimeoutException` with a clear message; `GameObject.Find` silently returns `null` and causes a confusing `NullReferenceException` later
 
+See: `test-helper-ui.md`.
+
 #### Use Operators instead of direct event invocation
 
 When reproducing user actions, always use uGUI operators (e.g., `UguiClickOperator`, `UguiTextInputOperator` in `TestHelper.UI.Operators` namespace) instead of directly calling button events or setting field values.
@@ -110,6 +142,8 @@ await new UguiClickOperator().OperateAsync(button);
 await new UguiTextInputOperator().OperateAsync(inputField, "12345");
 ```
 
+See: `test-helper-ui.md`.
+
 #### Verify modal/overlay blocking
 
 A modal or overlay must block interaction with elements behind it. Test from two angles:
@@ -117,7 +151,8 @@ A modal or overlay must block interaction with elements behind it. Test from two
 - **Behavioural (preferred)**: attempt to reach a background element via `GameObjectFinder` with `reachable: true` (default) while the overlay is open — the finder throws `TimeoutException`, confirming blockage. Repeat with the overlay dismissed to confirm reachability restores.
 - **Structural**: assert the backdrop intercepts raycasts: `Assert.That(background.GetComponent<Image>().raycastTarget, Is.True)` (or `canvasGroup.blocksRaycasts`).
 
-When a decorative full-screen element should not block (e.g., a background image), annotate it with `NonBlockingAnnotation` so `GameObjectFinder` skips it (see `test-helper-ui.md`).
+When a decorative full-screen element should not block (e.g., a background image), annotate it with `NonBlockingAnnotation` so `GameObjectFinder` skips it.
+See: `test-helper-ui.md`.
 
 ### Visual verification tests
 
