@@ -42,7 +42,7 @@ The external specification of a game usually describes a scene or a screen, so i
   The project holds the data as the class's assets, so the subject is those assets; a test that creates its own instance checks only the values the test sets, while a violation lies in the assets authored in the project.
   - The specification's condition selects the assets, and the test case asserts its expected result on every selected asset.
   - Specifications of the class's methods stay unit tests.
-  - The folder the specification places the data in is the validator's selection scope: state it in the class description per the output format, not as a test case, since a test checking an asset's location against the scope that selected it always passes.
+  - The folder the specification places the data in is the validator's selection scope: state it in the Notes per the [output format](#output-format), not as a test case, since a test checking an asset's location against the scope that selected it always passes.
     When the specification states no location, record it as an issue in the Assessment.
   - A table listing each asset's concrete values (e.g., a master data table) is the source the assets are authored from, not a constraint on them: a test comparing an asset with it only transcribes the table a second time.
     Derive validators from the constraints the specification states — value ranges, relations between fields, required references — and design no test case that compares an asset's values or the list of assets with such a table.
@@ -69,7 +69,7 @@ Before selecting the techniques, list from the specifications the inputs, states
 - **Outputs** — direct outputs (return values, on-screen display) and indirect outputs (raised events, calls to dependencies, saved data, logs)
 
 The inputs and states drive the techniques: e.g., equivalence partitioning for each input, state transition testing for the states.
-An output without a means to observe it marks its test cases unverifiable, and a combination of inputs and states with no specified output marks its test case undefined.
+An output without a means to observe it marks its test cases unverifiable, and a combination of inputs and states with no specified output marks its test case undefined; a combination the specification explicitly states as "undefined" gets no test case (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)).
 Include the list in the modeling result only when the [Assessment](#assessment) is `ASSESSMENT: WARN` or `ASSESSMENT: FAIL`.
 
 When an output of one operation is the input of its inverse, e.g., serialize and deserialize, and the specification does not define that intermediate form, neither operation has an expected result of its own; verify the pair by a round trip → `resources/round-trip-testing.md`
@@ -184,6 +184,7 @@ Design a test case even when it cannot be verified as specified, and mark it ins
 - **Undefined** — the specification states no expected result for the test case: e.g., an equivalence partition, a decision table combination, or a state transition table cell it leaves empty.
   End the method name with `_UNDEFINED` in place of `<Expected>`, and write `**undefined**` in the Verification column.
   - Example: `Attack_HpIsNegative_UNDEFINED` | **undefined**
+  - When the specification explicitly states that the behavior under a condition is undefined, e.g., "the result is undefined when HP is negative", it leaves no gap: design no test case for the condition, and list it in the Notes (see [Output Format](#output-format)).
 - **Ambiguous** — the specification states an expected result that admits more than one reading, so it gives no deterministic pass/fail criterion: e.g., "attack +2" while a buff multiplies attack, without stating whether the addition comes before or after the multiplication; random behavior without a specified distribution, range, or structural property (see [Testing randomness](resources/testing-randomness.md)).
   The author of a specification rarely notices its own ambiguity, so state the reason.
   End the method name with `_AMBIGUOUS` in place of `<Expected>`, and write `**ambiguous**` followed by the reason in the Verification column.
@@ -219,6 +220,12 @@ Structure by layer:
 
 A test case without `(existing)`, `(test fix)`, or `(spec change)` is a new test.
 Write the markers in English whatever the project language.
+
+**Notes** — a bullet list under a test case table, written in the project language in this order; omit a bullet that does not apply, and the Notes when no bullet remains:
+
+1. For validators, the selection scope (see [Test Layers](#test-layers))
+2. That no test code is generated from the test cases marked unverifiable, undefined, or ambiguous, when the table has any
+3. The conditions the specification explicitly states as undefined, which have no test case; write several conditions in one bullet where possible — in unit tests, one bullet per `<MethodName>`
 
 Read the output format template for the layer and follow it exactly (templates are in `${CLAUDE_SKILL_DIR}/assets/`):
 

@@ -15,3 +15,8 @@
 | `<MethodName>_<Condition>_<Expected>`                      | **unverifiable** `<property>` is `<expected value or state>`        |
 | `<MethodName>_<Condition>_UNDEFINED`                       | **undefined**                                                       |
 | `<MethodName>_<Condition>_AMBIGUOUS`                       | **ambiguous** `<reason>`                                            |
+
+**Notes:**
+
+- No test code is generated from the test cases marked unverifiable, undefined, or ambiguous.
+- `<MethodName>`: Conditions `<condition>` and `<condition>` are explicitly undefined in the specification, so they are not tested.

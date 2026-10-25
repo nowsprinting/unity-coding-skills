@@ -11,6 +11,7 @@ Test each equivalence partition with one representative, chosen in this order:
 4. Any one value within it, e.g., for a non-numeric equivalence partition, or a range without a prime number
 
 When the specification defines no behavior for an equivalence partition, valid or invalid, it is a gap in the specification: do not guess or invent the behavior, but design its test case as undefined and include the equivalence partition table as the modeling result (see [Test Techniques](../SKILL.md#test-techniques)).
+An equivalence partition the specification explicitly states as undefined is not a gap: design no test case for it (see [Unverifiable, Undefined, and Ambiguous Test Cases](../SKILL.md#unverifiable-undefined-and-ambiguous-test-cases)).
 
 Add an equivalence partition beyond every upper and lower limit, even when the specification states only the range within them — e.g., `HP < 0`, `HP > MaxHP`, `EXP > Next` (the experience needed for the next level).
 Such a value often arises from a calculation rather than a direct input: damage exceeding the remaining HP, experience gained beyond the next level.

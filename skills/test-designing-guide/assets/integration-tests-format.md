@@ -12,6 +12,11 @@
 | `<Condition>_UNDEFINED`                    | **undefined**                               |
 | `<Condition>_AMBIGUOUS`                    | **ambiguous** `<reason>`                    |
 
+**Notes:**
+
+- No test code is generated from the test cases marked unverifiable, undefined, or ambiguous.
+- Conditions `<condition>` and `<condition>` are explicitly undefined in the specification, so they are not tested.
+
 ### Visual verification tests
 
 #### <ClassName, or scene/prefab/screen name>Test

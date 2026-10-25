@@ -15,3 +15,8 @@
 | `<MethodName>_<条件>_<期待結果>`                      | **unverifiable** `<プロパティ>` が `<期待値または状態>` である        |
 | `<MethodName>_<条件>_UNDEFINED`                       | **undefined**                                                         |
 | `<MethodName>_<条件>_AMBIGUOUS`                       | **ambiguous** `<理由>`                                                |
+
+**Notes:**
+
+- unverifiable, undefined, ambiguous と書かれたテストケースからはテストコードを生成しません
+- `<MethodName>` の条件 `<条件>`、`<条件>` は明示的に未定義のためテストしない
