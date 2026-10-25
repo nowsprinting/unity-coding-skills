@@ -318,7 +318,7 @@ public void AttackCard_AttackIsGreaterThanZero(string path)
 - Prefer `[TestCaseSource]` with `SetName` over `[ValueSource]`: a `[ValueSource]` case is named after the whole path argument, which buries the asset name in the test results.
 - In an interpolated string, escape the `{m}` placeholder as `{{m}}` (see [TestCase / TestCaseSource](#testcase--testcasesource)).
 - Select the assets in the source (`.Where(...)`), not with `if` in the test (see [No Control Flow in Tests](#no-control-flow-in-tests)).
-- Limit `FindAssets` to the folders holding the game's data, so test assets under `Tests/` are not validated.
+- Limit `FindAssets` to the selection scope the test design names, so test assets under `Tests/` are not validated.
 
 ## Object Creation Pattern
 
