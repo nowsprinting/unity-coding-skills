@@ -79,7 +79,7 @@ Select the techniques that fit the test target, and read the resource of each on
 - **Equivalence partitioning** — for every input except those a contained target governs (see [Contained Test Targets](#contained-test-targets)); group the values the specification says produce the same outcome → `resources/equivalence-partitioning.md`
 - **Boundary value analysis** — when the specification differentiates behavior at the edges of equivalence partitions → `resources/boundary-value-analysis.md`
 - **Decision table testing** — when a combination of multiple conditions produces different outcomes according to rules → `resources/decision-table-testing.md`
-- **Combinatorial testing** — when multiple data-driven parameters (factors) combine and the expected result itself stays the same, e.g., the selected character and equipment → `resources/combinatorial-testing.md`
+- **Combinatorial testing** — when multiple data-driven parameters (factors) combine and the expected result itself stays the same, e.g., the selected character and equipment, or when the specification states that some inputs do not affect the output → `resources/combinatorial-testing.md`
 - **State transition testing** — when the target has a finite-state-machine (FSM), including screen transitions → `resources/state-transition-testing.md`
 - **Error guessing** — to surface failure patterns common in game development that specification-based techniques don't reach → `resources/error-guessing.md`
 

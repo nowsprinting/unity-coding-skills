@@ -1,6 +1,6 @@
 # Combinatorial Testing
 
-Apply when multiple data-driven parameters (factors) combine and the expected result itself stays the same — e.g., the selected character and equipment.
+Apply when multiple data-driven parameters (factors) combine and the expected result itself stays the same — e.g., the selected character and equipment — or when the specification states that some inputs do not affect the output.
 Unlike [decision table testing](decision-table-testing.md), where rules map each combination of conditions to a different outcome, every combination here expects the same behavior; the test cases look for combinations whose interaction breaks it.
 
 ## One Expected Result
@@ -12,6 +12,7 @@ When the expected result depends on the combination, e.g., damage computed from 
 
 The levels are the values of each parameter.
 Since the output has one equivalence partition, partition the input by its own kinds, and take one representative per input equivalence partition as its levels: positive, zero, and negative at most for a number; every member for an enum; every type the parameter can take for a type, e.g., the classes implementing an interface.
+Choose the levels so that no combination falls in a condition the specification explicitly states as undefined; when no choice of levels avoids it, write the combinations with the limited-combinations notation.
 
 ## Combinations per Layer
 
