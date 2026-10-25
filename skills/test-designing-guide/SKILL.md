@@ -21,6 +21,14 @@ Out of scope:
 - Extracting test targets from a specification and assembling the test design document — see the `design-tests` skill
 - Writing test code — see the `test-writing-guide` skill
 
+## Reading Code
+
+Derive test cases from the specification, never from the implementation: a test case derived from the implementation passes whatever the implementation does.
+Read only the following code, and no method bodies of production code:
+
+- **Existing tests** — when the specification of a test target with tests changes, or a bug report asks for a [reproduction test](resources/reproduction-tests.md), the signatures of the test target's test classes and test methods, with the attributes that give a parameterized test its arguments, to mark the test cases they already implement (see the [output markers](#output-format))
+- **Production code** — for unit tests, the signatures and XML documentation comments of the test target's members, to judge whether a test case can observe the actual outcome (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); for a class the input's software design introduces, read the signatures it fixes instead
+
 ## Test Layers
 
 A test target's layer follows its subject: a class, or an asset file's own consistency, is a unit test; the data of a `ScriptableObject` class a validator; a scene or a prefab an integration test.
@@ -47,7 +55,7 @@ A part of the subject without a specification of its own, e.g., a class no speci
 
 ## Test Techniques
 
-When modeling the specifications with a test technique reveals a gap or a contradiction in them, abort designing the test target: assess it as `ASSESSMENT: FAIL` and include the modeling result (e.g., the equivalence partition table, the decision table, the state transition diagram) in the [Assessment](#assessment), so the user can see where the specification breaks.
+When modeling the specifications with a test technique reveals a gap or a contradiction in them, do not guess the outcome: design the test case of a gap as undefined (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)), design no test case for a contradiction, and include the modeling result (e.g., the equivalence partition table, the decision table, the state transition diagram) in the [Assessment](#assessment), so the user can see where the specification breaks.
 
 **Prefer specification-based tests over structural (implementation-coupled) tests.** Structural tests break under refactoring and lose value fast. It's fine to write a structural test temporarily when you're unsure about an implementation, but plan to delete it once specification tests cover the same behavior.
 
@@ -75,7 +83,7 @@ Also read the following when they apply to the test target:
   - **Non-method target** — `<Condition>_<Expected>`: all **Integration tests** and **Visual verification tests** (multi-component interaction or on-screen rendering), **Unit tests whose target is an asset** (asset file validation, cross-asset consistency checks — the SUT is an asset or set of assets), and **Validators**. Do NOT include a method name. Do NOT add a feature-area or category prefix before `<Condition>` — the name starts directly with the condition (e.g., `OnVictoryForced_AllCardViewsAreFullyWithinHandArea`, not `Reward_OnVictoryForced_AllCardViewsAreFullyWithinHandArea`).
   - For **parameterized tests**, the `<Condition>` segment is the **equivalence partition name**, not an enumeration of individual argument values.
   - For **Validators**, the `<Condition>` segment names the assets the specification's condition selects, e.g., `AttackCard_AttackIsGreaterThanZero`; when the specification covers every asset of the class, the name is `<Expected>` alone, e.g., `NameIsNotEmpty`.
-  - The `<Expected>` segment names the **concrete resulting state or value** of that one partition (e.g. `IsNotInteractable`, `ReturnsFizz`), never a condition or comparison. **Exception**: a consolidated layout assertion test may use the generic `LayoutIsCorrect` (see [Integration testing](resources/integration-testing.md#perspectives), UI layout). Words like `Matches…`, `OnlyWhen…`, `DependingOn…`, `BasedOn…` in the name — or "only when / only if / depending on" in the verification description — signal that the outcome varies with input, meaning two partitions were merged into one method — split into one method per outcome (see [Deriving test methods from equivalence partitions](resources/equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)).
+  - The `<Expected>` segment names the **concrete resulting state or value** of that one partition (e.g. `IsNotInteractable`, `ReturnsFizz`), never a condition or comparison. **Exceptions**: an undefined or ambiguous test case uses `UNDEFINED` or `AMBIGUOUS` (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); a consolidated layout assertion test may use the generic `LayoutIsCorrect` (see [Integration testing](resources/integration-testing.md#perspectives), UI layout). Words like `Matches…`, `OnlyWhen…`, `DependingOn…`, `BasedOn…` in the name — or "only when / only if / depending on" in the verification description — signal that the outcome varies with input, meaning two partitions were merged into one method — split into one method per outcome (see [Deriving test methods from equivalence partitions](resources/equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)).
 - Do NOT create sequential IDs in test case names
 - Verify one condition per test. **Exception (multi-property)**: when multiple properties of the state resulting from a transition must all be correct simultaneously, a single test may assert all of them together. The same applies to a consolidated layout assertion test asserting multiple layout properties under one condition (see [Integration testing](resources/integration-testing.md#perspectives), UI layout).
 - Test concerns separately
@@ -84,7 +92,6 @@ Also read the following when they apply to the test target:
 
 In the **Verification** column, state **which observable property or behavior** is checked and **what its expected value or state** is — this corresponds to the `<Expected>` segment of the test method name, not the `<Condition>` segment, which the method name already captures.
 Write the prose in the project language.
-Write from the information already available in the specification; abstract descriptions are acceptable — reading source to obtain more concrete identifiers is not required.
 Describe observable behavior only; do NOT include any of the following **anywhere in the test case output** — this prohibition applies to the Verification column, class header descriptions (text after `#### ClassName`), and any other field:
 
 - Test framework attributes (`[Test]`, `[UnityTest]`, `[LoadScene]`, `[Category(...)]`, `[TakeScreenshot]`, etc.)
@@ -100,7 +107,7 @@ Further notation rules:
 
 - When a single test asserts multiple properties (the multi-property exception in [Test Case Naming](#test-case-naming)), list each property being verified in the Verification column.
 - **Parameterized tests** — write each consolidated parameterized test as a single table row, with the parameter notation from [Parameterized tests](resources/equivalence-partitioning.md#parameterized-tests) in the Test Method column. Do NOT specify the framework mechanism (`TestCase`, `Values`, etc.) — that's a test-writing decision.
-  - Example: `FizzBuzz_MultipleOfThree_ReturnsFizz` (n: 3, 6, 9) | `Returns "Fizz"`
+  - Example: `IsValidLevel_WithinRange_ReturnsTrue` (level: {1, 50, 99}) | `Returns true`
 - If a test case uses a **spy** to verify an interaction the API specification defines, note it in the Verification column: e.g., `(uses spy: <TargetDependency>)`. Do NOT note stubs or fakes — those are arrange/action concerns. xUTP definitions for reference:
   - **Stub** — returns canned responses to isolate the SUT from a dependency. Arrange/action concern; do NOT mention in Verification.
   - **Spy** — records interactions (calls, arguments) for later verification. Note it in Verification.
@@ -126,6 +133,18 @@ The Bad (not parameterized) row hides the concrete argument values in a vague ph
 The Bad (condition restated) row repeats the method name's `<Condition>` segment ("WhenBossNext") as a precondition clause; Verification states only the expected outcome, since the condition already lives in the method name.
 The Good rows state the observable behavior only; all other concerns go in the Test Method column or the test-writing phase.
 
+## Unverifiable, Undefined, and Ambiguous Test Cases
+
+Design a test case even when it cannot be verified as specified, and mark it instead of guessing, so the user sees every place the specification needs revising:
+
+- **Unverifiable** — in a unit test, the test cannot observe the actual outcome through the test target's API: a return value, a field or property of the instance, a raised event, or a call to a dependency a spy records. Judge it from what [Reading Code](#reading-code) allows; a `private` member is not observable. Write `**unverifiable**` in front of the expected outcome in the Verification column.
+  - Example: `Attack_HpIsPositive_ReducesHpByDamage` | **unverifiable** the remaining HP is reduced by the damage
+- **Undefined** — the specification states no expected outcome for the test case: e.g., an equivalence partition, a decision table combination, or a state transition table cell it leaves empty. End the method name with `_UNDEFINED` in place of `<Expected>`, and write `**undefined**` in the Verification column.
+  - Example: `Attack_HpIsNegative_UNDEFINED` | **undefined**
+- **Ambiguous** — the specification states an expected outcome that admits more than one reading, so it gives no deterministic pass/fail criterion: e.g., "attack +2" while a buff multiplies attack, without stating whether the addition comes before or after the multiplication; random behavior without a specified distribution, range, or structural property (see [Testing randomness](resources/testing-randomness.md)). The author of a specification rarely notices its own ambiguity, so state the reason. End the method name with `_AMBIGUOUS` in place of `<Expected>`, and write `**ambiguous**` followed by the reason in the Verification column.
+  - Example: `GetAttack_AttackUpWithMultiplyingBuff_AMBIGUOUS` | **ambiguous** whether "attack +2" applies before or after the multiplying buff
+  - In integration tests, a sensory outcome that neither an assertion nor image analysis can verify, e.g., "defeating an enemy feels satisfying", is not ambiguous: design it as a [manual test](resources/integration-testing.md#manual-tests), where a human judges it and the Verification column may stay subjective. Unit tests have no such escalation: an ambiguous specification at the unit test layer is always ambiguous.
+
 ## Output Format
 
 Output the test cases of a test target as the blocks of its layers that have test cases, in this order (omit blocks with none), followed by its [Assessment](#assessment):
@@ -144,9 +163,14 @@ Structure by layer:
 
 **Output markers** — annotations that flag test case categories; append to the specified field only, not the Verification column:
 
-- `(reproduction test)` — append to the **Test Method column** when the test reproduces a reported bug (see [Reproduction tests](resources/reproduction-tests.md))
 - `(acceptance test)` — append to the **Test Method column** when the input explicitly states requirements and the test directly verifies a specification that realizes one of them. Without stated requirements, mark no test as an acceptance test.
-- `(spec change)` — append to the **Test Method column** ONLY when updating an existing test whose **Verification (observable expected outcome) changes**. A change to the SUT signature/type that requires only arrange/action construction updates (e.g., wrapping `Foo`→`FooRef`) while the expected observable behavior stays identical is NOT a spec change — leave such tests **unmarked** (construction details are a test-writing concern per [Verification Column](#verification-column), not a test design concern). Litmus test: **if the Verification column wording is unchanged, do NOT append `(spec change)`.**
+- `(reproduction test)` — append to the **Test Method column** when the test reproduces a reported bug (see [Reproduction tests](resources/reproduction-tests.md))
+- `(existing)` — append to the **Test Method column** when an existing test implements the test case and needs no change.
+- `(test fix)` — append to the **Test Method column** when an existing test implements the test case but disagrees with a specification that has not changed, e.g., its name, arguments, or expected outcome is wrong.
+- `(spec change)` — append to the **Test Method column** when an existing test implements the test case and the change of the specification affects it: its expected outcome, its arguments, or its construction (e.g., wrapping `Foo`→`FooRef` in the SUT's signature).
+
+A test case without `(existing)`, `(test fix)`, or `(spec change)` is a new test.
+Write the markers in English whatever the project language.
 
 Read the output format template for the layer and follow it exactly (templates are in `${CLAUDE_SKILL_DIR}/assets/`):
 
@@ -161,22 +185,23 @@ When no template exists for the project language, use the default one as the str
 ## Assessment
 
 Assess whether the specifications of a test target can be tested as written, and assign one of the following labels.
-Record every issue found while designing — an undefined, ambiguous, or contradictory specification — instead of guessing.
+Record every issue found while designing instead of guessing.
 
-| Label              | Meaning                                                                                                                        |
-|--------------------|--------------------------------------------------------------------------------------------------------------------------------|
-| `ASSESSMENT: PASS` | Every specification has a deterministic pass/fail criterion at its layer; none of the FAIL criteria apply                      |
-| `ASSESSMENT: WARN` | Localized concerns (e.g., a large integration test, high FSM state combinations, an ambiguous specification the user resolved) |
-| `ASSESSMENT: FAIL` | Fundamental issues that require revising the specification                                                                     |
+| Label              | Meaning                                                           |
+|--------------------|-------------------------------------------------------------------|
+| `ASSESSMENT: PASS` | None of the FAIL or WARN criteria apply                           |
+| `ASSESSMENT: WARN` | Only WARN criteria apply                                          |
+| `ASSESSMENT: FAIL` | A FAIL criterion applies; the specification needs revising        |
 
-**FAIL criteria** — flag FAIL if any of the following apply:
+**FAIL criteria**:
 
-- **Undefined specification** — the expected outcome of a behavior is not stated, or an API specification leaves it unobservable (e.g., state that changes but is exposed through no member, event, or dependency call)
-- **Ambiguous specification** — a stated behavior has no deterministic pass/fail criterion and is not suited to manual tests, e.g.:
-  - A requirement given without the specification that realizes it ("defeating an enemy feels satisfying")
-  - Random behavior without a specified distribution, range, or structural property (see [Testing randomness](resources/testing-randomness.md))
 - **Contradictory specification** — two specifications demand incompatible outcomes
-- Combinatorial explosion: test case count grows faster than O(n) relative to the number of conditions
+- **Unverifiable, undefined, or ambiguous acceptance test** — an acceptance test is unverifiable, undefined, or ambiguous
+
+**WARN criteria**:
+
+- **Unverifiable, undefined, or ambiguous test case** — see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)
+- **Combinatorial explosion** — test case count grows faster than O(n) relative to the number of conditions
 
 **Output format**:
 
@@ -187,7 +212,7 @@ ASSESSMENT: PASS
 
 ```
 
-or, for WARN/FAIL, include Issues with the affected specification and a proposed remedy; for FAIL, also include the modeling result:
+or, for WARN/FAIL, include Issues with the affected specification and a proposed remedy, and the modeling result:
 
 ```markdown
 ### Assessment
@@ -199,11 +224,11 @@ ASSESSMENT: FAIL
 | Issue                                                                       | Specification               | Proposed Remedy                                  |
 |-----------------------------------------------------------------------------|-----------------------------|--------------------------------------------------|
 | Contradictory specification: the button is both hidden and disabled at zero | "Draw button" in §2.1, §3.4 | Specify which one applies                        |
-| Ambiguous specification: "rewards are random" with no distribution          | "Reward selection" in §4    | Specify the drop rates or the allowed reward set |
+| Ambiguous test case: "rewards are random" with no distribution              | "Reward selection" in §4    | Specify the drop rates or the allowed reward set |
 
 #### Modeling result
 
 <the equivalence partition table, decision table, state transition diagram, etc. that revealed the issues>
 ```
 
-On `ASSESSMENT: FAIL`, abort designing the test target: output the Assessment only, without test cases.
+Output the test cases whatever the label.

@@ -34,7 +34,7 @@ In this skill and `test-designing-guide`, the terms mean:
 The input may state the specification in any document: a requirements document, a software design document, an ADR, or a bug report (its Expected is the specification; see `resources/reproduction-tests.md` in `test-designing-guide`).
 When the input also states requirements, note which specifications realize them; `test-designing-guide` marks their test cases as acceptance tests.
 
-Read existing code and tests only as needed, e.g., to place test cases in an existing test class; do not derive test cases from the implementation (Step 1).
+Read existing code and tests only as `test-designing-guide` allows (Reading Code).
 
 ## Rules
 
@@ -77,7 +77,7 @@ Instruct each subagent to load the `test-designing-guide` skill — do not rely 
 Give each subagent the test target with its assigned specifications and the requirements they realize if any, the test targets it contains with their assigned specifications if any, and the input — its file path, or the full text when it was written directly or taken from the conversation — and have it return its output verbatim.
 A subagent cannot ask the user, so it records every question as an issue in the Assessment.
 
-When a target's Assessment raises an issue — an ambiguous, undefined, or contradictory specification — ask the user via `AskUserQuestion`, presenting the Issues together with the modeling result, then design that target again with the answer.
+When a target's Assessment raises an issue — e.g., an undefined, ambiguous, unverifiable, or contradictory specification — ask the user via `AskUserQuestion`, presenting the Issues together with the modeling result, then design that target again with the answer.
 When the user cannot resolve an issue that makes the Assessment `ASSESSMENT: FAIL` — it requires revising the specification — stop and report its Issues and modeling result to the user; revising the specification is up to the user or the caller.
 
 ### Step 3: Assemble the Test Cases

@@ -1,9 +1,16 @@
 # Equivalence Partitioning
 
-Group the values of each input into equivalence partitions the specification says produce the same outcome; each equivalence partition needs at least one representative.
+Group the values of each input into equivalence partitions the specification says produce the same outcome.
 A **valid equivalence partition** produces a normal outcome; an **invalid equivalence partition** results in an error — e.g., `0` and negative numbers in FizzBuzz.
 
-When the specification defines no behavior for an equivalence partition, valid or invalid, it is a gap in the specification: do not guess or invent the behavior, but abort designing the test target and include the equivalence partition table as the modeling result (see [Test Techniques](../SKILL.md#test-techniques)).
+Test each equivalence partition with one representative, chosen in this order:
+
+1. A value the specification states for the equivalence partition (when it states several, e.g., as examples, take all of them into the equivalence partition's parameterized test)
+2. The middle value of its range, when the range has both bounds
+3. A prime number within it, when its range lacks a bound
+4. Any one value within it, e.g., for a non-numeric equivalence partition, or a range without a prime number
+
+When the specification defines no behavior for an equivalence partition, valid or invalid, it is a gap in the specification: do not guess or invent the behavior, but design its test case as undefined and include the equivalence partition table as the modeling result (see [Test Techniques](../SKILL.md#test-techniques)).
 
 Add an equivalence partition beyond every upper and lower limit, even when the specification states only the range within them — e.g., `HP < 0`, `HP > MaxHP`, `EXP > Next` (the experience needed for the next level). Such a value often arises from a calculation rather than a direct input: damage exceeding the remaining HP, experience gained beyond the next level. Whether it is a valid or an invalid equivalence partition depends on the specification — `EXP > Next` is a valid equivalence partition, since it produces a level up.
 
@@ -16,7 +23,7 @@ The most common derivation error is merging equivalence partitions with **differ
 For each input variable:
 1. Partition the input domain into equivalence partitions the specification says produce the **same** outcome.
 2. Emit **one method per equivalence partition**, named `..._<Partition>_<ThatPartitionsOutcome>`. The `<Expected>` segment is a concrete state/value (`IsInteractable`, `IsNotInteractable`), never a condition word (`Matches…`, `…WhenNonEmpty`, `DependingOn…`).
-3. Within one equivalence partition, consolidate multiple representatives (and that equivalence partition's boundary values) into **one parameterized** method — they share the outcome (see [Parameterized tests](#parameterized-tests)).
+3. Within one equivalence partition, consolidate its representative and its boundary values into **one parameterized** method — they share the outcome (see [Parameterized tests](#parameterized-tests)).
 
 **Worked example** — `drawPileButton.interactable` driven by the draw pile count:
 
@@ -32,11 +39,11 @@ Two equivalence partitions, two outcomes → **two** methods (NOT one parameteri
 | `Sync_DrawPileIsEmpty_DrawPileButtonIsNotInteractable`                 | the draw pile button is not interactable |
 | `Sync_DrawPileIsNotEmpty_DrawPileButtonIsInteractable` (count: {1, 5}) | the draw pile button is interactable     |
 
-The non-empty method keeps both `1` and `5` because they share the outcome `true`; `1` is the equivalence partition's boundary value, `5` an interior representative.
+The non-empty method keeps both `1` and `5` because they share the outcome `true`; `1` is the equivalence partition's boundary value, `5` its representative — a prime number, since the equivalence partition has no upper bound.
 
 ## Parameterized tests
 
-When multiple test cases share the same expected outcome — such as argument variations or boundary values within the same equivalence partition, decision table rules sharing an outcome, or [combinations of parameters](combinatorial-testing.md) — consolidate them into a single parameterized test.
+When multiple test cases share the same expected outcome — such as the representative and the boundary values of the same equivalence partition, decision table rules sharing an outcome, or [combinations of parameters](combinatorial-testing.md) — consolidate them into a single parameterized test.
 
 **Specifying parameter name and values in the Test Method column** — write values after the method name:
 
