@@ -50,7 +50,6 @@ Read the specification and extract the test targets it covers, e.g.:
 - A screen
 - A character (actor)
 - A component (class)
-- A method
 
 Extract only targets the specification describes; do NOT derive targets at a level no specification describes — e.g., internal classes guessed from the external specification of a screen — because such tests couple to an implementation no specification fixes.
 When the input includes a software design, the classes and signatures it fixes are specifications, and are valid targets.
