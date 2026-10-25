@@ -54,16 +54,23 @@ Read the specification and extract the test targets it covers, e.g.:
 - A screen
 - A character (actor)
 - A component (class)
+- The data constraints of a `ScriptableObject` class (implemented as a validator)
 
 Extract only targets the specification describes; do NOT derive targets at a level no specification describes — e.g., internal classes guessed from the external specification of a screen — because such tests couple to an implementation no specification fixes.
 When the input includes a software design, the classes and signatures it fixes are specifications, and are valid targets.
-A table listing each asset's concrete values is the source the assets are authored from, not a target; extract only the constraints the specification states on that data (see Test Layers > Validators in `test-designing-guide`).
-
-Extract all the screen transitions as a single test target, whatever form the specification gives them in — a screen transition diagram, a sequence, a use case, or button operations written per screen.
 
 Assign each specification to exactly one test target, so that targets designed in parallel do not produce duplicate test cases.
 When the subject of one test target contains the subjects of others — e.g., a screen contains the classes placed on it, and the screen transitions contain the screens — assign the behavior within a contained target to that target, and leave the container only the behavior that combines them.
 Record the test targets each target contains.
+
+#### Screen Transitions
+
+Extract all the screen transitions as a single test target, whatever form the specification gives them in — a screen transition diagram, a sequence, a use case, or button operations written per screen.
+
+#### Validators for ScriptableObject Data
+
+Extract the constraints the specification states on the data of a `ScriptableObject` class as one test target (implemented as a validator); each constraint is a property of one asset (see `resources/validators.md` in `test-designing-guide`).
+A table listing each asset's concrete values is the source the assets are authored from, not a specification: extract no constraint from it.
 
 ### Step 2: Design Each Test Target
 
