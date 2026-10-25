@@ -171,4 +171,6 @@ Read the appropriate resource file based on the situation:
 - Before writing or modifying any test code file: Read `${CLAUDE_SKILL_DIR}/resources/unity-test-framework.md`
 - Before writing or modifying any test code file: Read `${CLAUDE_SKILL_DIR}/resources/test-helper.md`
 - Before writing or modifying UI tests with `TestHelper.UI` namespace API (e.g., `GameObjectFinder`, `Monkey`): Read `${CLAUDE_SKILL_DIR}/resources/test-helper-ui.md`
+- Before writing or modifying tests that use test doubles (stub, spy, mock, fake, dummy): Read `${CLAUDE_SKILL_DIR}/resources/test-doubles.md`
+- Before writing or modifying tests that verify statistical properties of samples (e.g., a drop rate, a damage distribution) with the `TestHelper.Statistics` namespace API: Read `${CLAUDE_SKILL_DIR}/resources/test-helper-statistics.md`
 - Before writing or modifying performance tests (`com.unity.test-framework.performance`, `[Performance]`, `Measure.*`): Read `${CLAUDE_SKILL_DIR}/resources/unity-test-framework-performance.md`

@@ -193,6 +193,10 @@ Assert.That(actual, Is.EqualTo(expected).Using(new XmlComparer()));
 
 ---
 
+## Statistics APIs
+
+To sample a SUT and verify statistical properties (`Experiment`, `DescriptiveStatistics`, `PixelPlot` in the `TestHelper.Statistics` namespace), see `test-helper-statistics.md`.
+
 ## Runtime Utilities
 
 ### SceneManagerHelper
