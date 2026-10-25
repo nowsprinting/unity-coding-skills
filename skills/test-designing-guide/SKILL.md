@@ -23,13 +23,14 @@ Out of scope:
 
 ## Test Layers
 
-A test target's layer follows its subject: a class or an asset is a unit test, the data of a `ScriptableObject` class a validator, a scene or a prefab an integration test.
+A test target's layer follows its subject: a class, or an asset file's own consistency, is a unit test; the data of a `ScriptableObject` class a validator; a scene or a prefab an integration test.
 The external specification of a game usually describes a scene or a screen, so it lands in integration tests; when the external specification is an API itself (e.g., a package), it lands in unit tests only, with no integration tests.
 
 - **Unit tests** — for specifications whose subject is a **class or an asset**, written as an **API contract**: a class or method's inputs, return values, state changes, raised events, or calls to its dependencies. This includes behavior driven by Unity's lifecycle (Awake, Start, Update, etc.) or UI events when the specification defines it per component. When the specification defines a class's collaboration with its dependencies, keep test density low and focus on those interactions. Specifications on the content of assets other than `ScriptableObject` data (asset file validation, cross-asset consistency) also belong here.
 - **Validators** — for specifications that constrain the data of a `ScriptableObject` class, e.g., "an attack card's attack is greater than 0". The project holds the data as the class's assets, so the subject is those assets; a test that creates its own instance checks only the values the test sets, while a violation lies in the assets authored in the project.
   - The specification's condition selects the assets, and the test case asserts its expected outcome on every selected asset.
   - Specifications of the class's methods stay unit tests.
+  - A table listing each asset's concrete values (e.g., a master data table) is the source the assets are authored from, not a constraint on them: a test comparing an asset with it only transcribes the table a second time. Derive validators from the constraints the specification states — value ranges, relations between fields, required references — and design no test case that compares an asset's values or the list of assets with such a table.
 - **Integration tests** — for specifications whose subject is a **scene or prefab** (or a screen the player sees): UI operations, on-screen display, scene transitions, and behavior emerging from components and the assets they reference.
   - Add the integration test method to the test class of the **primary class** when the specification names one; OR
   - Create a new dedicated test class named after the scene, prefab, or screen otherwise.

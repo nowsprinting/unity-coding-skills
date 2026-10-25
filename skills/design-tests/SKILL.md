@@ -54,6 +54,7 @@ Read the specification and extract the test targets it covers, e.g.:
 
 Extract only targets the specification describes; do NOT derive targets at a level no specification describes — e.g., internal classes guessed from the external specification of a screen — because such tests couple to an implementation no specification fixes.
 When the input includes a software design, the classes and signatures it fixes are specifications, and are valid targets.
+A table listing each asset's concrete values is the source the assets are authored from, not a target; extract only the constraints the specification states on that data (see Test Layers > Validators in `test-designing-guide`).
 
 Extract all the screen transitions as a single test target, whatever form the specification gives them in — a screen transition diagram, a sequence, a use case, or button operations written per screen.
 
