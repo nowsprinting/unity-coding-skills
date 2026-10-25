@@ -4,8 +4,10 @@ Reference for creating uGUI components that match the Unity editor's **GameObjec
 
 ## Principles
 
-- For **Button** and **Text**: use the legacy variants (`UnityEngine.UI.Button` / `UnityEngine.UI.Text`) by default. Switch to TextMesh Pro (`TMPro.TextMeshProUGUI` etc.) only when the user explicitly requests it.
-  - When TMP is requested and the project lacks TMP Essential Resources, import them with `TMPro.TMP_PackageResourceImporter.ImportResources(importEssentials: true, importExtras: false, interactive: false)`. Never use `EditorApplication.ExecuteMenuItem("Window/TextMeshPro/Import TMP Essential Resources")` — it opens a modal dialog that blocks the `run_method_in_unity` call until a human dismisses it.
+- For **Button** and **Text**: use the legacy variants (`UnityEngine.UI.Button` / `UnityEngine.UI.Text`) by default.
+  Switch to TextMesh Pro (`TMPro.TextMeshProUGUI` etc.) only when the user explicitly requests it.
+  - When TMP is requested and the project lacks TMP Essential Resources, import them with `TMPro.TMP_PackageResourceImporter.ImportResources(importEssentials: true, importExtras: false, interactive: false)`.
+    Never use `EditorApplication.ExecuteMenuItem("Window/TextMeshPro/Import TMP Essential Resources")` — it opens a modal dialog that blocks the `run_method_in_unity` call until a human dismisses it.
 - Use `ObjectFactory.CreateGameObject` / `ObjectFactory.AddComponent` (editor-only) instead of `new GameObject(...)` / `gameObject.AddComponent<T>()` so that Undo history and user Presets are applied automatically.
 - `DefaultControls.Create*` methods are the public API equivalent of the context menu — use them for all standard controls.
 
@@ -86,7 +88,8 @@ var font = Resources.GetBuiltinResource<Font>("Arial.ttf");
 #endif
 ```
 
-**TextMesh Pro** (`TMPro.TextMeshProUGUI`) does not use `Font` assets, so the names above do not apply. Leave `font` unassigned and it falls back to `TMP_Settings.defaultFontAsset` (LiberationSans SDF from TMP Essential Resources); assign a project `TMP_FontAsset` only when one is specified.
+**TextMesh Pro** (`TMPro.TextMeshProUGUI`) does not use `Font` assets, so the names above do not apply.
+Leave `font` unassigned and it falls back to `TMP_Settings.defaultFontAsset` (LiberationSans SDF from TMP Essential Resources); assign a project `TMP_FontAsset` only when one is specified.
 
 ### FontData defaults (from `FontData.defaultFontData`)
 
@@ -106,11 +109,15 @@ var font = Resources.GetBuiltinResource<Font>("Arial.ttf");
 | `color` | `s_TextColor` ≈ `#323232` | — |
 
 > **`verticalOverflow`: always use `Overflow`, not the Unity engine default `Truncate`.**
-> Legacy Text with `Truncate` + a vertically-centered alignment (`MiddleCenter`, `MiddleLeft`, `MiddleRight`) silently produces an **empty mesh** — no text rendered, no error — when `fontLineHeight > rectHeight`. The mechanism: MiddleCenter shifts the text block upward so the first line starts above `y = 0`; Unity's TextGenerator then excludes that line as "out of bounds", leaving no lines at all. `HorizontalOverflow: Wrap` compounds this by increasing the block height whenever text wraps.
+> Legacy Text with `Truncate` + a vertically-centered alignment (`MiddleCenter`, `MiddleLeft`, `MiddleRight`) silently produces an **empty mesh** — no text rendered, no error — when `fontLineHeight > rectHeight`.
+> The mechanism: MiddleCenter shifts the text block upward so the first line starts above `y = 0`; Unity's TextGenerator then excludes that line as "out of bounds", leaving no lines at all.
+> `HorizontalOverflow: Wrap` compounds this by increasing the block height whenever text wraps.
 >
 > If `Truncate` is genuinely required: switch alignment to `UpperLeft` (first line always starts at `y = 0`) and ensure `rectHeight ≥ fontSize × 1.4` to accommodate the font's actual line height.
 >
-> **Don't trust a single test resolution to rule this out.** The exact `rectHeight` threshold where the mesh goes empty shifts with the Canvas's `CanvasScaler.scaleFactor` — confirmed empirically to be **non-monotonic** (a `rectHeight` that renders fine at `scaleFactor` 0.5 and 2.0 produced an empty mesh at 1.0 and 0.25 for the same font/fontSize), an artifact of integer-pixel rounding inside `TextGenerator`. A screenshot or manual check at one GameView size proves nothing about other sizes; `Overflow` is the only reliable fix, not a `rectHeight` bumped just enough to pass one check.
+> **Don't trust a single test resolution to rule this out.**
+> The exact `rectHeight` threshold where the mesh goes empty shifts with the Canvas's `CanvasScaler.scaleFactor` — confirmed empirically to be **non-monotonic** (a `rectHeight` that renders fine at `scaleFactor` 0.5 and 2.0 produced an empty mesh at 1.0 and 0.25 for the same font/fontSize), an artifact of integer-pixel rounding inside `TextGenerator`.
+> A screenshot or manual check at one GameView size proves nothing about other sizes; `Overflow` is the only reliable fix, not a `rectHeight` bumped just enough to pass one check.
 
 ## `DefaultControls.Resources` setup
 
@@ -134,7 +141,8 @@ var res = new DefaultControls.Resources
 
 ### Canvas
 
-`MenuOptions.CreateNewUI` is internal. Replicate it manually:
+`MenuOptions.CreateNewUI` is internal.
+Replicate it manually:
 
 ```csharp
 var canvasGo = ObjectFactory.CreateGameObject(
@@ -150,7 +158,8 @@ canvas.renderMode = RenderMode.ScreenSpaceOverlay;
 //   GraphicRaycaster: all defaults
 ```
 
-**CanvasScaler: prefer `ScaleWithScreenSize`**: The Reset default (`ConstantPixelSize`) does not resize the UI when the screen resolution changes. Use `ScaleWithScreenSize` for all game scenes — this keeps the UI proportional at any resolution and ensures `EventSystem.RaycastAll` can reach elements regardless of the GameView size (e.g., CI caps the GameView at 640×480):
+**CanvasScaler: prefer `ScaleWithScreenSize`**: The Reset default (`ConstantPixelSize`) does not resize the UI when the screen resolution changes.
+Use `ScaleWithScreenSize` for all game scenes — this keeps the UI proportional at any resolution and ensures `EventSystem.RaycastAll` can reach elements regardless of the GameView size (e.g., CI caps the GameView at 640×480):
 
 ```csharp
 var scaler = canvasGo.GetComponent<CanvasScaler>();
@@ -173,7 +182,8 @@ rect.sizeDelta = Vector2.zero;
 
 ### EventSystem
 
-`MenuOptions.CreateEventSystem` is internal. Replicate it manually, checking for an existing EventSystem first:
+`MenuOptions.CreateEventSystem` is internal.
+Replicate it manually, checking for an existing EventSystem first:
 
 ```csharp
 using UnityEditor.EventSystems;
@@ -270,7 +280,8 @@ Scroll View                RectTransform: size (200, 200)
   └── Scrollbar Vertical   (right edge, direction=BottomToTop)
 ```
 
-`CreateScrollView` adds **no Layout Group and no ContentSizeFitter** to Content — its height stays fixed at 300 regardless of children. For a list that should grow with its children (static entries or items instantiated at runtime), add both to Content:
+`CreateScrollView` adds **no Layout Group and no ContentSizeFitter** to Content — its height stays fixed at 300 regardless of children.
+For a list that should grow with its children (static entries or items instantiated at runtime), add both to Content:
 
 ```csharp
 var content = scrollViewGo.transform.Find("Viewport/Content").gameObject;
@@ -285,15 +296,22 @@ Common failures:
 
 ## Layout notes
 
-- **Pivot must match the anchor.** When placing an element at a corner or edge ("top right", "bottom bar"), set the anchor preset first, set `pivot` to the same point (not the default `(0.5, 0.5)`), then set `anchoredPosition`. Otherwise offsets are measured from the element's center and it lands half-outside the intended corner.
-- **ContentSizeFitter under a size-controlling Layout Group parent conflicts.** A ContentSizeFitter on a child whose parent Layout Group has Control Child Size enabled for that axis has both components driving the same RectTransform — causing jitter or a silently ignored fitter. Disable Control Child Size on the parent for that axis, or remove the fitter.
+- **Pivot must match the anchor.**
+  When placing an element at a corner or edge ("top right", "bottom bar"), set the anchor preset first, set `pivot` to the same point (not the default `(0.5, 0.5)`), then set `anchoredPosition`.
+  Otherwise offsets are measured from the element's center and it lands half-outside the intended corner.
+- **ContentSizeFitter under a size-controlling Layout Group parent conflicts.**
+  A ContentSizeFitter on a child whose parent Layout Group has Control Child Size enabled for that axis has both components driving the same RectTransform — causing jitter or a silently ignored fitter.
+  Disable Control Child Size on the parent for that axis, or remove the fitter.
 - **ContentSizeFitter + Layout Group on the same object is fine** — that is the supported auto-size pattern (see Scroll View Content above): the Layout Group computes the preferred size from the children and controls them; the fitter applies that size to the object itself.
 
 ## Canvas / EventSystem notes
 
-- `MenuOptions.CreateNewUI` auto-creates an EventSystem if none exists. Replicate this behavior by calling the EventSystem snippet above after creating the Canvas.
-- Set `gameObject.layer = LayerMask.NameToLayer("UI")` on the Canvas. Child GameObjects created via `DefaultControls.Create*` inherit the layer from `PlaceUIElementRoot` in the original source — if you place them manually, set their layer too.
-- `DefaultControls.factory` can be swapped to `ObjectFactory`-backed implementation for full Undo/Preset parity. The simplest approach is to set `DefaultControls.factory` before calling `Create*`:
+- `MenuOptions.CreateNewUI` auto-creates an EventSystem if none exists.
+  Replicate this behavior by calling the EventSystem snippet above after creating the Canvas.
+- Set `gameObject.layer = LayerMask.NameToLayer("UI")` on the Canvas.
+  Child GameObjects created via `DefaultControls.Create*` inherit the layer from `PlaceUIElementRoot` in the original source — if you place them manually, set their layer too.
+- `DefaultControls.factory` can be swapped to `ObjectFactory`-backed implementation for full Undo/Preset parity.
+  The simplest approach is to set `DefaultControls.factory` before calling `Create*`:
 
 ```csharp
 // Optional: redirect DefaultControls to use ObjectFactory so Undo/Presets apply to children too
@@ -307,11 +325,13 @@ class DefaultEditorFactory : DefaultControls.IFactoryControls
 }
 ```
 
-Without this, `DefaultControls.Create*` uses `new GameObject(...)` internally for child objects, which bypasses Undo. If Undo fidelity is not a concern for a one-shot scene-generation script, the factory swap is optional.
+Without this, `DefaultControls.Create*` uses `new GameObject(...)` internally for child objects, which bypasses Undo.
+If Undo fidelity is not a concern for a one-shot scene-generation script, the factory swap is optional.
 
 ## Minimal sample
 
-Editor script that creates a Canvas with a Button under `Assets/UnityCodingSkills/Editor/`. Call it via `run_method_in_unity`.
+Editor script that creates a Canvas with a Button under `Assets/UnityCodingSkills/Editor/`.
+Call it via `run_method_in_unity`.
 Delete the file and its `.meta` from the filesystem once the run returns without errors (see `## Rules` in SKILL.md) — do not add a self-deleting `AssetDatabase.DeleteAsset` call to the script itself.
 
 ```csharp

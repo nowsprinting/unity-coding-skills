@@ -6,7 +6,8 @@ Source: Unity 6.3 LTS (6000.3) local documentation
 
 ## What Are Event Functions
 
-Predefined callbacks that all `MonoBehaviour` script components can receive, triggered by Unity Editor and Engine events. Implement the method signature in a `MonoBehaviour`-derived class to use them.
+Predefined callbacks that all `MonoBehaviour` script components can receive, triggered by Unity Editor and Engine events.
+Implement the method signature in a `MonoBehaviour`-derived class to use them.
 
 ## Initialization Events
 
@@ -16,8 +17,8 @@ Predefined callbacks that all `MonoBehaviour` script components can receive, tri
 | `OnEnable()` | Every time the object/component is enabled. Before `SceneManager.sceneLoaded` and `Start`. |
 | `Start()` | Once, before the first frame or physics update, only if the component is enabled. |
 
-**Critical ordering guarantee:** All `Awake` calls across all objects complete before any `Start` is called.  
-→ `Start` can safely access state initialized by another object's `Awake`.  
+**Critical ordering guarantee:** All `Awake` calls across all objects complete before any `Start` is called.
+→ `Start` can safely access state initialized by another object's `Awake`.
 → `Awake` cannot safely access state initialized by another object's `Awake` (order is arbitrary).
 
 ## Regular Update Events
@@ -28,7 +29,8 @@ Predefined callbacks that all `MonoBehaviour` script components can receive, tri
 | `FixedUpdate()` | Before each physics update, at a fixed discrete interval (not tied to frame rate) | Physics forces, Rigidbody manipulation |
 | `LateUpdate()` | After all `Update` and `FixedUpdate` calls and after all animations have been calculated | Camera follow, animation override |
 
-**Physics accuracy:** Use `FixedUpdate` for physics code. `Update` runs at variable frame rate and can cause inconsistent physics results.
+**Physics accuracy:** Use `FixedUpdate` for physics code.
+`Update` runs at variable frame rate and can cause inconsistent physics results.
 
 **`LateUpdate` use cases:**
 - Camera that tracks a moving target (target has already moved by `LateUpdate` time)
@@ -73,7 +75,8 @@ Derive from `StateMachineBehaviour` (not `MonoBehaviour`) to use these:
 
 ## Rendering Callbacks (Built-in Render Pipeline only)
 
-**These do NOT apply to URP or HDRP.** For SRP, use `RenderPipelineManager` events or `Application.onBeforeRender`.
+**These do NOT apply to URP or HDRP.**
+For SRP, use `RenderPipelineManager` events or `Application.onBeforeRender`.
 
 | Function | When called |
 |----------|-------------|
@@ -87,17 +90,20 @@ Derive from `StateMachineBehaviour` (not `MonoBehaviour`) to use these:
 | `OnGUI()` | Multiple times per frame: Layout, Repaint, then once per input event |
 | `OnDrawGizmos()` | In Scene view, for visualisation only |
 
-**Camera attachment requirement:** `OnPreCull`, `OnPreRender`, `OnPostRender`, and `OnRenderImage` only fire on a `MonoBehaviour` that is attached to the **same GameObject as a Camera component**. To receive these callbacks on a different object, use the delegate equivalents: `Camera.onPreCull`, `Camera.onPreRender`, `Camera.onPostRender`.
+**Camera attachment requirement:** `OnPreCull`, `OnPreRender`, `OnPostRender`, and `OnRenderImage` only fire on a `MonoBehaviour` that is attached to the **same GameObject as a Camera component**.
+To receive these callbacks on a different object, use the delegate equivalents: `Camera.onPreCull`, `Camera.onPreRender`, `Camera.onPostRender`.
 
 ## Input Events (Legacy — do not use in new code)
 
-`OnMouseOver`, `OnMouseDown`, `OnMouseUp`, `OnMouseEnter`, `OnMouseExit`, `OnMouseDrag`, `OnMouseUpAsButton` — only supported with the legacy Input Manager, which is no longer recommended. Use Unity's Input System package instead.
+`OnMouseOver`, `OnMouseDown`, `OnMouseUp`, `OnMouseEnter`, `OnMouseExit`, `OnMouseDrag`, `OnMouseUpAsButton` — only supported with the legacy Input Manager, which is no longer recommended.
+Use Unity's Input System package instead.
 
 ## GUI Events (Legacy — avoid in new code)
 
 `OnGUI()` — only for projects using the legacy IMGUI system.
 
-**Overhead warning:** Adding an `OnGUI` method, **even if the body is empty**, adds IMGUI processing overhead to every frame. Remove empty `OnGUI` stubs completely.
+**Overhead warning:** Adding an `OnGUI` method, **even if the body is empty**, adds IMGUI processing overhead to every frame.
+Remove empty `OnGUI` stubs completely.
 
 ## Coroutine and Async Resumption
 
@@ -111,7 +117,8 @@ Derive from `StateMachineBehaviour` (not `MonoBehaviour`) to use these:
 | `Awaitable.EndOfFrameAsync()` | End of frame |
 | Regular `.NET Task` / `async Task` | `Update` phase |
 
-**Order not guaranteed:** The execution order between a resuming coroutine and a resuming `Awaitable`/`Task` in the same phase is not guaranteed. `Awaitable` instances are grouped and executed in the order they were awaited.
+**Order not guaranteed:** The execution order between a resuming coroutine and a resuming `Awaitable`/`Task` in the same phase is not guaranteed.
+`Awaitable` instances are grouped and executed in the order they were awaited.
 
 ## Non-MonoBehaviour Initialization
 
@@ -123,11 +130,13 @@ Derive from `StateMachineBehaviour` (not `MonoBehaviour`) to use these:
 
 ## Execution Order Limitations
 
-- **Cross-object order is not guaranteed.** You cannot rely on which GameObject's `Update` (or any other event function) runs first unless explicitly documented.
-- **Same-script-class order is not guaranteed.** Two instances of the same `MonoBehaviour` on different GameObjects can fire in any order.
+- **Cross-object order is not guaranteed.**
+  You cannot rely on which GameObject's `Update` (or any other event function) runs first unless explicitly documented.
+- **Same-script-class order is not guaranteed.**
+  Two instances of the same `MonoBehaviour` on different GameObjects can fire in any order.
 - To control order between different `MonoBehaviour` types, use **Edit > Project Settings > Script Execution Order**.
 
 ## Scene Load Callbacks
 
-`SceneManager.sceneLoaded` fires after `OnEnable` but before `Start` for all objects in the scene.  
+`SceneManager.sceneLoaded` fires after `OnEnable` but before `Start` for all objects in the scene.
 `SceneManager.sceneUnloaded` fires when a scene is fully unloaded.

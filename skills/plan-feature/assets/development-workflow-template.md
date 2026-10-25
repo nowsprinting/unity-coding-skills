@@ -1,4 +1,5 @@
-**Recording implementation notes:** Notes for this run go in `<scratchpad>/implementation-notes.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally). Immediately before your **first** append in this run — and only then — delete that file if it exists (usually it will not), so this run starts from an empty one: every `/fix-bug` and plan-file run in the session shares this file, so an earlier run abandoned before its Implementation Notes step would otherwise leak its notes into this one.
+**Recording implementation notes:** Notes for this run go in `<scratchpad>/implementation-notes.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally).
+Immediately before your **first** append in this run — and only then — delete that file if it exists (usually it will not), so this run starts from an empty one: every `/fix-bug` and plan-file run in the session shares this file, so an earlier run abandoned before its Implementation Notes step would otherwise leak its notes into this one.
 
 While working through Steps 1-4, whenever one of the following occurs, immediately append a line to that file — do not wait until the end to reconstruct these from memory:
 
@@ -20,7 +21,9 @@ When a step delegates to a subagent or another skill (`failing-test-writer` in S
 ### Step 1: Skeleton (Compilable)
 
 1. Load the `code-writing-guide` skill — the skeleton is production code; do not rely on automatic skill triggering
-2. Create types and method signatures only — must compile, need not work yet. **New methods: empty body only** (no logic, no exceptions; value-returning methods must return a literal default: `0`, `false`, or `null`); **modify: signature only, body unchanged**; **delete: remove the entire method** — test code may fail to compile after modify or delete; fix in Step 2. Place each file at the path and in the assembly specified in the Implementation Design section
+2. Create types and method signatures only — must compile, need not work yet.
+   **New methods: empty body only** (no logic, no exceptions; value-returning methods must return a literal default: `0`, `false`, or `null`); **modify: signature only, body unchanged**; **delete: remove the entire method** — test code may fail to compile after modify or delete; fix in Step 2.
+   Place each file at the path and in the assembly specified in the Implementation Design section
 3. Commit skeleton to git
 
 ### Step 2: Test First
@@ -46,6 +49,8 @@ When a step delegates to a subagent or another skill (`failing-test-writer` in S
 ### Step 5: Implementation Notes
 
 1. `Read` `<scratchpad>/implementation-notes.md` if it exists — if it was never created, every category is "None"
-2. Organize its entries under `## Implementation Notes` at the end of this plan file — one bold sub-heading per category, each followed by a bullet list. Always include all five categories in this order: **Design decisions**, **Deviations**, **Tradeoffs**, **Test changes**, **Open questions**. Write `- None` for any category with nothing recorded, and add any last-minute Open questions before finalizing
+2. Organize its entries under `## Implementation Notes` at the end of this plan file — one bold sub-heading per category, each followed by a bullet list.
+   Always include all five categories in this order: **Design decisions**, **Deviations**, **Tradeoffs**, **Test changes**, **Open questions**.
+   Write `- None` for any category with nothing recorded, and add any last-minute Open questions before finalizing
 3. Report the same block to the user in chat
 4. Delete the temporary notes file if it exists

@@ -27,9 +27,12 @@ If no specification can be found, use `AskUserQuestion` to ask the user before p
 
 In this skill and `test-designing-guide`, the terms mean:
 
-- **Specification** — the observable behavior at the boundary of a unit (a scene, prefab, class, or asset). It is relative: the software design of one unit, e.g., a class's method signatures and their contracts, is the specification of the units below it. "Specification" names the behavior, never a document.
+- **Specification** — the observable behavior at the boundary of a unit (a scene, prefab, class, or asset).
+  It is relative: the software design of one unit, e.g., a class's method signatures and their contracts, is the specification of the units below it.
+  "Specification" names the behavior, never a document.
 - **External specification** — the specification at the outermost boundary of the product, as the player or the API user observes it.
-- **Requirement** — what users need to hold true, e.g., "defeating an enemy feels satisfying". A requirement alone has no pass/fail criterion; the specification that realizes it does.
+- **Requirement** — what users need to hold true, e.g., "defeating an enemy feels satisfying".
+  A requirement alone has no pass/fail criterion; the specification that realizes it does.
 
 The input may state the specification in any document: a requirements document, a software design document, an ADR, or a bug report (its Expected is the specification; see `resources/reproduction-tests.md` in `test-designing-guide`).
 When the input also states requirements, note which specifications realize them; `test-designing-guide` marks their test cases as acceptance tests.
@@ -38,7 +41,8 @@ Read existing code and tests only as `test-designing-guide` allows (Reading Code
 
 ## Rules
 
-- Modify no files other than the output file (Step 5). Record a gap or a contradiction in the specification in the target's Assessment instead of editing the input documents.
+- Modify no files other than the output file (Step 5).
+  Record a gap or a contradiction in the specification in the target's Assessment instead of editing the input documents.
 
 ## Workflow
 
@@ -94,7 +98,8 @@ When one is not covered, run Step 2 again for that target.
 Choose the destination in this order:
 
 1. The user or the caller specified a destination → write there.
-2. The specification came from a file → write a Markdown file next to it, named after the input file with a `-tests` suffix (e.g., `docs/inventory.md` → `docs/inventory-tests.md`). When several input files were given, name it after the first one.
+2. The specification came from a file → write a Markdown file next to it, named after the input file with a `-tests` suffix (e.g., `docs/inventory.md` → `docs/inventory-tests.md`).
+   When several input files were given, name it after the first one.
 3. Otherwise (the specification was written directly in the argument, or taken from the conversation) → output in the conversation.
 
 Write the output verbatim per Step 3; when writing a file, add only a top-level heading naming the source document above it.

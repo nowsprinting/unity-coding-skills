@@ -1,5 +1,7 @@
 # Unity Asset YAML Format Reference
 
+Covers the YAML format of the allowlisted asset types and how Unity rewrites a hand-edited file on re-save.
+
 ## Prerequisite: Force Text serialization
 
 Unity must be set to **Force Text** serialization mode for `.asset` files to be hand-editable.
@@ -10,14 +12,16 @@ Unity must be set to **Force Text** serialization mode for `.asset` files to be 
 
 ## Allowlist
 
-Only the following asset types are safe to hand-edit. All others carry binary-derived or complex internal structure and must be opened in the Unity Editor.
+Only the following asset types are safe to hand-edit.
+All others carry binary-derived or complex internal structure and must be opened in the Unity Editor.
 
 | Class name | Class ID | File extension | Notes |
 |---|---|---|---|
 | `MonoBehaviour` / ScriptableObject | 114 | `.asset` | User-defined data assets |
 | `Material` | 21 | `.mat` | Shader property overrides |
 
-**Do not hand-edit** (non-exhaustive): `AnimationClip` (74), `AnimatorController` (91), `Texture2D` (28), `Mesh` (43), `AudioClip` (83), `LightingDataAsset` (1120). `PhysicsMaterial` (134) and `PhysicsMaterial2D` (272) are excluded due to Unity version naming discrepancies — request user confirmation before adding them to the allowlist.
+**Do not hand-edit** (non-exhaustive): `AnimationClip` (74), `AnimatorController` (91), `Texture2D` (28), `Mesh` (43), `AudioClip` (83), `LightingDataAsset` (1120).
+`PhysicsMaterial` (134) and `PhysicsMaterial2D` (272) are excluded due to Unity version naming discrepancies — request user confirmation before adding them to the allowlist.
 
 ## File structure overview
 
@@ -35,7 +39,8 @@ Every Unity text-serialized asset file has this shape:
 - **Lines 1–2** (`%YAML 1.1` and `%TAG`) are mandatory and must appear exactly as shown — Unity refuses to load the file if they differ.
 - **Document marker** `--- !u!<classID> &<fileID>`:
   - `!u!<classID>` — Unity class type tag (see Allowlist table above).
-  - `&<fileID>` — local YAML anchor, an integer unique within the file. Internal references use this number.
+  - `&<fileID>` — local YAML anchor, an integer unique within the file.
+    Internal references use this number.
   - For a single-root ScriptableObject `.asset`: always `--- !u!114 &11400000`.
   - For a single Material `.mat`: always `--- !u!21 &2100000`.
 - **Top-level mapping key** matches the class name: `MonoBehaviour:` for ScriptableObject, `Material:` for Material.
@@ -43,7 +48,8 @@ Every Unity text-serialized asset file has this shape:
 
 ## ScriptableObject canonical preamble fields
 
-For `MonoBehaviour:` assets, the first ten fields must appear in this order with these canonical values. User-defined fields come **after** `m_EditorClassIdentifier`.
+For `MonoBehaviour:` assets, the first ten fields must appear in this order with these canonical values.
+User-defined fields come **after** `m_EditorClassIdentifier`.
 
 | Field | Canonical value | Meaning / notes |
 |---|---|---|
@@ -60,8 +66,11 @@ For `MonoBehaviour:` assets, the first ten fields must appear in this order with
 
 ### `m_Script` details
 
-- `fileID: 11500000` — the canonical local ID of every MonoScript inside its `.cs.meta` file. This value is always `11500000`.
-- `guid` — the GUID from the corresponding `.cs.meta` file. Find it by reading `<ScriptName>.cs.meta` and copying its `guid:` line. **Do not generate or guess.**
+- `fileID: 11500000` — the canonical local ID of every MonoScript inside its `.cs.meta` file.
+  This value is always `11500000`.
+- `guid` — the GUID from the corresponding `.cs.meta` file.
+  Find it by reading `<ScriptName>.cs.meta` and copying its `guid:` line.
+  **Do not generate or guess.**
 - `type: 3` — indicates a script asset.
 
 ### `m_EditorClassIdentifier` format
@@ -70,7 +79,9 @@ Format: `<AssemblyName>::<Namespace>.<ClassName>`
 
 Example: `MyGame::MyGame.ScriptableObjects.ItemData`
 
-This field is a hint that Unity uses to display the class name in the Inspector. It is normalized by Unity on re-save. However, breaking it (e.g., wrong class name, wrong namespace) causes the asset to display as a "Missing Script" stub until Unity normalizes it on next save.
+This field is a hint that Unity uses to display the class name in the Inspector.
+It is normalized by Unity on re-save.
+However, breaking it (e.g., wrong class name, wrong namespace) causes the asset to display as a "Missing Script" stub until Unity normalizes it on next save.
 
 ## Material canonical preamble fields
 
@@ -109,7 +120,8 @@ Material:
 ```
 
 Key notes:
-- `m_Shader` references the shader asset. Built-in shaders use `type: 0` and a fixed GUID of the form `0000000000000000f000000000000000` — copy from an existing `.mat` in the project or package cache rather than guessing.
+- `m_Shader` references the shader asset.
+  Built-in shaders use `type: 0` and a fixed GUID of the form `0000000000000000f000000000000000` — copy from an existing `.mat` in the project or package cache rather than guessing.
 - `m_Parent: {fileID: 0}` — setting this to a non-zero cross-file reference turns the Material into a **Material Variant**; only do so intentionally.
 - Unity re-sorts `m_TexEnvs`, `m_Floats`, `m_Ints`, and `m_Colors` entries **alphabetically by property name** on every save — do not rely on ordering.
 
@@ -128,7 +140,8 @@ Serializes as:
 <Cost>k__BackingField: 1
 ```
 
-**Do not rename** the backing-field key to the property name (`Cost:`) — Unity will not recognize it and the value will be lost on next save. The angle brackets and `k__BackingField` suffix are literal and mandatory.
+**Do not rename** the backing-field key to the property name (`Cost:`) — Unity will not recognize it and the value will be lost on next save.
+The angle brackets and `k__BackingField` suffix are literal and mandatory.
 
 ## Object reference syntax
 
@@ -138,7 +151,8 @@ Serializes as:
 {fileID: 11400000}
 ```
 
-`fileID` matches an `&11400000` anchor elsewhere in the same file. `{fileID: 0}` means null.
+`fileID` matches an `&11400000` anchor elsewhere in the same file.
+`{fileID: 0}` means null.
 
 ### Cross-file reference
 
@@ -146,7 +160,8 @@ Serializes as:
 {fileID: N, guid: <32-hex>, type: T}
 ```
 
-All three keys are required. Omitting any key produces an unresolvable reference.
+All three keys are required.
+Omitting any key produces an unresolvable reference.
 
 | `type` value | Meaning |
 |---|---|
@@ -154,7 +169,8 @@ All three keys are required. Omitting any key produces an unresolvable reference
 | `2` | Project asset (most `.asset`, `.mat`, `.prefab`, `.unity` files) |
 | `3` | Script asset (MonoScript — target of `m_Script`) |
 
-**To obtain a GUID:** read the target asset's `.meta` file and copy its `guid:` line. Never generate or guess a GUID — a fabricated value produces a broken reference that is invisible until runtime.
+**To obtain a GUID:** read the target asset's `.meta` file and copy its `guid:` line.
+Never generate or guess a GUID — a fabricated value produces a broken reference that is invisible until runtime.
 
 ## Scalar formatting reference
 
@@ -173,7 +189,8 @@ All three keys are required. Omitting any key produces an unresolvable reference
 
 ### List and nested struct indentation
 
-Block sequences use 2-space indent. For a list of scalars or references:
+Block sequences use 2-space indent.
+For a list of scalars or references:
 
 ```yaml
 <ItemList>k__BackingField:
@@ -193,7 +210,8 @@ For a list of nested structs, the first field of each struct aligns with the `- 
 
 ## Behavior on re-save
 
-Unity does **not** preserve user formatting, key ordering, or comments when it re-saves an asset. Every hand-edit will be normalized:
+Unity does **not** preserve user formatting, key ordering, or comments when it re-saves an asset.
+Every hand-edit will be normalized:
 
 - All `m_*` preamble fields are reordered to Unity's canonical sequence.
 - Non-ASCII strings are re-emitted as `\uXXXX` escapes inside double quotes.
@@ -212,7 +230,8 @@ Unity is tolerant of **omitted** user fields (it supplies defaults), but droppin
 
 ## Worked example: Material (synthesized)
 
-> Note: The following is a synthesized minimal example based on Unity 6 Built-in / Unlit Color Material structure. Use it as a format reference when creating or editing `.mat` files.
+> Note: The following is a synthesized minimal example based on Unity 6 Built-in / Unlit Color Material structure.
+> Use it as a format reference when creating or editing `.mat` files.
 
 A minimal `Unlit/Color` Material (`Assets/Materials/ExampleMaterial.mat`):
 
@@ -249,24 +268,28 @@ Material:
 Annotations:
 - `--- !u!21 &2100000` — class ID 21 = Material; `2100000` is the canonical local anchor for a single-root Material.
 - `serializedVersion: 8` — Unity's internal migration version; do not change.
-- `m_Shader` with `type: 0` and `guid: 0000000000000000f000000000000000` — built-in shader reference format. The exact `fileID` and `guid` for a specific built-in shader must be copied from an existing `.mat` in the project or from a package-cache file; do not guess.
+- `m_Shader` with `type: 0` and `guid: 0000000000000000f000000000000000` — built-in shader reference format.
+  The exact `fileID` and `guid` for a specific built-in shader must be copied from an existing `.mat` in the project or from a package-cache file; do not guess.
 - `m_Parent: {fileID: 0}` — null; setting this to a cross-file reference creates a Material Variant.
-- `m_SavedProperties.m_Colors` contains `_Color` — the shader property name. Unity re-sorts all property entries by name on save.
+- `m_SavedProperties.m_Colors` contains `_Color` — the shader property name.
+  Unity re-sorts all property entries by name on save.
 - Empty lists (`m_TexEnvs: []`, `m_Floats: []`, etc.) are written inline — do not expand them to block sequences unless they actually have entries.
 
 ## Troubleshooting
 
-**Asset shows as "Missing Script" (broken pink stub) in Inspector**
-→ Check `m_Script`: verify `fileID: 11500000`, confirm `guid` matches the target `.cs.meta`, and confirm `type: 3`. Also verify `m_EditorClassIdentifier` has the correct `Assembly::Namespace.Type` format.
+**Asset shows as "Missing Script" (broken pink stub) in Inspector** → Check `m_Script`: verify `fileID: 11500000`, confirm `guid` matches the target `.cs.meta`, and confirm `type: 3`.
+Also verify `m_EditorClassIdentifier` has the correct `Assembly::Namespace.Type` format.
 
-**Edit appears accepted but Unity reverts it on next save**
-→ A field name typo or wrong scalar type (e.g. `true` instead of `1`) caused Unity to silently drop the value and substitute a default. Run `git diff` after Unity re-saves and trace which field was normalized. Align with Unity's output.
+**Edit appears accepted but Unity reverts it on next save** → A field name typo or wrong scalar type (e.g. `true` instead of `1`) caused Unity to silently drop the value and substitute a default.
+Run `git diff` after Unity re-saves and trace which field was normalized.
+Align with Unity's output.
 
-**Non-ASCII characters appear garbled or as escape sequences in Inspector**
-→ Ensure the file is UTF-8 without BOM, and that all non-ASCII characters inside string fields are encoded as `\uXXXX` inside double-quoted scalars. An unquoted field containing raw UTF-8 bytes may survive import but will be re-emitted as `\uXXXX` on the next save.
+**Non-ASCII characters appear garbled or as escape sequences in Inspector** → Ensure the file is UTF-8 without BOM, and that all non-ASCII characters inside string fields are encoded as `\uXXXX` inside double-quoted scalars.
+An unquoted field containing raw UTF-8 bytes may survive import but will be re-emitted as `\uXXXX` on the next save.
 
-**File does not start with `%YAML 1.1`**
-→ The project or this specific asset is in Binary or Mixed serialization mode. Do not hand-edit. Ask the user to switch Asset Serialization to Force Text (Edit → Project Settings → Editor → Asset Serialization → Force Text) and re-save the asset from within Unity before attempting to edit it as text.
+**File does not start with `%YAML 1.1`** → The project or this specific asset is in Binary or Mixed serialization mode.
+Do not hand-edit.
+Ask the user to switch Asset Serialization to Force Text (Edit → Project Settings → Editor → Asset Serialization → Force Text) and re-save the asset from within Unity before attempting to edit it as text.
 
 ## Reference links
 

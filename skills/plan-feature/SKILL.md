@@ -13,11 +13,13 @@ metadata:
   author: Koji Hasegawa
 ---
 
-Guide for plan mode. This skill defines the orchestration workflow for test-first implementation planning.
+Guide for plan mode.
+This skill defines the orchestration workflow for test-first implementation planning.
 
 ## Mode Check
 
-This skill requires **plan mode**. Before doing anything else, check the current mode:
+This skill requires **plan mode**.
+Before doing anything else, check the current mode:
 
 - `ExitPlanMode` is in the deferred tools list → **not in plan mode** → stop immediately and tell the user:
   > "This skill (`/plan-feature`) requires plan mode. Enter plan mode first: use `/plan` or press Shift+Tab to toggle."
@@ -25,7 +27,8 @@ This skill requires **plan mode**. Before doing anything else, check the current
 
 ## Task Type Check
 
-If the user's request is to investigate or fix a bug rather than implement a new feature, change a specification, or refactor, use `ExitPlanMode` immediately and guide the user to invoke the `/fix-bug` skill instead. The rest of this skill applies to feature implementation, spec changes, and refactoring only.
+If the user's request is to investigate or fix a bug rather than implement a new feature, change a specification, or refactor, use `ExitPlanMode` immediately and guide the user to invoke the `/fix-bug` skill instead.
+The rest of this skill applies to feature implementation, spec changes, and refactoring only.
 
 ## Plan Mode Workflow
 
@@ -33,22 +36,30 @@ If the user's request is to investigate or fix a bug rather than implement a new
 
 Launch Explore agents to understand the codebase relevant to the task.
 
-**TBD items:** If the requirements or specifications explicitly contain the text "TBD" for any item, treat that item as non-existent — do not design or implement it. Only ask the user via `AskUserQuestion` if the TBD item is a prerequisite that cannot be deferred without blocking the overall design.
+**TBD items:** If the requirements or specifications explicitly contain the text "TBD" for any item, treat that item as non-existent — do not design or implement it.
+Only ask the user via `AskUserQuestion` if the TBD item is a prerequisite that cannot be deferred without blocking the overall design.
 
 ### Step 2: Implementation Design (Plan Agent)
 
-Launch a Plan agent to design the class/method structure. Include the following instruction in the Plan agent prompt:
+Launch a Plan agent to design the class/method structure.
+Include the following instruction in the Plan agent prompt:
 
 > Design the class/method seams with **testability** in mind:
 > - Prefer small, focused public interfaces
-> - **Test through the same seam production code uses.** Tests should exercise the same `public`/`internal` API that production callers go through. Do not promote a `private` method or widen visibility merely to reach it from a test — by default, private stays private.
-> - **Sanctioned exception (reduce combinatorial coverage):** When a method takes **3 or more parameters** — a heuristic for the real trigger, which is that several *independent* conditions combine so exhaustive coverage cost explodes (this can also happen with fewer parameters that each take many values, and may not apply when the extra parameters don't drive branching) — extract the cohesive sub-logic (a pure computation or decision that depends on only 1–2 of those inputs) into its own unit. Prefer a standalone class or pure function when the logic stands on its own; fall back to an `internal` method on the same class only when it cannot be cleanly separated from instance state. Give the extracted unit `internal` (not `public`) visibility when it need not be reachable outside the assembly — the narrowed visibility is a *consequence* of the extraction, not the goal.
+> - **Test through the same seam production code uses.**
+>   Tests should exercise the same `public`/`internal` API that production callers go through.
+>   Do not promote a `private` method or widen visibility merely to reach it from a test — by default, private stays private.
+> - **Sanctioned exception (reduce combinatorial coverage):** When a method takes **3 or more parameters** — a heuristic for the real trigger, which is that several *independent* conditions combine so exhaustive coverage cost explodes (this can also happen with fewer parameters that each take many values, and may not apply when the extra parameters don't drive branching) — extract the cohesive sub-logic (a pure computation or decision that depends on only 1–2 of those inputs) into its own unit.
+>   Prefer a standalone class or pure function when the logic stands on its own; fall back to an `internal` method on the same class only when it cannot be cleanly separated from instance state.
+>   Give the extracted unit `internal` (not `public`) visibility when it need not be reachable outside the assembly — the narrowed visibility is a *consequence* of the extraction, not the goal.
 > - Inject dependencies via interfaces so they can be replaced with test doubles
 > - Avoid hidden static/global state and `new` calls inside constructors for external dependencies
 >
-> **Naming:** If any class or public method name explicitly specified by the user is a poor fit for what the spec describes, propose a more appropriate alternative using `AskUserQuestion` before finalizing the design. Accept the user's final choice without further challenge.
+> **Naming:** If any class or public method name explicitly specified by the user is a poor fit for what the spec describes, propose a more appropriate alternative using `AskUserQuestion` before finalizing the design.
+> Accept the user's final choice without further challenge.
 >
-> **TBD items:** Any item explicitly marked "TBD" in the requirements or spec must be excluded from the design. Skip it silently unless it is structurally required to complete the design (in which case, ask via `AskUserQuestion`).
+> **TBD items:** Any item explicitly marked "TBD" in the requirements or spec must be excluded from the design.
+> Skip it silently unless it is structurally required to complete the design (in which case, ask via `AskUserQuestion`).
 
 The Plan agent output should include **only**:
 - Class names and responsibilities
@@ -98,7 +109,8 @@ Use `AskUserQuestion` to present the user with three options:
 
 ### Step 4: Review
 
-Read the critical files identified in the plan. Verify that the Plan agent's design and the `/design-tests` test cases are consistent with each other and with the user's intent.
+Read the critical files identified in the plan.
+Verify that the Plan agent's design and the `/design-tests` test cases are consistent with each other and with the user's intent.
 
 ### Step 5: Write the Plan File
 
@@ -106,7 +118,8 @@ Assemble the plan file with the following sections:
 
 1. **Context** — why this change is needed
 2. **Implementation Design** — from Step 2 Plan agent output
-3. **Test Cases** — pasted verbatim as one block from the `/design-tests` output. Do not rewrite, translate, or clean up the output — `/design-tests` already applies its content restrictions.
+3. **Test Cases** — pasted verbatim as one block from the `/design-tests` output.
+   Do not rewrite, translate, or clean up the output — `/design-tests` already applies its content restrictions.
 4. **Known Trade-offs** — from `ASSESSMENT: WARN` issues (if any)
 5. **Development Workflow** — Read `${CLAUDE_SKILL_DIR}/assets/development-workflow-template.md` and paste its full contents verbatim as the body of this section in the plan file, then add any project-specific steps per `CLAUDE.md`
 

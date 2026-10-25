@@ -1,5 +1,7 @@
 # Unity Modern Guidelines
 
+Covers the Unity and C# features available in each Unity version.
+
 ## How to Use This Guidelines
 
 Based on the detected Unity version, apply all features up to that version when writing Unity C# code.
@@ -92,8 +94,7 @@ Project Unity version:
     // Use:
     var slice = items[1..4];
     ```
-- Use `System.MathF` for `float` math instead of double-cast `System.Math` (keep `System.Math` for
-  `double` math)
+- Use `System.MathF` for `float` math instead of double-cast `System.Math` (keep `System.Math` for `double` math)
     ```csharp
     // Instead of:
     var root = (float)Math.Sqrt(value);
@@ -176,7 +177,7 @@ _ = SpawnAsync(destroyCancellationToken);
 
 ### Unity 6000.0+
 
-**Unity Test Framework:**                                                                                                                                                                                        
+**Unity Test Framework:**
 - `com.unity.test-framework` is bundled as a **core package** from 6000.0.44f1; no separate package installation required
 
 ### Unity 6000.3+

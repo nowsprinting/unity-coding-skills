@@ -15,8 +15,10 @@ Guide for writing test code for Unity projects.
 
 ## Rules
 
-- Before modifying any test file, check if the editor is in Play Mode. If it is, stop it using the `unity_play_control` tool first.
-- Never create `.meta` files. Unity editor creates them automatically.
+- Before modifying any test file, check if the editor is in Play Mode.
+  If it is, stop it using the `unity_play_control` tool first.
+- Never create `.meta` files.
+  Unity editor creates them automatically.
 - When a test creates a `GameObject` or instantiates a prefab, apply `[CreateScene]` to the test method (not required if `[LoadScene]` is already present).
 - When adding a test seam to production code (e.g., an `internal` accessor or a virtual override point to support injection), always wrap it with `#if UNITY_INCLUDE_TESTS` … `#endif` so it is excluded from non-test builds:
     ```csharp
@@ -44,8 +46,10 @@ Guide for writing test code for Unity projects.
 
 Give every value the test's outcome does not depend on — an argument of the SUT, a field of an object passed to the SUT, the default of a creation-method parameter — a value that declares "this value does not matter here":
 
-- Use a **neutral** value: `0`, `null`, `false`, empty string/collection. A domain-plausible value (e.g. `hp = 79`) reads as a deliberate Arrange choice, and no reader can tell it apart from a value the outcome depends on.
-- If no neutral value works — `0`/`null` breaks the object graph or crashes something downstream — then nothing can mean "does not matter", so the test states the value it needs. Substituting a different "safe" value just hides the same problem behind a less obvious number.
+- Use a **neutral** value: `0`, `null`, `false`, empty string/collection.
+  A domain-plausible value (e.g. `hp = 79`) reads as a deliberate Arrange choice, and no reader can tell it apart from a value the outcome depends on.
+- If no neutral value works — `0`/`null` breaks the object graph or crashes something downstream — then nothing can mean "does not matter", so the test states the value it needs.
+  Substituting a different "safe" value just hides the same problem behind a less obvious number.
 
 A value no assertion can depend on (e.g. a display name used only for logging) genuinely does not matter, so a descriptive placeholder such as `"TestEnemy"` is fine in place of `null` — but default to neutral, and deviate only when you can state why the value is provably inert.
 
@@ -81,7 +85,8 @@ while (battleDirector.IsPlaying) // wait until the played action fully resolves
 Assert.That(battleState.Enemies[0].Hp, Is.LessThan(hpBefore));
 ```
 
-- To confirm step completion, use a production-side state machine or a "busy" signal (`IsPlaying`, coroutine flag, etc.). Do not use a fixed number of frames or `WaitForSeconds`.
+- To confirm step completion, use a production-side state machine or a "busy" signal (`IsPlaying`, coroutine flag, etc.).
+  Do not use a fixed number of frames or `WaitForSeconds`.
 - When UniTask is available, `UniTask.WaitUntil` and `UniTask.WaitUntilValueChanged` are alternatives to the `while` loop:
   ```csharp
   await UniTask.WaitUntil(() => isActive == false);
@@ -145,9 +150,11 @@ See: `test-helper-ui.md`.
 
 #### Verify modal/overlay blocking
 
-A modal or overlay must block interaction with elements behind it. Test from two angles:
+A modal or overlay must block interaction with elements behind it.
+Test from two angles:
 
-- **Behavioural (preferred)**: attempt to reach a background element via `GameObjectFinder` with `reachable: true` (default) while the overlay is open — the finder throws `TimeoutException`, confirming blockage. Repeat with the overlay dismissed to confirm reachability restores.
+- **Behavioural (preferred)**: attempt to reach a background element via `GameObjectFinder` with `reachable: true` (default) while the overlay is open — the finder throws `TimeoutException`, confirming blockage.
+  Repeat with the overlay dismissed to confirm reachability restores.
 - **Structural**: assert the backdrop intercepts raycasts: `Assert.That(background.GetComponent<Image>().raycastTarget, Is.True)` (or `canvasGroup.blocksRaycasts`).
 
 When a decorative full-screen element should not block (e.g., a background image), annotate it with `NonBlockingAnnotation` so `GameObjectFinder` skips it.
@@ -158,7 +165,8 @@ See: `test-helper-ui.md`.
 When implementing a visual verification test (a test designed to verify on-screen rendering via screenshot and image analysis):
 
 1. Take a screenshot using `[TakeScreenshot]` or `ScreenshotHelper.TakeScreenshotAsync()` (see `test-helper.md`).
-2. Apply `[Description("After running this test, verify the screenshots from the following perspectives: <verification aspects>")]` to the test method. The verification aspects are taken directly from the **Image analysis by saved screenshot** column in the test case design.
+2. Apply `[Description("After running this test, verify the screenshots from the following perspectives: <verification aspects>")]` to the test method.
+   The verification aspects are taken directly from the **Image analysis by saved screenshot** column in the test case design.
 3. Apply `[Category("VisualVerification")]` to the test method.
 4. You can omit writing `Assert` statements.
 

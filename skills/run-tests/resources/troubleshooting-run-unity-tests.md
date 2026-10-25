@@ -1,5 +1,12 @@
 # Troubleshooting the `run_unity_tests` Tool
 
+Covers diagnosing failures of the `run_unity_tests` tool from its response and log files.
+
+Out of scope:
+
+- Failures of runs on a standalone player — see `run-on-standalone-player.md`
+- Errors from the TestHelper packages — see `troubleshooting-test-helper.md` and `troubleshooting-test-helper-ui.md`
+
 ## Tool Not Found
 
 If the `run_unity_tests` tool is not available, consider the following causes:
@@ -21,11 +28,13 @@ If the response takes longer than expected, check:
 
 ## Triage by Tool Response
 
-Check the tool response before investigating log files. Most failure modes can be identified and resolved from `errorMessage` alone.
+Check the tool response before investigating log files.
+Most failure modes can be identified and resolved from `errorMessage` alone.
 
 ### `success: false` — Validation errors
 
-Fix the tool call and retry immediately. No log investigation needed.
+Fix the tool call and retry immediately.
+No log investigation needed.
 
 | `errorMessage`                   | Problem                          | Fix                                                                        |
 |----------------------------------|----------------------------------|----------------------------------------------------------------------------|
@@ -38,9 +47,11 @@ Fix the tool call and retry immediately. No log investigation needed.
 
 `errorMessage`: `"Unity Editor did not connect within 30 seconds."`
 
-Rider cannot see the Unity Editor. Possible causes:
+Rider cannot see the Unity Editor.
+Possible causes:
 
-- **Compilation errors**: Play Mode tests cannot run if there are compilation errors. Check with `get_unity_compilation_result` and fix errors before retrying.
+- **Compilation errors**: Play Mode tests cannot run if there are compilation errors.
+  Check with `get_unity_compilation_result` and fix errors before retrying.
 - **Editor not running**: Use the `execute_run_configuration` tool to launch the `Start Unity` configuration, then retry.
 - **Wrong project open**: Verify the Editor has the correct project loaded.
 
@@ -48,56 +59,67 @@ Rider cannot see the Unity Editor. Possible causes:
 
 `errorMessage`: `"Test execution timed out after N seconds."`
 
-This fires the same way whether the Unity Editor is still running normally or has frozen completely — the MCP tool's own timeout (default 300s / `MCP_TOOL_TIMEOUT`) is on a channel independent of the Editor. Distinguishing the two determines whether retrying can help at all.
+This fires the same way whether the Unity Editor is still running normally or has frozen completely — the MCP tool's own timeout (default 300s / `MCP_TOOL_TIMEOUT`) is on a channel independent of the Editor.
+Distinguishing the two determines whether retrying can help at all.
 
 **Step 1 — Determine whether the Editor actually froze.**
 
 - Inspect `idea.log` for `UnitTestLaunch created` and `RunUnitTestLaunch.Start called` (confirming the run started), then check `Editor.log` for the lifecycle marker sequence described in [Tests launched but timed out](#tests-launched-but-timed-out).
   - Markers 1–3 present but marker 5 absent → the Editor froze — see [Editor freeze](#possible-cause-editor-freeze) for causes.
   - Marker 5 present → the run completed; this was not a freeze — go to Step 2.
-- If still unclear, ask the user whether the Unity Editor UI is responding to input at all. A genuinely unresponsive Editor confirms a freeze.
+- If still unclear, ask the user whether the Unity Editor UI is responding to input at all.
+  A genuinely unresponsive Editor confirms a freeze.
 
-**If frozen, retrying `run_unity_tests` will not help** — it reaches the same frozen Editor and times out again the same way. Report the freeze to the user and ask them to force-quit and relaunch the Unity Editor (`execute_run_configuration` → `Start Unity`), then fix the test code that caused it before re-running.
+**If frozen, retrying `run_unity_tests` will not help** — it reaches the same frozen Editor and times out again the same way.
+Report the freeze to the user and ask them to force-quit and relaunch the Unity Editor (`execute_run_configuration` → `Start Unity`), then fix the test code that caused it before re-running.
 
 **Step 2 — If not frozen, reduce scope or increase the timeout.**
 
 - **Narrow the test selection**: Add `assemblyNames`, `testNames`, or `categoryNames` filters to run fewer tests per call.
-- **Tests with a long `[Timeout]` attribute**: NUnit's default per-test timeout is 180,000 ms (3 minutes). If tests intentionally take longer, ask the user to increase `MCP_TOOL_TIMEOUT` (e.g., `MCP_TOOL_TIMEOUT=600`).
+- **Tests with a long `[Timeout]` attribute**: NUnit's default per-test timeout is 180,000 ms (3 minutes).
+  If tests intentionally take longer, ask the user to increase `MCP_TOOL_TIMEOUT` (e.g., `MCP_TOOL_TIMEOUT=600`).
 
 ### `success: false` — Domain reload reconnection failure
 
 `errorMessage`: `"Unity Editor did not reconnect within N seconds after domain reload. This may be caused by a crash or the editor being closed. However, before retrying or restarting Unity Editor, check idea.log and Editor.log to understand the situation."`
 
-Check `Editor.log` for a crash or compilation error that prevented the Editor from recovering. See [Domain reload during test execution](#domain-reload-during-test-execution) for log patterns to look for.
+Check `Editor.log` for a crash or compilation error that prevented the Editor from recovering.
+See [Domain reload during test execution](#domain-reload-during-test-execution) for log patterns to look for.
 
-If the Editor is still running, wait 10–30 seconds and retry once. If reconnection fails repeatedly, restart the Unity Editor.
+If the Editor is still running, wait 10–30 seconds and retry once.
+If reconnection fails repeatedly, restart the Unity Editor.
 
 ### `success: false` — Protocol disconnection
 
 `errorMessage`: `"Test execution was cancelled due to protocol disconnection or Kotlin coroutine cancellation."`
 
-The MCP client (Claude Code) disconnected, or Rider itself shut down. Confirm both Rider and the MCP connection are healthy, then retry.
+The MCP client (Claude Code) disconnected, or Rider itself shut down.
+Confirm both Rider and the MCP connection are healthy, then retry.
 
 ### `success: true` — Zero test results
 
 All of `passCount`, `failCount`, `skipCount`, `inconclusiveCount` are `0`.
 
-No tests matched the filter. See [Zero test results returned as success](#zero-test-results-returned-as-success) for log patterns, then:
+No tests matched the filter.
+See [Zero test results returned as success](#zero-test-results-returned-as-success) for log patterns, then:
 
 - Verify `assemblyNames` by running `resolve-test-target.sh` against any test file in the target assembly.
 - Check spelling of any `testNames` or `categoryNames` values.
 
 ### `success: true` — Failures present
 
-Read `failedTests` and `inconclusiveTests` for test IDs and output. No log investigation needed unless failures point to environment or infrastructure issues.
+Read `failedTests` and `inconclusiveTests` for test IDs and output.
+No log investigation needed unless failures point to environment or infrastructure issues.
 
 ## Log Files to Investigate
 
-Paths are from Unity's [Log Files](https://docs.unity3d.com/Manual/log-files.html) and JetBrains' [Directories used by the IDE](https://www.jetbrains.com/help/rider/Directories_Used_by_the_IDE_to_Store_Settings_Caches_Plugins_and_Logs.html) documentation. Replace `<version>` with the Rider build directory name (e.g. `Rider2024.3`).
+Paths are from Unity's [Log Files](https://docs.unity3d.com/Manual/log-files.html) and JetBrains' [Directories used by the IDE](https://www.jetbrains.com/help/rider/Directories_Used_by_the_IDE_to_Store_Settings_Caches_Plugins_and_Logs.html) documentation.
+Replace `<version>` with the Rider build directory name (e.g. `Rider2024.3`).
 
 ### JetBrains Rider log (primary)
 
-Every `run_unity_tests` invocation writes here. Grep keywords: `UnityTestMcpHandler`, `RunUnityTestsTool`.
+Every `run_unity_tests` invocation writes here.
+Grep keywords: `UnityTestMcpHandler`, `RunUnityTestsTool`.
 
 | OS      | Path                                              |
 |---------|---------------------------------------------------|
@@ -117,14 +139,19 @@ Editor-side crashes, domain reloads, compile errors, and test-framework lifecycl
 | Windows | `%LOCALAPPDATA%\Unity\Editor\Editor.log` |
 | Linux   | `~/.config/unity3d/Editor.log`           |
 
-These are the global Editor log paths. Check the Editor version in `ProjectSettings/ProjectVersion.txt` (`m_EditorVersion`) first:
+These are the global Editor log paths.
+Check the Editor version in `ProjectSettings/ProjectVersion.txt` (`m_EditorVersion`) first:
 
-- **Unity 6000.5 or later**: the default is the project-specific log `<project root>/Logs/Editor.log`. Read it first. A setting can switch the output back to the global Editor log, so if the project-specific log is missing or stale (its modification time predates the current Editor session), read the global Editor log above instead.
+- **Unity 6000.5 or later**: the default is the project-specific log `<project root>/Logs/Editor.log`.
+  Read it first.
+  A setting can switch the output back to the global Editor log, so if the project-specific log is missing or stale (its modification time predates the current Editor session), read the global Editor log above instead.
 - **Earlier than Unity 6000.5**: read only the global Editor log above.
 
 ### Editor.log vs Editor-prev.log
 
-Unity's normal convention is `Editor.log` = current session, `Editor-prev.log` = previous session. This does not always hold — some setups (e.g., an Editor session attached to Rider/an IDE) have been observed writing the actively-updated log to `Editor-prev.log` while `Editor.log` sits stale from an earlier session. Before trusting either file, compare their modification times (`ls -la` on both) and read whichever is actually current; do not assume the filename tells you which one is live.
+Unity's normal convention is `Editor.log` = current session, `Editor-prev.log` = previous session.
+This does not always hold — some setups (e.g., an Editor session attached to Rider/an IDE) have been observed writing the actively-updated log to `Editor-prev.log` while `Editor.log` sits stale from an earlier session.
+Before trusting either file, compare their modification times (`ls -la` on both) and read whichever is actually current; do not assume the filename tells you which one is live.
 
 ## Log Patterns by Scenario
 
@@ -135,7 +162,8 @@ Unity's normal convention is `Editor.log` = current session, `Editor-prev.log` =
 BackendUnityModel=null
 ```
 
-Rider cannot see the Unity Editor. For recovery steps, see [Unity Editor not connected](#success-false--unity-editor-not-connected).
+Rider cannot see the Unity Editor.
+For recovery steps, see [Unity Editor not connected](#success-false--unity-editor-not-connected).
 
 ### Tests launched but timed out
 
@@ -153,20 +181,26 @@ For recovery steps, see [Timeout](#success-false--timeout).
 
 #### Possible cause: Editor freeze
 
-The Unity Editor's main thread never yielded, so Unity Test Framework's own timeout mechanism — which needs a yield point to check elapsed time — never got a chance to run either. Only the external MCP tool timeout eventually fires; the Editor itself remains frozen, and the remaining lifecycle markers never appear in `Editor.log`, so `idea.log` alone cannot identify the hanging test.
+The Unity Editor's main thread never yielded, so Unity Test Framework's own timeout mechanism — which needs a yield point to check elapsed time — never got a chance to run either.
+Only the external MCP tool timeout eventually fires; the Editor itself remains frozen, and the remaining lifecycle markers never appear in `Editor.log`, so `idea.log` alone cannot identify the hanging test.
 
 Common causes:
 
-- An infinite loop, or a wait whose condition never becomes true, with **no** `yield return` / `await` reached inside the loop body. (A loop that does yield each iteration lets Unity Test Framework's own timeout fail just that one test instead — the run then continues and completes normally, which does not match this log pattern.)
+- An infinite loop, or a wait whose condition never becomes true, with **no** `yield return` / `await` reached inside the loop body.
+  (A loop that does yield each iteration lets Unity Test Framework's own timeout fail just that one test instead — the run then continues and completes normally, which does not match this log pattern.)
 - An `async` delegate passed to an NUnit assertion overload that accepts one (`Assert.ThrowsAsync`, `Assert.CatchAsync`, `Is.Not.AllocatingGCMemory()`, …), or a `DelayedConstraint` (`.After(ms)`).
 
-[UTF Analyzers](https://github.com/nowsprinting/test-framework.analyzers) reports many of these patterns before the run. Fetch the rule list from the **Diagnostics** section of its [README](https://github.com/nowsprinting/test-framework.analyzers/blob/master/README.md) instead of relying on memory — newer versions add rules. If the suspected test code matches a rule, find out why no diagnostic stopped it:
+[UTF Analyzers](https://github.com/nowsprinting/test-framework.analyzers) reports many of these patterns before the run.
+Fetch the rule list from the **Diagnostics** section of its [README](https://github.com/nowsprinting/test-framework.analyzers/blob/master/README.md) instead of relying on memory — newer versions add rules.
+If the suspected test code matches a rule, find out why no diagnostic stopped it:
 
-1. **Installation and version** — look for `com.nowsprinting.test-framework.analyzers` in `Packages/manifest.json` (UPM; the resolved version is in `Packages/packages-lock.json`) or `UTFAnalyzers` in `Assets/packages.config` (NuGetForUnity). Compare the installed version with the [releases](https://github.com/nowsprinting/test-framework.analyzers/releases) to see whether the matching rule exists in it.
+1. **Installation and version** — look for `com.nowsprinting.test-framework.analyzers` in `Packages/manifest.json` (UPM; the resolved version is in `Packages/packages-lock.json`) or `UTFAnalyzers` in `Assets/packages.config` (NuGetForUnity).
+   Compare the installed version with the [releases](https://github.com/nowsprinting/test-framework.analyzers/releases) to see whether the matching rule exists in it.
 2. **Suppression** — search `.editorconfig` and `.globalconfig` for `dotnet_diagnostic.UTF*.severity` entries that lower the rule's default severity, and the test code for `#pragma warning disable UTF*` or `[SuppressMessage]` naming a `UTF*` ID.
 3. **Current diagnostics** — run `get_file_problems` on the suspected test file to see whether the diagnostic fires now.
 
-Report the matching rule and the findings (not installed, outdated, or suppressed) to the user, and let the user decide whether to install, upgrade, or remove the suppression. Use `AskUserQuestion` only for what the files cannot settle.
+Report the matching rule and the findings (not installed, outdated, or suppressed) to the user, and let the user decide whether to install, upgrade, or remove the suppression.
+Use `AskUserQuestion` only for what the files cannot settle.
 
 Check `Editor.log` for the test-framework lifecycle marker sequence:
 
@@ -178,13 +212,16 @@ Check `Editor.log` for the test-framework lifecycle marker sequence:
 | `Saving results to: ...TestResults.xml`               | Result file saved (only in projects that write one) |
 | `Executing IPostBuildCleanup for: ...TestRunBuilder.` | Runner cleanup complete                             |
 
-If markers 1–3 appear but marker 5 does not, the Editor froze during test execution. Whether marker 4 appears depends on the project, so do not use it to judge completion.
+If markers 1–3 appear but marker 5 does not, the Editor froze during test execution.
+Whether marker 4 appears depends on the project, so do not use it to judge completion.
 
-`Editor.log` cannot identify *which* test caused the freeze in interactive mode — per-test `##utp:` messages are only emitted in batch mode. To isolate it: add `Debug.Log` at the start of each test method so the last logged name is visible, run tests one at a time in the Test Runner, or switch to batch-mode execution where `##utp:{"type":"TestStarted",...}` lines appear in `Editor.log`.
+`Editor.log` cannot identify *which* test caused the freeze in interactive mode — per-test `##utp:` messages are only emitted in batch mode.
+To isolate it: add `Debug.Log` at the start of each test method so the last logged name is visible, run tests one at a time in the Test Runner, or switch to batch-mode execution where `##utp:{"type":"TestStarted",...}` lines appear in `Editor.log`.
 
 ### Manually canceled in Unity Test Runner
 
-Same `idea.log` pattern as [timed out](#tests-launched-but-timed-out) — `RunResult` is not fired on manual cancel (known limitation). For recovery steps, see [Timeout](#success-false--timeout).
+Same `idea.log` pattern as [timed out](#tests-launched-but-timed-out) — `RunResult` is not fired on manual cancel (known limitation).
+For recovery steps, see [Timeout](#success-false--timeout).
 
 ### Domain reload during test execution
 
@@ -194,7 +231,9 @@ BackendUnityModel became null (domain reload or disconnection), waiting for reco
 Unity Editor reconnected after domain reload, re-launching tests
 ```
 
-This is normal for Play Mode tests. The framework handles reconnection automatically and relaunches the test run. For recovery steps, see [Domain reload reconnection failure](#success-false--domain-reload-reconnection-failure).
+This is normal for Play Mode tests.
+The framework handles reconnection automatically and relaunches the test run.
+For recovery steps, see [Domain reload reconnection failure](#success-false--domain-reload-reconnection-failure).
 
 ### Protocol disconnection (Kotlin cancellation)
 
@@ -203,7 +242,8 @@ This is normal for Play Mode tests. The framework handles reconnection automatic
 Test execution was cancelled due to protocol disconnection or Kotlin coroutine cancellation.
 ```
 
-The MCP client (Claude Code) disconnected, or Rider itself shut down. For recovery steps, see [Protocol disconnection](#success-false--protocol-disconnection).
+The MCP client (Claude Code) disconnected, or Rider itself shut down.
+For recovery steps, see [Protocol disconnection](#success-false--protocol-disconnection).
 
 ### Zero test results returned as success
 
@@ -213,13 +253,16 @@ RunResult received: passed=true, testResults.Count=0
 Building response, snapshot.Count=0
 ```
 
-The test filter matched no tests. For recovery steps, see [Zero test results](#success-true--zero-test-results).
+The test filter matched no tests.
+For recovery steps, see [Zero test results](#success-true--zero-test-results).
 
 ## Diagnostic Workflow
 
 1. Grep `idea.log` for `UnityTestMcpHandler` to find the most recent invocation and see how far it progressed.
 2. `BackendUnityModel=null` → Unity Editor is not connected; see [Unity Editor not connected](#unity-editor-not-connected).
-3. `UnitTestLaunch created` is present but `RunResult received` is missing → timeout, manual cancel, or Editor freeze. Check `Editor.log` for the lifecycle marker sequence: if the Editor froze, retrying or adjusting `MCP_TOOL_TIMEOUT` will not help — ask the user to restart the Editor first. Otherwise, increase `MCP_TOOL_TIMEOUT` or narrow the test filter.
+3. `UnitTestLaunch created` is present but `RunResult received` is missing → timeout, manual cancel, or Editor freeze.
+   Check `Editor.log` for the lifecycle marker sequence: if the Editor froze, retrying or adjusting `MCP_TOOL_TIMEOUT` will not help — ask the user to restart the Editor first.
+   Otherwise, increase `MCP_TOOL_TIMEOUT` or narrow the test filter.
 4. `became null` → domain reload occurred; `did not reconnect` → check `Editor.log` for a crash or compile error.
 5. `snapshot.Count=0` → filter mismatch; verify `assemblyNames` by running `resolve-test-target.sh` against any test file in the target assembly, or check `testNames` spelling.
 6. If `idea.log` shows the launch started but stopped silently, check `Editor.log` for the lifecycle marker sequence to determine whether the hang occurred before or after test code started running.

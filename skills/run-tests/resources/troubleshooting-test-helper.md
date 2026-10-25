@@ -1,12 +1,15 @@
 # Troubleshooting the TestHelper package
 
+Covers problems with `[TakeScreenshot]` and `FlipTexture2dEqualityComparer` of the `com.nowsprinting.test-helper` package.
+
 ## TakeScreenshot
 
 ### Screenshot resolution is too low for image analysis
 
 When the GameView resolution is too low, screenshots produced by `[TakeScreenshot]` may not have enough detail for pixel-level image analysis.
 
-Apply `[GameViewResolution(960, 540, "540p")]` to the test method temporarily, re-run the tests, then remove the attribute. Do not commit resolution overrides to visual verification tests.
+Apply `[GameViewResolution(960, 540, "540p")]` to the test method temporarily, re-run the tests, then remove the attribute.
+Do not commit resolution overrides to visual verification tests.
 
 ```csharp
 [Test]
@@ -51,7 +54,8 @@ If the assertion still fails after raising the tolerance, the rendering result i
 
 ### 4. Verify capture timing
 
-Screenshots must be captured at the end of a frame. Capturing before `EndOfFrameAsync` may snapshot a pre-render state:
+Screenshots must be captured at the end of a frame.
+Capturing before `EndOfFrameAsync` may snapshot a pre-render state:
 
 ```csharp
 await Awaitable.EndOfFrameAsync(); // Do not capture before this
@@ -60,4 +64,5 @@ var actual = ScreenCapture.CaptureScreenshotAsTexture();
 
 ### 5. Verify setup
 
-If the `FlipBinding.CSharp` NuGet package (v1.0.0 or newer) is not installed, compilation will fail. When not installed via OpenUPM (UnityNuGet), the scripting define symbol `ENABLE_FLIP_BINDING` must also be added.
+If the `FlipBinding.CSharp` NuGet package (v1.0.0 or newer) is not installed, compilation will fail.
+When not installed via OpenUPM (UnityNuGet), the scripting define symbol `ENABLE_FLIP_BINDING` must also be added.

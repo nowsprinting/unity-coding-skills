@@ -1,13 +1,21 @@
 # UI Test Helper — Quick Reference
 
-Package: `com.nowsprinting.test-helper.ui`  
+Covers the APIs of the `com.nowsprinting.test-helper.ui` package for finding and operating GameObjects, monkey testing, and their customization.
+
+Out of scope:
+
+- Attributes, constraints, and comparers — see `test-helper.md`
+
+Package: `com.nowsprinting.test-helper.ui`
 Add `TestHelper.UI` to Assembly Definition References.
 
 ---
 
 ## Find a GameObject
 
-Use `GameObjectFinder` instead of `UnityEngine.GameObject.Find`. `GameObjectFinder` polls until the object appears (no timing issues), verifies user reachability and interactability, and fails with `TimeoutException` when the object is not found — making test failures actionable. `GameObject.Find` returns `null` silently and cannot check reachability.
+Use `GameObjectFinder` instead of `UnityEngine.GameObject.Find`.
+`GameObjectFinder` polls until the object appears (no timing issues), verifies user reachability and interactability, and fails with `TimeoutException` when the object is not found — making test failures actionable.
+`GameObject.Find` returns `null` silently and cannot check reachability.
 
 ```csharp
 var finder = new GameObjectFinder();                    // 1 second timeout (default)
@@ -21,14 +29,15 @@ var finder = new GameObjectFinder(timeoutSeconds: 5d);  // custom timeout
 | Find by component type, text, or texture       | `await finder.FindByMatcherAsync(matcher)`                                        |
 | Find inside a scrollable or pageable component | `await finder.FindByMatcherAsync(matcher, paginator: paginator)`                  |
 
-Common options: `reachable: true` (default), `interactable: false` (default).  
+Common options: `reachable: true` (default), `interactable: false` (default).
 Result: use `.GameObject` on the returned value.
 
 **UI blocking**: `reachable: true` is also useful for verifying that elements behind a modal dialog or overlay are blocked from interaction — or conversely, that they become reachable once the overlay is dismissed.
 
 ### Matchers
 
-Matcher is an implementation class of `TestHelper.UI.GameObjectMatchers.IGameObjectMatcher`. Use to determine whether a `GameObject` matches a specific condition.
+Matcher is an implementation class of `TestHelper.UI.GameObjectMatchers.IGameObjectMatcher`.
+Use to determine whether a `GameObject` matches a specific condition.
 
 **Built-in matchers**: `ComponentMatcher`, `ButtonMatcher` (by name/path/text/texture), `ToggleMatcher` (by name/path/text)
 
@@ -58,7 +67,8 @@ var btn = await finder.FindByMatcherAsync(new ButtonMatcher(texture: "icon_close
 
 ### Paginators
 
-Paginator is an implementation class of `TestHelper.UI.Paginators.IPaginator`. Use to find `GameObject` on pageable or scrollable UI components (e.g., `ScrollRect`, Carousel, Paged dialog).
+Paginator is an implementation class of `TestHelper.UI.Paginators.IPaginator`.
+Use to find `GameObject` on pageable or scrollable UI components (e.g., `ScrollRect`, Carousel, Paged dialog).
 
 **Built-in paginators**: `UguiScrollbarPaginator(scrollbar)`, `UguiScrollRectPaginator(scrollRect)`
 
@@ -152,7 +162,8 @@ Grouping the search and operation together keeps test methods concise and avoids
 
 ## Monkey Testing
 
-Randomly operates all interactable GameObjects for a duration. Throws `TimeoutException` if no interactable objects appear, or `InfiniteLoopException` if a repeating operation pattern is detected.
+Randomly operates all interactable GameObjects for a duration.
+Throws `TimeoutException` if no interactable objects appear, or `InfiniteLoopException` if a repeating operation pattern is detected.
 
 ```csharp
 var config = new MonkeyConfig
@@ -164,14 +175,14 @@ var config = new MonkeyConfig
 await Monkey.Run(config);
 ```
 
-Register additional operators via `config.OperatorPool.Register<T>()`.  
+Register additional operators via `config.OperatorPool.Register<T>()`.
 Enable verbose logging with `config.Verbose = true`.
 
 ---
 
 ## Annotation Components
 
-Attach to GameObjects in scenes to control test behavior without code changes.  
+Attach to GameObjects in scenes to control test behavior without code changes.
 Assembly reference: `TestHelper.UI.Annotations`
 
 | Goal | Component |
@@ -208,11 +219,13 @@ var finder = new GameObjectFinder(reachableStrategy: reachableStrategy);
 
 ### IGameObjectMatcher interface
 
-Implement `IGameObjectMatcher` to match GameObjects by custom conditions. Pass the instance to `FindByMatcherAsync`.
+Implement `IGameObjectMatcher` to match GameObjects by custom conditions.
+Pass the instance to `FindByMatcherAsync`.
 
 ### IPaginator interface
 
-Implement `IPaginator` to support custom scrollable or pageable components. Required methods:
+Implement `IPaginator` to support custom scrollable or pageable components.
+Required methods:
 - `ResetAsync` — navigate to the first page
 - `NextPageAsync` — navigate to the next page
 - `HasNextPage` — returns whether a next page exists
@@ -221,7 +234,8 @@ Constructor requirements: first parameter must be a `MonoBehaviour` subclass (th
 
 ### IOperator interface
 
-Implement `IOperator` (or a sub-interface like `IClickOperator`) to support non-uGUI interactions. Implement:
+Implement `IOperator` (or a sub-interface like `IClickOperator`) to support non-uGUI interactions.
+Implement:
 - `CanOperate(GameObject)` — whether the operation applies to this object
 - `OperateAsync(GameObject, RaycastResult, CancellationToken)` — execute the operation
 

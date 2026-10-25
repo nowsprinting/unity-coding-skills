@@ -1,8 +1,15 @@
 # Test Helper — Quick Reference
 
+Covers the attributes, constraints, comparers, and runtime utilities of the `com.nowsprinting.test-helper` package.
+
+Out of scope:
+
+- Finding and operating UI GameObjects — see `test-helper-ui.md`
+- Replacing `UnityEngine.Random` with a test double — see `test-helper-random.md`
+
 Package: `com.nowsprinting.test-helper`
 
-Add `TestHelper` to Assembly Definition References to use attributes and constraints.  
+Add `TestHelper` to Assembly Definition References to use attributes and constraints.
 Add `TestHelper.RuntimeInternals` to also use `SceneManagerHelper`, `ScreenshotHelper`, and `PathHelper`.
 
 ---
@@ -20,7 +27,8 @@ Add `TestHelper.RuntimeInternals` to also use `SceneManagerHelper`, `ScreenshotH
 - Paths can be relative to the test class file: `"../../Scenes/MyScene.unity"`
 - `[LoadScene]` and `[CreateScene]` run after `OneTimeSetUp` and before `SetUp`
 - If you need to load a scene programmatically during the test, use `SceneManagerHelper.LoadSceneAsync(path)` combined with `[BuildScene]`
-- Any test that creates a `GameObject` or instantiates a prefab (`new GameObject()`, `Object.Instantiate`) needs `[CreateScene]` or `[LoadScene]` — without one, the objects are created in whatever scene the editor currently has open and leak across tests. This is not specific to visual verification tests.
+- Any test that creates a `GameObject` or instantiates a prefab (`new GameObject()`, `Object.Instantiate`) needs `[CreateScene]` or `[LoadScene]` — without one, the objects are created in whatever scene the editor currently has open and leak across tests.
+  This is not specific to visual verification tests.
 
 ### Asset loading
 
@@ -46,7 +54,9 @@ public void OneTimeSetUp() => LoadAssetAttribute.LoadAssets(this);
 | Set a custom resolution             | `[GameViewResolution(400, 200, "WQVGA")]` — wait one frame to apply if not using `[CreateScene]`/`[LoadScene]` |
 | Show or hide Gizmos                 | `[GizmosShowOnGameView(true)]` on the test method only                                                         |
 
-**When to apply `[FocusGameView]`**: Apply it at method scope on any test that includes UI-operation tests (using `GameObjectFinder`, click/drag operators, etc.). This avoids unintended GameView focus loss. Do not apply it assembly-wide or to classes that test pure logic without UI interaction.
+**When to apply `[FocusGameView]`**: Apply it at method scope on any test that includes UI-operation tests (using `GameObjectFinder`, click/drag operators, etc.).
+This avoids unintended GameView focus loss.
+Do not apply it assembly-wide or to classes that test pure logic without UI interaction.
 
 ```csharp
 [Test]
@@ -85,13 +95,17 @@ public async Task ClickStartButton_LoadsGameScene() { ... }
 | Record video while the test runs                  | `[RecordVideo]` (requires Instant Replay package) |
 
 - `[TakeScreenshot]` works with sync `[Test]`, async `[Test]`, and `[UnityTest]` — no need to make the method async just to use it.
-- Saved to `<Application.persistentDataPath>/TestHelper/Screenshots/<TestName>.png` by default. The absolute path is recorded in the NUnit test result as the `Screenshot` property — read it from there instead of composing the path by hand (the file name is sanitized, and gets a `_1`, `_2` … suffix when one test saves several).
+- Saved to `<Application.persistentDataPath>/TestHelper/Screenshots/<TestName>.png` by default.
+  The absolute path is recorded in the NUnit test result as the `Screenshot` property — read it from there instead of composing the path by hand (the file name is sanitized, and gets a `_1`, `_2` … suffix when one test saves several).
 
 > [!WARNING]\
 > When combining `[TakeScreenshot]` with `[CreateScene]`:
 >
-> - Declare `[TakeScreenshot]` **above** `[CreateScene]`. Both implement `IOuterUnityTestAction`, and NUnit runs `AfterTest` in source declaration order — `[CreateScene]`'s `AfterTest` unloads the scene it created, so a `[TakeScreenshot]` declared below it captures an already-unloaded scene. (`[LoadScene]` does not unload in `AfterTest`, so order doesn't matter there.)
-> - Pass `[CreateScene(camera: true)]`. The default `camera: false` leaves no camera to clear the GameView, and a Screen Space Overlay `Canvas` doesn't clear the background itself, so the previous test's rendered frame stays visible in the new screenshot.
+> - Declare `[TakeScreenshot]` **above** `[CreateScene]`.
+>   Both implement `IOuterUnityTestAction`, and NUnit runs `AfterTest` in source declaration order — `[CreateScene]`'s `AfterTest` unloads the scene it created, so a `[TakeScreenshot]` declared below it captures an already-unloaded scene.
+>   (`[LoadScene]` does not unload in `AfterTest`, so order doesn't matter there.)
+> - Pass `[CreateScene(camera: true)]`.
+>   The default `camera: false` leaves no camera to clear the GameView, and a Screen Space Overlay `Canvas` doesn't clear the background itself, so the previous test's rendered frame stays visible in the new screenshot.
 
 ```csharp
 [Test]
@@ -101,10 +115,12 @@ public async Task MyScene_SomeState_Screenshot() { ... }
 ```
 
 > [!WARNING]\
-> `[TakeScreenshot]` captures **after `TearDown` has run**, not at the end of the test method body. If `TearDown` destroys GameObjects or unloads the scene, the screenshot will be empty — call `await ScreenshotHelper.TakeScreenshotAsync()` inside the test method instead.
+> `[TakeScreenshot]` captures **after `TearDown` has run**, not at the end of the test method body.
+> If `TearDown` destroys GameObjects or unloads the scene, the screenshot will be empty — call `await ScreenshotHelper.TakeScreenshotAsync()` inside the test method instead.
 
 > [!IMPORTANT]\
-> When the resolution itself is part of the test condition (e.g., verifying element positions at a specific viewport size), apply `[GameViewResolution]` on the test method. CI runs at a constrained screen resolution and a standalone Player cannot change its resolution at run time, so a resolution-pinned test should also carry `[Category("IgnoreCI")]` and `[UnityPlatform]` restricted to the desktop editors (see `unity-test-framework.md`):
+> When the resolution itself is part of the test condition (e.g., verifying element positions at a specific viewport size), apply `[GameViewResolution]` on the test method.
+> CI runs at a constrained screen resolution and a standalone Player cannot change its resolution at run time, so a resolution-pinned test should also carry `[Category("IgnoreCI")]` and `[UnityPlatform]` restricted to the desktop editors (see `unity-test-framework.md`):
 
 ```csharp
 [Test]
@@ -131,7 +147,8 @@ Add `using Is = TestHelper.Constraints.Is;` to use these alongside NUnit's `Is`.
 
 ### Layout constraints
 
-Requires test-helper **v1.6.2 or later**. These implement the recipes referenced by `test-writing-guide` → **Layout assertion tests**.
+Requires test-helper **v1.6.2 or later**.
+These implement the recipes referenced by `test-writing-guide` → **Layout assertion tests**.
 
 | Goal                                                  | Constraint                                            |
 |-------------------------------------------------------|-------------------------------------------------------|
@@ -142,7 +159,8 @@ Requires test-helper **v1.6.2 or later**. These implement the recipes referenced
 
 `Overlapping` and `TextOverflowing` match when the defect is present, so the form you actually write is the negated one (`Is.Not.Overlapping`, `Is.Not.TextOverflowing`) — don't write `Is.Overlapping` meaning "no overlap".
 
-`WithinScreen` targets a screen's top-level, dynamically-positioned container (dialog, popup, context menu) — the one actually at risk of clipping past the screen edge. Elements nested inside it are checked against their **parent container** with `WithinContainer`, not against the screen again — see `test-designing-guide` → `resources/integration-testing.md` → Perspectives → UI layout.
+`WithinScreen` targets a screen's top-level, dynamically-positioned container (dialog, popup, context menu) — the one actually at risk of clipping past the screen edge.
+Elements nested inside it are checked against their **parent container** with `WithinContainer`, not against the screen again — see `test-designing-guide` → `resources/integration-testing.md` → Perspectives → UI layout.
 
 **Modifiers**
 
@@ -158,16 +176,22 @@ Assert.That(cards, Is.Not.Overlapping.Ignoring(ignoredGroup).Within(2f));
 Assert.That(flavorText, Is.Not.TextOverflowing.Within(1f));
 ```
 
-**Accepted `actual` types**: `RectTransform`, `GameObject`, or `Component` (resolved via its `GameObject`). A value that can't be resolved throws `ArgumentNullException`/`ArgumentException` rather than reporting a non-match — otherwise a negated constraint (`Is.Not.WithinScreen`) would vacuously pass on `null`.
+**Accepted `actual` types**: `RectTransform`, `GameObject`, or `Component` (resolved via its `GameObject`).
+A value that can't be resolved throws `ArgumentNullException`/`ArgumentException` rather than reporting a non-match — otherwise a negated constraint (`Is.Not.WithinScreen`) would vacuously pass on `null`.
 
 **Usage notes**
 
-- `Is.Not.Overlapping` takes a **collection**; a single `RectTransform`/`GameObject`/`Component`, or a collection with fewer than 2 elements, throws `ArgumentException`. Pass even a two-element comparison as an array: `new[] { a, b }`.
-- `Is.TextOverflowing` only looks at a `Text`/`TMP_Text` on the resolved `RectTransform`'s **own** `GameObject` — passing a parent throws `ArgumentException`. When applying it over a collection, filter down to elements that actually carry a text component first.
+- `Is.Not.Overlapping` takes a **collection**; a single `RectTransform`/`GameObject`/`Component`, or a collection with fewer than 2 elements, throws `ArgumentException`.
+  Pass even a two-element comparison as an array: `new[] { a, b }`.
+- `Is.TextOverflowing` only looks at a `Text`/`TMP_Text` on the resolved `RectTransform`'s **own** `GameObject` — passing a parent throws `ArgumentException`.
+  When applying it over a collection, filter down to elements that actually carry a text component first.
 - `Is.All.<constraint>` applies a constraint to every item of a collection, e.g. `Is.All.WithinScreen`.
-- Call `Canvas.ForceUpdateCanvases()` before `Is.Not.TextOverflowing` — without it, the assertion fails with "has not been laid out; call `Canvas.ForceUpdateCanvases()` before asserting". (The general layout-settling rule — `Canvas.ForceUpdateCanvases()` then `await Awaitable.NextFrameAsync()` — is already covered in `test-writing-guide` → Layout assertion tests; this note only calls out `TextOverflowing`'s specific failure mode.)
+- Call `Canvas.ForceUpdateCanvases()` before `Is.Not.TextOverflowing` — without it, the assertion fails with "has not been laid out; call `Canvas.ForceUpdateCanvases()` before asserting".
+  (The general layout-settling rule — `Canvas.ForceUpdateCanvases()` then `await Awaitable.NextFrameAsync()` — is already covered in `test-writing-guide` → Layout assertion tests; this note only calls out `TextOverflowing`'s specific failure mode.)
 
-**What these constraints do NOT see**: they compare axis-aligned bounding boxes of the four world corners only — `RectMask2D` clipping, `Canvas.enabled`, `CanvasGroup.alpha`, and `activeInHierarchy` are ignored (geometry only). A rotated element is over-approximated by its AABB. All three Canvas render modes (Overlay / Camera / World Space) are supported.
+**What these constraints do NOT see**: they compare axis-aligned bounding boxes of the four world corners only — `RectMask2D` clipping, `Canvas.enabled`, `CanvasGroup.alpha`, and `activeInHierarchy` are ignored (geometry only).
+A rotated element is over-approximated by its AABB.
+All three Canvas render modes (Overlay / Camera / World Space) are supported.
 
 To verify an element is not clipped by a `RectMask2D`, pass the mask's `RectTransform` as the `WithinContainer` container, guarded by `Assume.That` — the constraint itself doesn't know whether masking is even in effect, so a passing `WithinContainer` on an unmasked container proves nothing about clipping:
 

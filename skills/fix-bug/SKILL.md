@@ -12,12 +12,13 @@ metadata:
   author: Koji Hasegawa
 ---
 
-Guide for diagnosing and fixing bugs. This skill defines a test-first debugging workflow:
-reproduce the bug with a failing test, diagnose the root cause, then fix it.
+Guide for diagnosing and fixing bugs.
+This skill defines a test-first debugging workflow: reproduce the bug with a failing test, diagnose the root cause, then fix it.
 
 ## Mode Check
 
-This skill must be used **outside plan mode**. Before doing anything else, check the current mode:
+This skill must be used **outside plan mode**.
+Before doing anything else, check the current mode:
 
 - `ExitPlanMode` is NOT in the deferred tools list (i.e., directly callable) → **in plan mode** → stop immediately and tell the user:
   > "This skill (`/fix-bug`) must be used outside plan mode. Please exit plan mode first."
@@ -25,7 +26,9 @@ This skill must be used **outside plan mode**. Before doing anything else, check
 
 ## Workflow
 
-**Recording implementation notes:** Notes for this run go in `<scratchpad>/implementation-notes.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally). Immediately before your **first** append in this run — and only then — delete that file if it exists (usually it will not), so this run starts from an empty one: every `/fix-bug` and plan-file run in the session shares this file, so an earlier run abandoned before its Implementation Notes step would otherwise leak its notes into this one. Never delete it again afterwards, including when Step 3 sends you back to Step 1 or Step 2; those loops are part of the same run and their notes must survive.
+**Recording implementation notes:** Notes for this run go in `<scratchpad>/implementation-notes.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally).
+Immediately before your **first** append in this run — and only then — delete that file if it exists (usually it will not), so this run starts from an empty one: every `/fix-bug` and plan-file run in the session shares this file, so an earlier run abandoned before its Implementation Notes step would otherwise leak its notes into this one.
+Never delete it again afterwards, including when Step 3 sends you back to Step 1 or Step 2; those loops are part of the same run and their notes must survive.
 
 While working through Steps 1-8, whenever one of the following occurs, immediately append a line to that file — do not wait until the end to reconstruct these from memory:
 
@@ -47,7 +50,8 @@ When a step delegates to a subagent or another skill (`/design-tests` in Step 2;
 
 ### Step 1: Clarify the Bug Report
 
-> Work from the user's report and the documents that state the specification (external specification, software design) only — do not read code yet. Reading the implementation here biases "Expected" toward what the code does rather than what the specification says.
+> Work from the user's report and the documents that state the specification (external specification, software design) only — do not read code yet.
+> Reading the implementation here biases "Expected" toward what the code does rather than what the specification says.
 
 Extract the following from the user's prompt:
 
@@ -55,24 +59,28 @@ Extract the following from the user's prompt:
 - **Expected**: the expected behavior
 - **Actual**: the observed behavior
 
-If any of the three cannot be determined from the prompt, use `AskUserQuestion` to ask
-the user before proceeding. All three must be known before moving to Step 2.
+If any of the three cannot be determined from the prompt, use `AskUserQuestion` to ask the user before proceeding.
+All three must be known before moving to Step 2.
 
 Also determine the **report type**:
 
-- **Existing test failure** — the user reports that an existing test is failing. The specific failing test method need not be known at this stage; note the scope (class name, scene name, or test assembly) from the prompt. **Step 2 is skipped** — proceed directly to Step 3.
-- **Behavioral bug** — the user describes unexpected runtime behavior with no mention of a failing test. Proceed normally through Step 2.
+- **Existing test failure** — the user reports that an existing test is failing.
+  The specific failing test method need not be known at this stage; note the scope (class name, scene name, or test assembly) from the prompt.
+  **Step 2 is skipped** — proceed directly to Step 3.
+- **Behavioral bug** — the user describes unexpected runtime behavior with no mention of a failing test.
+  Proceed normally through Step 2.
 
-Also check the relevant documentation (external specification, software design) for consistency with the
-user's bug report. If the documentation and the report conflict, use `AskUserQuestion`
-to clarify with the user which is correct. If the docs contain errors or are missing
-relevant information, add them to the list of files to be modified in this bug fix.
+Also check the relevant documentation (external specification, software design) for consistency with the user's bug report.
+If the documentation and the report conflict, use `AskUserQuestion` to clarify with the user which is correct.
+If the docs contain errors or are missing relevant information, add them to the list of files to be modified in this bug fix.
 
 ### Step 2: Write the Reproduction Test
 
-> **Skip this step** if Step 1 identified this as an **existing test failure** case. Proceed directly to Step 3.
+> **Skip this step** if Step 1 identified this as an **existing test failure** case.
+> Proceed directly to Step 3.
 
-Search the project's test code for existing tests closest to the bug scenario. These serve two purposes:
+Search the project's test code for existing tests closest to the bug scenario.
+These serve two purposes:
 - Placement anchor — add the reproduction test nearby
 - Style reference — follow the same test conventions
 
@@ -82,30 +90,30 @@ Use Explore agents to locate relevant test files and test cases.
 
 Run the `/design-tests` skill with the bug report from Step 1 (Condition / Expected / Actual) and a request to design its reproduction test, with output in the conversation.
 
-From its output, take the test case marked `(reproduction test)`. Keep any regression test cases for Step 6 — do not implement them yet.
+From its output, take the test case marked `(reproduction test)`.
+Keep any regression test cases for Step 6 — do not implement them yet.
 
-Then load the `test-writing-guide` and `code-writing-guide` skills — test code is code, so both guides apply; do not rely on automatic skill triggering — and implement the reproduction test. Place it near the similar tests found above.
+Then load the `test-writing-guide` and `code-writing-guide` skills — test code is code, so both guides apply; do not rely on automatic skill triggering — and implement the reproduction test.
+Place it near the similar tests found above.
 
-If an existing test is testing the wrong behavior (i.e., the test itself is buggy), rewrite
-that test to correctly reproduce the bug rather than adding a new one.
+If an existing test is testing the wrong behavior (i.e., the test itself is buggy), rewrite that test to correctly reproduce the bug rather than adding a new one.
 
 ### Step 3: Verify the Reproduction Test Fails
 
 Run tests using the `/run-tests` skill and verify that the reproduction test **fails**:
 
 - **If a test was added in Step 2**: run that specific test.
-- **If Step 2 was skipped (existing test failure)**: narrow down the test to run using the scope identified in Step 1 (e.g., a specific test class or assembly). If narrowing down is not possible, run all tests.
+- **If Step 2 was skipped (existing test failure)**: narrow down the test to run using the scope identified in Step 1 (e.g., a specific test class or assembly).
+  If narrowing down is not possible, run all tests.
 
-If multiple tests fail and it is unclear which one corresponds to the reported bug, use
-`AskUserQuestion` to ask the user which test to focus on.
+If multiple tests fail and it is unclear which one corresponds to the reported bug, use `AskUserQuestion` to ask the user which test to focus on.
 
 #### If the test does not fail (Step 2 path only)
 
 - Delete the reproduction test
 - Return to Step 2 and search more broadly
 
-If reproduction has been attempted **3 times** without success, return to **Step 1** and
-use `AskUserQuestion` to re-clarify the bug report with the user.
+If reproduction has been attempted **3 times** without success, return to **Step 1** and use `AskUserQuestion` to re-clarify the bug report with the user.
 
 ### Step 4: Confirm Reproduction with User
 
@@ -124,7 +132,9 @@ With the reproduction confirmed, investigate the root cause:
 
 1. Trace through the code path triggered by the reproduction test
 2. Identify the specific line(s) or logic responsible for the bug
-3. Write a unit-level reproduction test that calls the suspected code directly (per `test-writing-guide`), and run it with `/run-tests` to verify it **fails** — this confirms the suspected cause before changing the production code, and pins the defect at the unit layer where the Step 2 test cannot locate it. If it passes, the suspect is wrong: delete the test, record it under **Ruled out**, and return to item 1. Skip this item when the cause lies outside code a unit test can call (e.g., scene/prefab wiring or asset settings)
+3. Write a unit-level reproduction test that calls the suspected code directly (per `test-writing-guide`), and run it with `/run-tests` to verify it **fails** — this confirms the suspected cause before changing the production code, and pins the defect at the unit layer where the Step 2 test cannot locate it.
+   If it passes, the suspect is wrong: delete the test, record it under **Ruled out**, and return to item 1.
+   Skip this item when the cause lies outside code a unit test can call (e.g., scene/prefab wiring or asset settings)
 4. Commit the unit-level reproduction test, for the same reason as Step 4
 5. Formulate a fix
 
@@ -135,8 +145,7 @@ Before applying the fix, check whether the affected area has adequate coverage f
 1. Start from the regression test cases `/design-tests` produced in Step 2 (if Step 2 ran)
 2. Read the test files for the affected production code
 3. Identify behaviors that could regress from the change but are not currently tested
-4. If gaps exist, add regression tests (per `test-writing-guide`) and run them — they must **pass**
-   (they test existing correct behavior, not the bug itself)
+4. If gaps exist, add regression tests (per `test-writing-guide`) and run them — they must **pass** (they test existing correct behavior, not the bug itself)
 
 ### Step 7: Apply Fix & Verify
 
@@ -158,5 +167,8 @@ Before applying the fix, check whether the affected area has adequate coverage f
 ### Step 9: Implementation Notes
 
 1. `Read` `<scratchpad>/implementation-notes.md` if it exists
-2. Report the entries to the user in chat under an `## Implementation Notes` heading — one bold sub-heading per category, each followed by a bullet list. Always include all six categories in this order: **Bug report clarifications**, **Root cause**, **Ruled out**, **Tradeoffs**, **Test changes**, **Open questions**. Write `- None` for any category with nothing recorded, and add any last-minute Open questions before finalizing. If the file was never created, report every category as "None"
+2. Report the entries to the user in chat under an `## Implementation Notes` heading — one bold sub-heading per category, each followed by a bullet list.
+   Always include all six categories in this order: **Bug report clarifications**, **Root cause**, **Ruled out**, **Tradeoffs**, **Test changes**, **Open questions**.
+   Write `- None` for any category with nothing recorded, and add any last-minute Open questions before finalizing.
+   If the file was never created, report every category as "None"
 3. Delete the temporary notes file if it exists
