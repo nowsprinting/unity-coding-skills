@@ -78,9 +78,10 @@ Instruct each subagent to load the `test-designing-guide` skill — do not rely 
 6. Write the test cases and the Assessment in the output format (Output Format)
 
 Give each subagent the test target with its assigned specifications and the requirements they realize if any, the test targets it contains with their assigned specifications if any, and the input — its file path, or the full text when it was written directly or taken from the conversation — and have it return its output verbatim.
+Also have it write the modeling result to `<scratchpad>/modeling-results/<test target>.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally in the instruction): a subagent's context is gone once it returns, and you need the modeling result to show it when the user asks to see it, without holding every target's modeling result in your context.
 A subagent cannot ask the user, so it records every question as an issue in the Assessment.
 
-When a target's Assessment raises an issue — e.g., an undefined, ambiguous, unverifiable, or contradictory specification — ask the user via `AskUserQuestion`, presenting the Issues together with the modeling result, then design that target again with the answer.
+When a target's Assessment raises an issue — e.g., an undefined, ambiguous, unverifiable, or contradictory specification — ask the user via `AskUserQuestion`, presenting the Issues, then design that target again with the answer.
 When the user cannot resolve an issue that makes the Assessment `ASSESSMENT: FAIL` — it requires revising the specification — stop and report its Issues and modeling result to the user; revising the specification is up to the user or the caller.
 
 ### Step 3: Assemble the Test Cases
@@ -103,3 +104,5 @@ Choose the destination in this order:
 3. Otherwise (the specification was written directly in the argument, or taken from the conversation) → output in the conversation.
 
 Write the output verbatim per Step 3; when writing a file, add only a top-level heading naming the source document above it.
+
+End your reply by telling the user that you can show the modeling result of each target on request: the test design document leaves it out, so the user has no other way to learn it exists.

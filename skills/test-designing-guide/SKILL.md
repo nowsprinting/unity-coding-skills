@@ -70,11 +70,11 @@ Before selecting the techniques, list from the specifications the inputs, states
 
 The inputs and states drive the techniques: e.g., equivalence partitioning for each input, state transition testing for the states.
 An output without a means to observe it marks its test cases unverifiable, and a combination of inputs and states with no specified output marks its test case undefined; a combination the specification explicitly states as "undefined" gets no test case (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)).
-Include the list in the modeling result only when the [Assessment](#assessment) is `ASSESSMENT: WARN` or `ASSESSMENT: FAIL`.
+Include the list in the modeling result.
 
 When an output of one operation is the input of its inverse, e.g., serialize and deserialize, and the specification does not define that intermediate form, neither operation has an expected result of its own; verify the pair by a round trip → `resources/round-trip-testing.md`
 
-When modeling the specifications with a test technique reveals a gap or a contradiction in them, do not guess the outcome: design the test case of a gap as undefined (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)), design no test case for a contradiction, and include the modeling result (e.g., the equivalence partition table, the decision table, the state transition diagram) in the [Assessment](#assessment), so the user can see where the specification breaks.
+When modeling the specifications with a test technique reveals a gap or a contradiction in them, do not guess the outcome: design the test case of a gap as undefined (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)), design no test case for a contradiction, and include the modeling result (e.g., the equivalence partition table, the decision table, the state transition diagram) in the [Assessment](#assessment) when it is `ASSESSMENT: FAIL`, so the user can see where the specification breaks.
 
 **Prefer specification-based tests over structural (implementation-coupled) tests.**
 Structural tests break under refactoring and lose value fast.
@@ -267,7 +267,8 @@ ASSESSMENT: PASS
 
 ```
 
-or, for WARN/FAIL, include Issues with the affected specification and a proposed remedy, and the modeling result:
+For `ASSESSMENT: WARN` or `ASSESSMENT: FAIL`, add `#### Issues` with the affected specification and a proposed remedy of each issue.
+For `ASSESSMENT: FAIL`, also add `#### Modeling result`:
 
 ```markdown
 ### Assessment
