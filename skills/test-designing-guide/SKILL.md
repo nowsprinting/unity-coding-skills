@@ -38,14 +38,8 @@ The external specification of a game usually describes a scene or a screen, so i
   This includes behavior driven by Unity's lifecycle (Awake, Start, Update, etc.) or UI events when the specification defines it per component.
   When the specification defines a class's collaboration with its dependencies, keep test density low and focus on those interactions.
   Specifications on the content of assets other than `ScriptableObject` data (asset file validation, cross-asset consistency) also belong here.
-- **Validators** — for specifications that constrain the data of a `ScriptableObject` class, e.g., "an attack card's attack is greater than 0".
-  The project holds the data as the class's assets, so the subject is those assets; a test that creates its own instance checks only the values the test sets, while a violation lies in the assets authored in the project.
-  - The specification's condition selects the assets, and the test case asserts its expected result on every selected asset.
-  - Specifications of the class's methods stay unit tests.
-  - The folder the specification places the data in is the validator's selection scope: state it in the Notes per the [output format](#output-format), not as a test case, since a test checking an asset's location against the scope that selected it always passes.
-    When the specification states no location, record it as an issue in the Assessment.
-  - A table listing each asset's concrete values (e.g., a master data table) is the source the assets are authored from, not a constraint on them: a test comparing an asset with it only transcribes the table a second time.
-    Derive validators from the constraints the specification states — value ranges, relations between fields, required references — and design no test case that compares an asset's values or the list of assets with such a table.
+- **Validators** — for specifications that constrain the data of a `ScriptableObject` class, e.g., "an attack card's attack is greater than 0", verified on the class's assets authored in the project.
+  Specifications of the class's methods stay unit tests.
 - **Integration tests** — for specifications whose subject is a **scene or prefab** (or a screen the player sees): UI operations, on-screen display, scene transitions, and behavior emerging from components and the assets they reference.
   - Add the integration test method to the test class of the **primary class** when the specification names one; OR
   - Create a new dedicated test class named after the scene, prefab, or screen otherwise.
@@ -92,6 +86,7 @@ Select the techniques that fit the test target, and read the resource of each on
 Also read the following when they apply to the test target:
 
 - **Integration testing** — when the test target is an integration test → `resources/integration-testing.md`
+- **Validators** — when the test target is a validator → `resources/validators.md`
 - **Testing randomness** — when the SUT consumes a pseudo-random number generator → `resources/testing-randomness.md`
 - **Reproduction tests** — when the request is to reproduce a reported bug → `resources/reproduction-tests.md`
 
@@ -107,7 +102,7 @@ If no language is specified, default to English.
     Do NOT include a method name.
     Do NOT add a feature-area or category prefix before `<Condition>` — the name starts directly with the condition (e.g., `OnVictoryForced_AllCardViewsAreFullyWithinHandArea`, not `Reward_OnVictoryForced_AllCardViewsAreFullyWithinHandArea`).
   - For **parameterized tests**, the `<Condition>` segment is the **equivalence partition name**, not an enumeration of individual argument values.
-  - For **Validators**, the `<Condition>` segment names the assets the specification's condition selects, e.g., `AttackCard_AttackIsGreaterThanZero`; when the specification covers every asset of the class, the name is `<Expected>` alone, e.g., `NameIsNotEmpty`.
+  - For **Validators**, the `<Condition>` segment is the precondition of the property (see [Validators](resources/validators.md#test-methods)).
   - The `<Expected>` segment names the **concrete resulting state or value** of that one partition (e.g. `IsNotInteractable`, `ReturnsFizz`), never a condition or comparison.
     **Exceptions**: an undefined or ambiguous test case uses `UNDEFINED` or `AMBIGUOUS` (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); a consolidated layout assertion test may use the generic `LayoutIsCorrect` (see [Integration testing](resources/integration-testing.md#perspectives), UI layout).
     Words like `Matches…`, `OnlyWhen…`, `DependingOn…`, `BasedOn…` in the name — or "only when / only if / depending on" in the verification description — signal that the outcome varies with input, meaning two partitions were merged into one method — split into one method per outcome (see [Deriving test methods from equivalence partitions](resources/equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)).
@@ -223,7 +218,7 @@ Write the markers in English whatever the project language.
 
 **Notes** — a bullet list under a test case table, written in the project language in this order; omit a bullet that does not apply, and the Notes when no bullet remains:
 
-1. For validators, the selection scope (see [Test Layers](#test-layers))
+1. For validators, the selection scope (see [Validators](resources/validators.md#selection-scope))
 2. That no test code is generated from the test cases marked unverifiable, undefined, or ambiguous, when the table has any
 3. The conditions the specification explicitly states as undefined, which have no test case; write several conditions in one bullet where possible — in unit tests, one bullet per `<MethodName>`
 
