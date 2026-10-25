@@ -33,9 +33,7 @@ Examples:
 
 - `<RootNamespace>` is the `rootNamespace` of the assembly that defines the component classes used in the Scene or Prefab; the Scene or Prefab itself belongs to no assembly. When those classes span several assemblies (excluding Unity's and third-party ones), use the one that none of the others references. If a test class for the same Scene or Prefab already exists, add tests to it. If more than one assembly remains, pick the one whose `rootNamespace` existing Scene or Prefab tests already use; ask the user only when none do.
 - A validator's namespace is the namespace of the `ScriptableObject` class it validates.
-- `<MethodName>` must always match the production method name exactly — never translate it. When the test target is not a single method — integration tests, visual verification tests, validators, and unit tests whose target is an asset (asset file validation, cross-asset consistency checks) — `<MethodName>` is omitted and the convention becomes `<Condition>_<Expected>`. A validator covering every asset of its class drops `<Condition>_` as well.
-- `<Condition>` and `<Expected>` follow the project language specified in `CLAUDE.md`. If no language is specified, default to English.
-- Write `<Expected>` in active voice: `ReturnsTrue`, `ThrowsArgumentException`, `ReducesHpBy3`, etc. For exceptions, include the exception type: `ThrowsArgumentException`, not just `ThrowsException`.
+- Use the test method name the test design gives. When writing a test without a test design, load the `test-designing-guide` skill and follow its Test Case Naming.
 
 ## Modernize Test Code
 
@@ -100,7 +98,7 @@ Assert.That(obj, Is.Null);
 
 - `[TestFixture]` is required on every test class
 - Separate Arrange / Act / Assert sections with blank lines; no AAA comments
-- Prefer one `Assert.That` per test method. **Exception**: when verifying that the state resulting from a transition has multiple properties with the correct values simultaneously, multiple `Assert.That` calls are permitted in a single test. In that case, pass a short `message` string as the third argument to **each** `Assert.That` to identify which property is being verified.
+- Prefer one `Assert.That` per test method. **Exception**: when the Verification column of the test case lists multiple properties (the multi-property exception in the test design, e.g., the state resulting from a transition), multiple `Assert.That` calls are permitted in a single test. In that case, pass a short `message` string as the third argument to **each** `Assert.That` to identify which property is being verified.
 - Use the **constraint model only**: `Assert.That(actual, constraint)` — never use the classic model (`Assert.AreEqual`, etc.)
 - Do NOT pass the `message` argument to `Assert.That` in single-assertion tests; the test name and constraint must be self-explanatory. When a test contains multiple `Assert.That` calls (see exception above), a `message` argument is **required** on every call.
 

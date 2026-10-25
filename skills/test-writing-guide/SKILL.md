@@ -93,12 +93,11 @@ Assert.That(battleState.Enemies[0].Hp, Is.LessThan(hpBefore));
 
 #### Layout assertion tests: verify UI layout with deterministic assertions
 
-When a layout specification is expressible as a deterministic assertion (*the element is within the screen, elements do not overlap, text does not overflow its container*), write it as a **layout assertion test** (an integration test), not a visual verification test. Displayed content (card data, text length, item count) is a test *input*: the pass criterion never varies with it. Leave to visual verification what does not suit a strict assertion: color, positional relationships like "A is to the right of B", on-screen position, and typography (font size, font style, font family) are visual design likely to change, and legibility (text/background contrast) is impractical to assert.
+Implement a test case the test design gives as a layout assertion test — the element is within the screen, elements do not overlap, text does not overflow its container — with deterministic assertions, as designed.
 Reasons:
 
 - **Deterministic pass/fail**: boolean assertions run unattended in CI without a human reading screenshots.
 - **Pins the specific bug**: an overlap assertion names the two elements; a screenshot cannot.
-- **Do NOT add a visual verification test for the same property** — verify each layout property in exactly one layer.
 
 Choose the implementation means by what the condition is about:
 
@@ -159,7 +158,7 @@ See: `test-helper-ui.md`.
 When implementing a visual verification test (a test designed to verify on-screen rendering via screenshot and image analysis):
 
 1. Take a screenshot using `[TakeScreenshot]` or `ScreenshotHelper.TakeScreenshotAsync()` (see `test-helper.md`).
-2. Apply `[Description("After running this test, verify the screenshots from the following perspectives: <verification aspects>")]` to the test method. The verification aspects are taken directly from the **Image analysis by saved screenshot** column in the test case design. List only aspects suited to visual verification (legibility, contrast, positional relationships, typography, visual state representation, rendering quality) — do NOT list mechanically assertable facts such as a panel's `activeSelf` or exact text content; assert those in integration tests instead.
+2. Apply `[Description("After running this test, verify the screenshots from the following perspectives: <verification aspects>")]` to the test method. The verification aspects are taken directly from the **Image analysis by saved screenshot** column in the test case design.
 3. Apply `[Category("VisualVerification")]` to the test method.
 4. You can omit writing `Assert` statements.
 
