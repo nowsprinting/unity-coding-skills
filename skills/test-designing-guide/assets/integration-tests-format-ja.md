@@ -14,7 +14,7 @@
 
 **Notes:**
 
-- unverifiable, undefined, ambiguous と書かれたテストケースからはテストコードを生成しません
+- undefined, ambiguous と書かれたテストケースからはテストコードを生成しません
 - 条件 `<条件>`、`<条件>` は明示的に未定義のためテストしない
 
 ### Visual verification tests

@@ -27,7 +27,7 @@ Derive test cases from the specification, never from the implementation: a test 
 Read only the following code, and no method bodies of production code:
 
 - **Existing tests** — when the specification of a test target with tests changes, or a bug report asks for a [reproduction test](resources/reproduction-tests.md), the signatures of the test target's test classes and test methods, with the attributes that give a parameterized test its arguments, to mark the test cases they already implement (see the [output markers](#output-format))
-- **Production code** — for unit tests, the signatures and XML documentation comments of the test target's members, to judge whether a test case can observe the actual result (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); for a class the input's software design introduces, read the signatures it fixes instead
+- **Production code** — for unit tests and validators, the signatures and XML documentation comments of the test target's members, to judge whether a test case can observe the actual result (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); for a class the input's software design introduces, read the signatures it fixes instead
 
 ## Test Layers
 
@@ -184,8 +184,9 @@ The Good rows state the observable behavior only; all other concerns go in the T
 
 Design a test case even when it cannot be verified as specified, and mark it instead of guessing, so the user sees every place the specification needs revising:
 
-- **Unverifiable** — in a unit test, the test cannot observe the actual result through the test target's API: a return value, a field or property of the instance, a raised event, or a call to a dependency a spy records.
+- **Unverifiable** — the test cannot observe the actual result through the test target's API: a return value, a field or property of the instance, a raised event, or a call to a dependency a spy records.
   Judge it from what [Reading Code](#reading-code) allows; a `private` member is not observable.
+  Integration tests have no unverifiable test case, since a result no assertion can observe escalates to image analysis and finally to a [manual test](resources/integration-testing.md#manual-tests).
   Write `**unverifiable**` in front of the expected result in the Verification column.
   - Example: `Attack_HpIsPositive_ReducesHpByDamage` | **unverifiable** the remaining HP is reduced by the damage
 - **Undefined** — the specification states no expected result for the test case: e.g., an equivalence partition, a decision table combination, or a state transition table cell it leaves empty.

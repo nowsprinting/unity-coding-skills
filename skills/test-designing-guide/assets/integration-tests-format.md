@@ -14,7 +14,7 @@
 
 **Notes:**
 
-- No test code is generated from the test cases marked unverifiable, undefined, or ambiguous.
+- No test code is generated from the test cases marked undefined or ambiguous.
 - Conditions `<condition>` and `<condition>` are explicitly undefined in the specification, so they are not tested.
 
 ### Visual verification tests
