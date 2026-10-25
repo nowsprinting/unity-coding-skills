@@ -209,7 +209,7 @@ Record every issue found while designing instead of guessing.
 **WARN criteria**:
 
 - **Unverifiable, undefined, or ambiguous test case** — see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)
-- **Combinatorial explosion** — test case count grows faster than O(n) relative to the number of conditions
+- **Combinatorial explosion** — in integration tests, test case count grows faster than O(n) relative to the number of conditions
 
 **Output format**:
 

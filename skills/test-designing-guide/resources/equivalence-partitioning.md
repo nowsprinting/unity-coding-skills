@@ -51,7 +51,6 @@ When multiple test cases share the same expected result — such as the represen
 - **Enum parameter, all values**: `(direction: (Direction))`
 - **Multiple parameters, all combinations (exhaustive)**: `(param1: {0, 1, 2}, param2: {3, 4, 5})` — when a parameter is `bool` or enum covering all its values, use the shorthand in place of the braces: `(flag: (bool), count: {0, 1, 5})`
 - **Multiple parameters, limited to specific combinations**: `({param1: 0, param2: 3}, {param1: 1, param2: 4})`
-- **Multiple parameters, pairwise combinations**: write `(use pairwise)` — the test-writing phase applies the pairwise (all-pairs) method to select a covering combination set; when to use it, see [combinatorial testing](combinatorial-testing.md)
 
 Do NOT over-consolidate: keep separate rows for tests that belong to **different** equivalence partitions or produce **different** expected results.
 
