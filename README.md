@@ -6,7 +6,7 @@ Reliable tests give the agent a clear signal: green means done.
 This plugin provides the methodology, conventions, and tools to make that signal trustworthy.
 
 > [!IMPORTANT]\
-> This plugin relies on Claude Code-specific features, such as the bundled `/simplify` skill and frontmatter fields of skills and subagents.
+> This plugin relies on Claude Code-specific features, such as the bundled `/simplify` skill and frontmatter fields of skills.
 > If you use the skills with a different coding agent, please modify them accordingly.
 
 ## Skills
@@ -17,7 +17,7 @@ This plugin provides the methodology, conventions, and tools to make that signal
 | `design-tests`             | Designs tests from a specification and produces the test design document                                       |                                                                                                                                                                                               |       ✅       |
 | `edit-scene`               | Creates or modifies scene and prefab files using the `run_method_in_unity` tool                                | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html) and [Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |       ✅       |
 | `fix-bug`                  | Reproduces and fixes bugs using a test-first workflow                                                          |                                                                                                                                                                                               |       ✅       |
-| `plan-feature`             | Orchestrates the test-first planning workflow for feature implementation in plan mode                          |                                                                                                                                                                                               |       ✅       |
+| `implement`                | Implements a feature test-first, from test design through refactoring                                          |                                                                                                                                                                                               |       ✅       |
 | `resolve-diagnostics`      | Resolves IDE diagnostics at `warning` or higher severity in the specified files                                | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html)                                                                                                             |       ✅       |
 | `run-tests`                | Runs Unity tests using the `run_unity_tests` tool                                                              | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html) and [Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |       ✅       |
 | `test-designing-guide`     | Test design by modeling specifications with test techniques                                                    |                                                                                                                                                                                               |                |
@@ -31,55 +31,7 @@ This plugin provides the methodology, conventions, and tools to make that signal
 > [!TIP]\
 > The Rider built-in MCP server also provides tools useful for coding agents, such as `list_directory_tree`, `search_file`, `search_regex`, `search_symbol`, and `search_text`.
 
-## Subagents
-
-| Agent                 | Description                                                                                                             |
-|-----------------------|-------------------------------------------------------------------------------------------------------------------------|
-| `failing-test-writer` | Implements test code from the plan file's Test Cases table and confirms tests fail as expected (Step 2 of dev workflow) |
-
 ## Usage
-
-### Test-first feature planning
-
-```bash
-/plan-feature <SPEC>
-```
-
-The created plan file includes the following:
-
-- Layered-designed test cases to reduce redundant tests, tests without assertions, and unnecessary test doubles:
-  - Editor tests (Edit Mode tests for editor extensions and validate assets)
-  - Unit tests (Play Mode tests for runtime code)
-  - Validators for the data of ScriptableObject assets
-  - Integration tests including UI operation and layout assertions
-  - Visual verification tests using image analysis
-- Test-first development workflow
-  - Effective (failable) test code
-  - Definition of Done
-  - Safe refactoring to improve internal quality (uses `/simplify` skill and static analysis)
-
-Dependencies:
-
-```text
-plan-feature
-├── Plan (built-in subagent)
-├── design-tests
-│   └── test-designing-guide
-└── Development workflow (written in the plan file)
-    ├── code-writing-guide
-    ├── run-tests
-    ├── simplify (built-in skill)
-    ├── failing-test-writer (subagent)
-    │   ├── code-writing-guide
-    │   ├── test-writing-guide
-    │   └── run-tests
-    └── resolve-diagnostics
-        ├── code-writing-guide
-        └── run-tests
-```
-
-> [!IMPORTANT]\
-> This skill requires plan mode.
 
 ### Test design
 
@@ -109,6 +61,37 @@ Dependencies:
 ```text
 design-tests
 └── test-designing-guide
+```
+
+### Test-first feature implementation
+
+```bash
+/implement [SPECIFICATION] [TEST-DESIGN]
+```
+
+Implements a feature or a specification change test-first.
+The `SPECIFICATION` can state requirements, specifications, and a software design; the `TEST-DESIGN` is a test design document, e.g., the output of `/design-tests`.
+Each is given as a file path or written directly; when omitted, it is read from the conversation.
+
+1. Splits the test targets into phases, from the ones with no dependencies up, so that tests run against real implemented classes instead of test doubles
+2. Runs each phase in a subagent:
+   - Test design of the test cases the `TEST-DESIGN` lacks, including those of the classes the phase adds
+   - Test First: a compilable skeleton and failing test code (effective, failable tests)
+   - Implementation until all tests pass (Definition of Done)
+   - Safe refactoring to improve internal quality (uses `/simplify` skill and static analysis)
+
+Dependencies:
+
+```text
+implement
+├── test-designing-guide
+├── test-writing-guide
+├── code-writing-guide
+├── run-tests
+├── simplify (built-in skill)
+└── resolve-diagnostics
+    ├── code-writing-guide
+    └── run-tests
 ```
 
 ### Bug fixing through reproduction tests

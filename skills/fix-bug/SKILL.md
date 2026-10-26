@@ -26,8 +26,8 @@ Before doing anything else, check the current mode:
 
 ## Workflow
 
-**Recording implementation notes:** Notes for this run go in `<scratchpad>/implementation-notes.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally).
-Immediately before your **first** append in this run — and only then — delete that file if it exists (usually it will not), so this run starts from an empty one: every `/fix-bug` and plan-file run in the session shares this file, so an earlier run abandoned before its Implementation Notes step would otherwise leak its notes into this one.
+**Recording implementation notes:** Notes for this run go in `<scratchpad>/implementation-notes`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally): one note per line, in the form `<category>: <note>`.
+Immediately before your **first** append in this run — and only then — delete that file if it exists (usually it will not), so this run starts from an empty one: every `/fix-bug` and `/implement` run in the session shares this file, so an earlier run abandoned before its Implementation Notes step would otherwise leak its notes into this one.
 Never delete it again afterwards, including when Step 3 sends you back to Step 1 or Step 2; those loops are part of the same run and their notes must survive.
 
 While working through Steps 1-8, whenever one of the following occurs, immediately append a line to that file — do not wait until the end to reconstruct these from memory:
@@ -41,8 +41,8 @@ While working through Steps 1-8, whenever one of the following occurs, immediate
 Append with `Bash` — the `Write` tool cannot append:
 
 ```bash
-cat >> "<scratchpad>/implementation-notes.md" <<'EOF'
-- **Root cause**: <one line>
+cat >> "<scratchpad>/implementation-notes" <<'EOF'
+Root cause: <one line>
 EOF
 ```
 
@@ -166,8 +166,8 @@ Before applying the fix, check whether the affected area has adequate coverage f
 
 ### Step 9: Implementation Notes
 
-1. `Read` `<scratchpad>/implementation-notes.md` if it exists
-2. Report the entries to the user in chat under an `## Implementation Notes` heading — one bold sub-heading per category, each followed by a bullet list.
+1. `Read` `<scratchpad>/implementation-notes` if it exists
+2. Report the notes to the user in chat under an `## Implementation Notes` heading — one bold sub-heading per category, each followed by a bullet list.
    Always include all six categories in this order: **Bug report clarifications**, **Root cause**, **Ruled out**, **Tradeoffs**, **Test changes**, **Open questions**.
    Write `- None` for any category with nothing recorded, and add any last-minute Open questions before finalizing.
    If the file was never created, report every category as "None"

@@ -111,6 +111,7 @@ Choose the destination in this order:
 1. The user or the caller specified a destination → write there.
 2. The specification came from a file → write a Markdown file next to it, named after the input file with a `-tests` suffix (e.g., `docs/inventory.md` → `docs/inventory-tests.md`).
    When several input files were given, name it after the first one.
+   When a file of that name already exists, ask the user via `AskUserQuestion` whether to overwrite it or to write to a file name they specify.
 3. Otherwise (the specification was written directly in the argument, or taken from the conversation) → output in the conversation.
 
 Write the output verbatim per Step 3; when writing a file, add only a top-level heading naming the source document above it.

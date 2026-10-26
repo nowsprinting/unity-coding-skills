@@ -207,6 +207,7 @@ Design a test case even when it cannot be verified as specified, and mark it ins
   End the method name with `_UNDEFINED` in place of `<Expected>`, and write `**undefined**` in the Verification column.
   - Example: `Attack_HpIsNegative_UNDEFINED` | **undefined**
   - When the specification explicitly states that the behavior under a condition is undefined, e.g., "the result is undefined when HP is negative", it leaves no gap: design no test case for the condition, and list it in the Notes (see [Output Format](#output-format)).
+  - When the specification explicitly marks an item "TBD", it leaves no gap either: treat the item as non-existent, and design no test case for it.
 - **Ambiguous** — the specification states an expected result that admits more than one reading, so it gives no deterministic pass/fail criterion: e.g., "attack +2" while a buff multiplies attack, without stating whether the addition comes before or after the multiplication; random behavior without a specified distribution, range, or structural property (see [Testing randomness](resources/testing-randomness.md)).
   The author of a specification rarely notices its own ambiguity, so state the reason.
   End the method name with `_AMBIGUOUS` in place of `<Expected>`, and write `**ambiguous**` followed by the reason in the Verification column.
