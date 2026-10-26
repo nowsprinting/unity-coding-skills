@@ -33,6 +33,30 @@ This plugin provides the methodology, conventions, and tools to make that signal
 
 ## Usage
 
+```mermaid
+flowchart LR
+    D1["D1. Requirements and/or specifications"]
+    D2["D2. Test design doc"]
+    D3["D3. Design doc"]
+    D4["D4. Test code"]
+    D5["D5. Production code"]
+    P1(("P1. /design-tests"))
+    P2(("P2. Design<sup>1</sup>"))
+    P3(("P3. /implement"))
+    D1 --> P1
+    D3 -. optional .-> P1
+    P1 --> D2
+    D2 --> P3
+    D1 --> P2
+    D1 --> P3
+    P2 --> D3
+    D3 --> P3
+    P3 --> D4
+    P3 --> D5
+```
+
+<sup>1</sup> Use any design skills you prefer, e.g., `grilling`, `pstack`, or `modularity:design`.
+
 ### Test design
 
 ```bash
