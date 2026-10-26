@@ -304,9 +304,9 @@ The following maps the test-designing-guide notation to NUnit attributes:
 |-----------------------------------------------------------------------|------------------------------------------------------------|
 | `(flag: (bool))` — bool param, all values                             | `[Values] bool flag`                                       |
 | `(direction: (Direction))` — enum param, all values                   | `[Values] Direction direction`                             |
-| `(n: 3, 6, 9)` — explicit values, single param                        | `[Values(3, 6, 9)] int n`                                  |
-| `(a: {0, 1, -1}, b: {0, 1})` — multiple params, exhaustive            | `[Values(0, 1, -1)] int a, [Values(0, 1)] int b`           |
+| `(n: {3, 6, 9})` — explicit values, single param                      | `[Values(3, 6, 9)] int n`                                  |
 | `(flag: (bool), count: {0, 1, 5})` — mixed                            | `[Values] bool flag, [Values(0, 1, 5)] int count`          |
+| `(a: {0, 1, -1}, b: {0, 1})` — multiple params, exhaustive            | `[Values(0, 1, -1)] int a, [Values(0, 1)] int b`           |
 | `(a: {0, 1, -1}, b: {0, 1}, by pairwise)` — multiple params, pairwise | `[Pairwise]` on the method + `[Values(...)]` on each param |
 
 - `[Values]` with no argument on a `bool` parameter generates `true` and `false`; on an enum parameter, it generates all defined values
