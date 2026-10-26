@@ -106,12 +106,11 @@ Dependencies:
 
 ```text
 fix-bug
-├── code-writing-guide
+├── test-designing-guide
 ├── test-writing-guide
+├── code-writing-guide
 ├── run-tests
 ├── simplify (built-in skill)
-├── design-tests
-│   └── test-designing-guide
 └── resolve-diagnostics
     ├── code-writing-guide
     └── run-tests

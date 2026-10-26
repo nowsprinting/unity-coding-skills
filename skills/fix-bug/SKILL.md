@@ -24,6 +24,10 @@ Before doing anything else, check the current mode:
   > "This skill (`/fix-bug`) must be used outside plan mode. Please exit plan mode first."
 - `ExitPlanMode` is in the deferred tools list → not in plan mode → proceed.
 
+## Task Type Check
+
+If the user's request is to implement a new feature, change a specification, or refactor rather than investigate or fix a bug, stop and guide the user to invoke the `/implement` skill instead.
+
 ## Workflow
 
 **Recording implementation notes:** Notes for this run go in `<scratchpad>/implementation-notes`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally): one note per line, in the form `<category>: <note>`.
@@ -37,6 +41,7 @@ While working through Steps 1-8, whenever one of the following occurs, immediate
 - You investigated a suspected cause, code path, or reproduction approach and eliminated it → **Ruled out**
 - You considered alternatives and chose one, and why → **Tradeoffs**
 - You modified or deleted test code that was already committed, and why → **Test changes**
+- A test design you take test cases from has Issues in its Assessment, or a test case marked unverifiable, undefined, or ambiguous → **Open questions**
 
 Append with `Bash` — the `Write` tool cannot append:
 
@@ -46,7 +51,7 @@ Root cause: <one line>
 EOF
 ```
 
-When a step delegates to a subagent or another skill (`/design-tests` in Step 2; `/simplify` and `/resolve-diagnostics` in Step 8), append the note yourself from what it returns — they do not write to this file.
+When a step delegates to a subagent or another skill (the test design subagent in Step 6; `/simplify` and `/resolve-diagnostics` in Step 8), append the note yourself from what it returns — they do not write to this file.
 
 ### Step 1: Clarify the Bug Report
 
@@ -72,6 +77,7 @@ Also determine the **report type**:
 
 Also check the relevant documentation (external specification, software design) for consistency with the user's bug report.
 If the documentation and the report conflict, use `AskUserQuestion` to clarify with the user which is correct.
+If the user answers that the specification itself is to change, rather than that the documentation misstates it, the request is a specification change: stop and guide the user to invoke the `/implement` skill instead.
 If the docs contain errors or are missing relevant information, add them to the list of files to be modified in this bug fix.
 
 ### Step 2: Write the Reproduction Test
@@ -88,10 +94,9 @@ These serve two purposes:
 
 Use Explore agents to locate relevant test files and test cases.
 
-Run the `/design-tests` skill with the bug report from Step 1 (Condition / Expected / Actual) and a request to design its reproduction test, with output in the conversation.
-
-From its output, take the test case marked `(reproduction test)`.
-Keep any regression test cases for Step 6 — do not implement them yet.
+Load the `test-designing-guide` skill — do not rely on automatic skill triggering — and design the reproduction test of the bug report from Step 1 (Condition / Expected / Actual) per its Reproduction tests resource.
+Design no regression test cases: Step 6 designs them against the code the fix changes, which is unknown until Step 5.
+Skip the Assessment; when the reproduction test case would be unverifiable, undefined, or ambiguous, return to Step 1 and re-clarify the bug report with the user via `AskUserQuestion`.
 
 Then load the `test-writing-guide` and `code-writing-guide` skills — test code is code, so both guides apply; do not rely on automatic skill triggering — and implement the reproduction test.
 Place it near the similar tests found above.
@@ -132,7 +137,8 @@ With the reproduction confirmed, investigate the root cause:
 
 1. Trace through the code path triggered by the reproduction test
 2. Identify the specific line(s) or logic responsible for the bug
-3. Write a unit-level reproduction test that calls the suspected code directly (per `test-writing-guide`), and run it with `/run-tests` to verify it **fails** — this confirms the suspected cause before changing the production code, and pins the defect at the unit layer where the Step 2 test cannot locate it.
+3. Write a unit-level reproduction test that calls the suspected code directly (per `test-writing-guide`; load it and `code-writing-guide` if Step 2 was skipped — do not rely on automatic skill triggering), and run it with `/run-tests` to verify it **fails** — this confirms the suspected cause before changing the production code, and pins the defect at the unit layer where the Step 2 test cannot locate it.
+   Take its expected result from the specification of the called code — the documentation from Step 1, or its XML documentation comment — not from the code traced in items 1-2: an expected result derived from the implementation passes whatever the implementation does.
    If it passes, the suspect is wrong: delete the test, record it under **Ruled out**, and return to item 1.
    Skip this item when the cause lies outside code a unit test can call (e.g., scene/prefab wiring or asset settings)
 4. Commit the unit-level reproduction test, for the same reason as Step 4
@@ -140,12 +146,15 @@ With the reproduction confirmed, investigate the root cause:
 
 ### Step 6: Regression Test Coverage
 
-Before applying the fix, check whether the affected area has adequate coverage for adjacent behavior:
+Before applying the fix, cover the adjacent behavior the fix could disturb:
 
-1. Start from the regression test cases `/design-tests` produced in Step 2 (if Step 2 ran)
+1. Run a general-purpose subagent that loads the `test-designing-guide` skill — do not rely on automatic skill triggering — and designs the test cases of each test target the fix formulated in Step 5 changes, e.g., the class that owns the changed lines.
+   Give it the test targets, the documentation from Step 1 — its file path, or the full text when it came from the conversation — and the user's instructions on the test techniques, if any (e.g., error guessing); have it return the test cases verbatim.
+   Designing in a subagent keeps the method bodies you read in Step 5 out of the test design: a test case derived from the implementation passes whatever the implementation does
 2. Read the test files for the affected production code
-3. Identify behaviors that could regress from the change but are not currently tested
-4. If gaps exist, add regression tests (per `test-writing-guide`) and run them — they must **pass** (they test existing correct behavior, not the bug itself)
+3. From the returned test cases, choose those that verify behavior the fix could disturb and no existing test covers
+4. Add regression tests for them (per `test-writing-guide`) and run them — they must **pass** (they test existing correct behavior, not the bug itself).
+   Write no test code for a test case marked unverifiable, undefined, or ambiguous
 
 ### Step 7: Apply Fix & Verify
 
