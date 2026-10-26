@@ -16,6 +16,6 @@
 
 **Notes:**
 
-- すべて `<データフォルダ>` 配下の `<ClassName>` ScriptableObject のアセットを引数に取るパラメタライズドテスト
-- unverifiable, undefined, ambiguous と書かれたテストケースからはテストコードを生成しません
-- 条件 `<条件>`、`<条件>` は明示的に未定義のためテストしない
+- すべて `<データフォルダ>` 配下の `<ClassName>` ScriptableObject のアセットを引数に取るパラメタライズドテストです
+- 条件 `<条件>`、`<条件>` は、振る舞いが「未定義」と仕様に明示されているため、テストケースに含まれません
+- unverifiable, undefined, ambiguous と書かれたテストケースからは、テストコードは生成されません

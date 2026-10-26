@@ -15,8 +15,8 @@
 
 **Notes:**
 
+- The specification explicitly states the behavior under conditions `<condition>` and `<condition>` as "undefined", so they are not included in the test cases.
 - No test code is generated from the test cases marked undefined or ambiguous.
-- Conditions `<condition>` and `<condition>` are explicitly undefined in the specification, so they are not tested.
 
 #### Visual verification tests
 

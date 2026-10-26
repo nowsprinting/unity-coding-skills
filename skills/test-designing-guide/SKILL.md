@@ -243,8 +243,8 @@ Write the markers in English whatever the project language.
 **Notes** — a bullet list under a test case table, written in the project language in this order; omit a bullet that does not apply, and the Notes when no bullet remains:
 
 1. For validators, the selection scope (see [Validators](resources/validators.md#selection-scope))
-2. That no test code is generated from the test cases marked unverifiable, undefined, or ambiguous, when the table has any
-3. The conditions the specification explicitly states as undefined, which have no test case; write several conditions in one bullet where possible — in unit tests, one bullet per `<MethodName>`
+2. The conditions the specification explicitly states as undefined, which have no test case; write several conditions in one bullet where possible — in unit tests, one bullet per `<MethodName>`
+3. That no test code is generated from the test cases marked unverifiable, undefined, or ambiguous, when the table has any
 4. Any other supplementary remark on the test cases
 
 Read the output format template for the layer and follow it exactly (templates are in `${CLAUDE_SKILL_DIR}/assets/`):
