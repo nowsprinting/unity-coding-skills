@@ -23,6 +23,9 @@ Guide for running Unity tests with the `run_unity_tests` tool, running Play Mode
   Domain reload typically takes several seconds; immediate retry hits the same in-flight reload and fails again.
   Do not switch tools in the meantime (e.g., calling `unity_play_control` to verify state) — that just compounds the multiplexed calls.
   If the same tool returns `error` or `canceled` on two consecutive attempts (with the 10-second wait between them), stop and consult the user instead of retrying further.
+- **After adding or deleting assets that a `[TestCaseSource]` or `[ValueSource]` enumerates, request a domain reload before running the tests.**
+  The Editor builds the test tree once per domain and reuses it, and an asset import (`AssetDatabase.Refresh`) does not reload the domain, so the test cases stay as they were at the last reload — a source that found no assets then keeps failing with `No arguments were provided`.
+  Call `run_method_in_unity` with `assemblyName: UnityEditor.CoreModule`, `typeName: UnityEditor.EditorUtility`, `methodName: RequestScriptReload`, then run the tests.
 
 ## Run Tests
 
