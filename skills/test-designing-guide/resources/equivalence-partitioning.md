@@ -16,6 +16,7 @@ An equivalence partition the specification explicitly states as undefined is not
 Add an equivalence partition beyond every upper and lower limit, even when the specification states only the range within them — e.g., `HP < 0`, `HP > MaxHP`, `EXP > Next` (the experience needed for the next level).
 Such a value often arises from a calculation rather than a direct input: damage exceeding the remaining HP, experience gained beyond the next level.
 Whether it is a valid or an invalid equivalence partition depends on the specification — `EXP > Next` is a valid equivalence partition, since it produces a level up.
+An enum has no values beyond its members, so it gets no such equivalence partition.
 
 ## Deriving test methods from equivalence partitions
 
