@@ -1,6 +1,7 @@
 # Combinatorial Testing
 
-Apply when multiple data-driven parameters (factors) combine and the expected result itself stays the same — e.g., the selected character and equipment — or when the specification states that some inputs do not affect the output.
+Apply only when the user explicitly asks to test the combinations of multiple parameters (factors) whose expected result stays the same — e.g., the selected character and equipment.
+The other techniques leave the inputs the expected result does not depend on out of the test cases, and the test-writing phase gives them neutral values; testing their combinations is a risk judgment the specification does not make, so the user makes it.
 Unlike [decision table testing](decision-table-testing.md), where rules map each combination of conditions to a different outcome, every combination here expects the same behavior; the test cases look for combinations whose interaction breaks it.
 
 ## One Expected Result
@@ -19,6 +20,8 @@ Choose the levels so that no combination falls in a condition the specification 
 In integration tests, as a principle, cover every combination of the levels of any two parameters with the pairwise (all-pairs) method; append `by pairwise` to the [parameterized test](../SKILL.md#parameterized-tests) notation, e.g., `(character: (Character), weapon: {Sword, Bow}, by pairwise)`, and the test-writing phase selects a covering combination set.
 
 In unit tests, cover all combinations, never pairwise; write the levels of each parameter in the parameterized test notation, e.g., `(character: (Character), weapon: {Sword, Bow})`.
+
+Validators get no combinatorial testing: their input is the assets authored in the project, which the test cannot choose.
 
 ## Combinatorial Explosion
 

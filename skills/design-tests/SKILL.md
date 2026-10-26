@@ -23,6 +23,7 @@ The test design knowledge lives in the `test-designing-guide` skill; this skill 
 
 Take the specification to test against from the `SPECIFICATION` argument: either a file path or the specification written directly.
 When the argument is omitted, take it from the conversation.
+The argument or the conversation may also include instructions on the test techniques to apply, e.g., combinatorial testing.
 If no specification can be found, use `AskUserQuestion` to ask the user before proceeding.
 
 In this skill and `test-designing-guide`, the terms mean:
@@ -85,7 +86,7 @@ Instruct each subagent to load the `test-designing-guide` skill — do not rely 
 5. Assess the target (Assessment)
 6. Write the test cases and the Assessment in the output format (Output Format)
 
-Give each subagent the test target with its assigned specifications and the requirements they realize if any, the test targets it contains with their assigned specifications if any, and the input — its file path, or the full text when it was written directly or taken from the conversation — and have it return its output verbatim.
+Give each subagent the test target with its assigned specifications and the requirements they realize if any, the test targets it contains with their assigned specifications if any, the user's instructions on the test techniques if any, and the input — its file path, or the full text when it was written directly or taken from the conversation — and have it return its output verbatim.
 Also have it write the modeling result to `<scratchpad>/modeling-results/<test target>.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally in the instruction): a subagent's context is gone once it returns, and you need the modeling result to show it when the user asks to see it, without holding every target's modeling result in your context.
 A subagent cannot ask the user, so it records every question as an issue in the Assessment.
 

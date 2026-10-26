@@ -92,6 +92,12 @@ Creates test cases at the layer of each specification's subject — e.g., integr
 The `SPECIFICATION` can be stated in any document — a requirements document, a software design document, an ADR, or a bug report — given as a file path or written directly; when omitted, it is read from the conversation.
 For a file path, the output goes to a Markdown file with a `-tests` suffix next to it; otherwise, to the conversation.
 
+By default, it designs no combinatorial tests: inputs that do not affect the expected result are left out of the test cases.
+When the combinations need testing, name the inputs to combine in your instruction, e.g.,
+```
+/design-tests @docs/equipment.md, and test the combinations of the character and the weapon with combinatorial testing
+```
+
 Dependencies:
 
 ```text
