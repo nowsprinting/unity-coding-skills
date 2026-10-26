@@ -39,6 +39,11 @@ Test execution can take several minutes.
 Do not re-run while a test is in progress — always wait for it to complete or time out.
 If a timeout occurs, narrow down the tests using filter settings and re-run.
 
+### Judging the Result
+
+The tests pass only when none of them fails or is inconclusive: count an inconclusive test as a failure, since its `Assume` stopped it before it could verify the expected result.
+A skipped test does not count as a failure: it is excluded on purpose, e.g., by `[Ignore]` or a platform condition.
+
 ### Performance Test Results
 
 When `com.unity.test-framework.performance` is installed, each run writes its measurements to `Application.persistentDataPath/PerformanceTestResults.json` (alongside the `TestResults.xml` they are parsed from).
