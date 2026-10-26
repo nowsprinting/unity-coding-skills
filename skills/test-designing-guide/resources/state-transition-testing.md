@@ -20,6 +20,9 @@ Testing longer paths exceeds 0-switch coverage.
 Design one test method per transition, with the source state and the event in the `<Condition>` segment and the destination state in the `<Expected>` segment.
 When the specification defines that an event is not accepted in a state, design a test case that the state does not change.
 
+For an external specification or a specification that realizes a stated requirement, mark as an acceptance test (see [Output Format](../SKILL.md#output-format)) only the test case of a transition the specification itself describes — an edge of its diagram, a step of its scenario or use case, or a sentence such as "pressing Start opens the stage select screen".
+A transition derived only by completing the state transition table, and an event not accepted, get no mark.
+
 ## Screen Transitions
 
 Model the screen transitions as an FSM, with screens as states and player operations as events, whether the specification gives them as a screen transition diagram, a sequence, a use case, or button operations written per screen.

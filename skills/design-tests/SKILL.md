@@ -36,7 +36,7 @@ In this skill and `test-designing-guide`, the terms mean:
   A requirement alone has no pass/fail criterion; the specification that realizes it does.
 
 The input may state the specification in any document: a requirements document, a software design document, an ADR, or a bug report (its Expected is the specification; see `resources/reproduction-tests.md` in `test-designing-guide`).
-When the input also states requirements, note which specifications realize them; `test-designing-guide` marks their test cases as acceptance tests.
+Note which specifications are external specifications and, when the input also states requirements, which specifications realize them; `test-designing-guide` marks the test cases of their normal outcomes as acceptance tests.
 
 Read existing code and tests only as `test-designing-guide` allows (Reading Code).
 
@@ -86,11 +86,11 @@ Instruct each subagent to load the `test-designing-guide` skill — do not rely 
 5. Assess the target (Assessment)
 6. Write the test cases and the Assessment in the output format (Output Format)
 
-Give each subagent the test target with its assigned specifications and the requirements they realize if any, the test targets it contains with their assigned specifications if any, the user's instructions on the test techniques if any, and the input — its file path, or the full text when it was written directly or taken from the conversation — and have it return its output verbatim.
+Give each subagent the test target with its assigned specifications, which of them are external specifications, and the requirements they realize if any, the test targets it contains with their assigned specifications if any, the user's instructions on the test techniques if any, and the input — its file path, or the full text when it was written directly or taken from the conversation — and have it return its output verbatim.
 Also have it write the modeling result to `<scratchpad>/modeling-results/<test target>.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally in the instruction): a subagent's context is gone once it returns, and you need the modeling result to show it when the user asks to see it, without holding every target's modeling result in your context.
 A subagent cannot ask the user, so it records every question as an issue in the Assessment.
 
-When a target's Assessment is `❌FAIL` — e.g., a contradictory specification, or an undefined, ambiguous, or unverifiable acceptance test — ask the user via `AskUserQuestion`, presenting the Issues that make it FAIL, then design that target again with the answer.
+When a target's Assessment is `❌FAIL` — e.g., a contradictory specification, or an ambiguous or unverifiable acceptance test — ask the user via `AskUserQuestion`, presenting the Issues that make it FAIL, then design that target again with the answer.
 When the user cannot resolve them — they require revising the specification — stop and report the Issues and modeling result to the user; revising the specification is up to the user or the caller.
 Proceed with an `⚠️WARN` target as it is: its Issues stay in its Assessment, which the output carries for the user or the caller to act on.
 

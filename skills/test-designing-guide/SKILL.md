@@ -230,8 +230,8 @@ Output the test cases of a test target as one section per test class, in this or
 
 **Output markers** — annotations that flag test case categories; append to the specified field only, not the Verification column:
 
-- `(acceptance test)` — append to the **Test Method column** when the input explicitly states requirements and the test directly verifies a specification that realizes one of them.
-  Without stated requirements, mark no test as an acceptance test.
+- `(acceptance test)` — append to the **Test Method column** when the test verifies a normal outcome, not an error, of an external specification or of a specification that realizes a requirement the input explicitly states: e.g., a valid equivalence partition; for a state transition, see [State transition testing](resources/state-transition-testing.md#test-methods).
+  An undefined test case states no outcome, so it is never an acceptance test.
 - `(reproduction test)` — append to the **Test Method column** when the test reproduces a reported bug (see [Reproduction tests](resources/reproduction-tests.md))
 - `(existing)` — append to the **Test Method column** when an existing test implements the test case and needs no change.
 - `(test fix)` — append to the **Test Method column** when an existing test implements the test case but disagrees with a specification that has not changed, e.g., its name, arguments, or expected result is wrong.
@@ -271,7 +271,7 @@ Record every issue found while designing instead of guessing.
 **FAIL criteria**:
 
 - **Contradictory specification** — two specifications demand incompatible outcomes
-- **Unverifiable, undefined, or ambiguous acceptance test** — an acceptance test is unverifiable, undefined, or ambiguous
+- **Unverifiable or ambiguous acceptance test** — an acceptance test is unverifiable or ambiguous
 
 **WARN criteria**:
 
