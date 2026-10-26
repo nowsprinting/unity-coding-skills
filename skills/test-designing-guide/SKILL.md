@@ -27,7 +27,8 @@ Derive test cases from the specification, never from the implementation: a test 
 Read only the following code, and no method bodies of production code:
 
 - **Existing tests** — when the specification of a test target with tests changes, or a bug report asks for a [reproduction test](resources/reproduction-tests.md), the signatures of the test target's test classes and test methods, with the attributes that give a parameterized test its arguments, to mark the test cases they already implement (see the [output markers](#output-format))
-- **Production code** — for unit tests and validators, the signatures and XML documentation comments of the test target's members, to judge whether a test case can observe the actual result (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); for a class the input's software design introduces, read the signatures it fixes instead
+- **Production code** — for unit tests and validators, the signatures and XML documentation comments of the test target's members, to judge whether a test case can observe the actual result (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); for a class the input's software design introduces, read the signatures it fixes instead.
+  Take the inputs to model from the specification, not from the parameters of a signature.
 
 ## Test Layers
 
@@ -59,7 +60,8 @@ A part of the subject without a specification of its own, e.g., a class no speci
 
 Before selecting the techniques, list from the specifications the inputs, states, and outputs of the test target, since a value that does not pass through an argument or a return value is easy to miss:
 
-- **Inputs** — direct inputs (arguments, UI operations) and indirect inputs (return values of dependencies, random numbers, time, assets the target references, the order of Unity's lifecycle events)
+- **Inputs** — direct inputs (arguments, UI operations) and indirect inputs (return values of dependencies, random numbers, time, assets the target references, the order of Unity's lifecycle events).
+  Leave out an input the specification states does not affect the outputs: the test-writing phase gives it a neutral value.
 - **States** — the states the target holds across operations, e.g., flags and remaining counts, even when the specification does not describe them as an FSM
 - **Outputs** — direct outputs (return values, on-screen display) and indirect outputs (raised events, calls to dependencies, saved data, logs)
 
@@ -77,7 +79,7 @@ It's fine to write a structural test temporarily when you're unsure about an imp
 
 Select the techniques that fit the test target, and read the resource of each one you apply:
 
-- **Equivalence partitioning** — for every input except those a contained target governs (see [Contained Test Targets](#contained-test-targets)); group the values the specification says produce the same outcome → `resources/equivalence-partitioning.md`
+- **Equivalence partitioning** — for every input except those a contained target governs (see [Contained Test Targets](#contained-test-targets)) and those the specification states do not affect the outputs; group the values the specification says produce the same outcome → `resources/equivalence-partitioning.md`
 - **Boundary value analysis** — when the specification differentiates behavior at the edges of equivalence partitions → `resources/boundary-value-analysis.md`
 - **Decision table testing** — when a combination of multiple conditions produces different outcomes according to rules → `resources/decision-table-testing.md`
 - **Combinatorial testing** — only when the user explicitly asks to test the combinations of inputs whose expected result stays the same, e.g., the selected character and equipment → `resources/combinatorial-testing.md`
@@ -123,10 +125,10 @@ When multiple test cases share the same expected result — such as the represen
 Do NOT over-consolidate: keep separate rows for tests that belong to **different** equivalence partitions or produce **different** expected results (see [Deriving test methods from equivalence partitions](resources/equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)).
 
 Write each parameterized test as a single table row, with its parameter names and values after the method name in the Test Method column.
-Do NOT specify the framework mechanism (`TestCase`, `Values`, etc.) — that's a test-writing decision.
-
 Leave out of the parameters an input the expected result does not depend on, e.g., a condition marked "don't care" in a decision table: the test-writing phase gives it a neutral value.
 The factors of [combinatorial testing](resources/combinatorial-testing.md) are the exception: they go in the parameters.
+Do NOT specify the framework mechanism (`TestCase`, `Values`, etc.) — that's a test-writing decision.
+
 - **Bool parameter, all values**: `(flag: (bool))`
 - **Enum parameter, all values**: `(direction: (Direction))`
 - **Multiple parameters, all combinations (exhaustive)**: `(param1: {0, 1, 2}, param2: {3, 4, 5})` — when a parameter is `bool` or enum covering all its values, use the shorthand in place of the braces: `(flag: (bool), count: {0, 1, 5})`
