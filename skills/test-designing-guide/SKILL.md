@@ -71,7 +71,7 @@ Include the list in the modeling result.
 
 When an output of one operation is the input of its inverse, e.g., serialize and deserialize, and the specification does not define that intermediate form, neither operation has an expected result of its own; verify the pair by a round trip → `resources/round-trip-testing.md`
 
-When modeling the specifications with a test technique reveals a gap or a contradiction in them, do not guess the outcome: design the test case of a gap as undefined (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)), design no test case for a contradiction, and include the modeling result (e.g., the equivalence partition table, the decision table, the state transition diagram) in the [Assessment](#assessment) when it is `ASSESSMENT: FAIL`, so the user can see where the specification breaks.
+When modeling the specifications with a test technique reveals a gap or a contradiction in them, do not guess the outcome: design the test case of a gap as undefined (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)), design no test case for a contradiction, and include the modeling result (e.g., the equivalence partition table, the decision table, the state transition diagram) in the [Assessment](#assessment) when it is `❌FAIL`, so the user can see where the specification breaks.
 
 **Prefer specification-based tests over structural (implementation-coupled) tests.**
 Structural tests break under refactoring and lose value fast.
@@ -262,11 +262,11 @@ When no template exists for the project language, use the default one as the str
 Assess whether the specifications of a test target can be tested as written, and assign one of the following labels.
 Record every issue found while designing instead of guessing.
 
-| Label              | Meaning                                                           |
-|--------------------|-------------------------------------------------------------------|
-| `ASSESSMENT: PASS` | None of the FAIL or WARN criteria apply                           |
-| `ASSESSMENT: WARN` | Only WARN criteria apply                                          |
-| `ASSESSMENT: FAIL` | A FAIL criterion applies; the specification needs revising        |
+| Label    | Meaning                                                    |
+|----------|------------------------------------------------------------|
+| `✅PASS` | None of the FAIL or WARN criteria apply                    |
+| `⚠️WARN` | Only WARN criteria apply                                   |
+| `❌FAIL` | A FAIL criterion applies; the specification needs revising |
 
 **FAIL criteria**:
 
@@ -283,17 +283,16 @@ Record every issue found while designing instead of guessing.
 ```markdown
 ### Assessment
 
-ASSESSMENT: PASS
-
+✅PASS
 ```
 
-For `ASSESSMENT: WARN` or `ASSESSMENT: FAIL`, add `#### Issues` with the affected specification and a proposed remedy of each issue.
-For `ASSESSMENT: FAIL`, also add `#### Modeling result`:
+For `⚠️WARN` or `❌FAIL`, add `#### Issues` with the affected specification and a proposed remedy of each issue.
+For `❌FAIL`, also add `#### Modeling result`:
 
 ```markdown
 ### Assessment
 
-ASSESSMENT: FAIL
+❌FAIL
 
 #### Issues
 

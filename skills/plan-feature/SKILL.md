@@ -80,15 +80,15 @@ After Step 2, run the `/design-tests` skill with output in the conversation — 
 
 `/design-tests` returns:
 - **Test Cases** per test target — ready to paste into the plan file as one block
-- **Assessment** per test target (`ASSESSMENT: PASS`, `WARN`, or `FAIL`); act on the worst label across targets
+- **Assessment** per test target (`✅PASS`, `⚠️WARN`, or `❌FAIL`); act on the worst label across targets
 
 #### Handling the Assessment
 
-| Result             | Action                                                                             |
-|--------------------|------------------------------------------------------------------------------------|
-| `ASSESSMENT: PASS` | Proceed to Step 4 (Review)                                                         |
-| `ASSESSMENT: WARN` | Proceed to Step 4; record the Issues in the plan file's "Known Trade-offs" section |
-| `ASSESSMENT: FAIL` | Loop back to Step 2 (see below); maximum **1 retry**                               |
+| Result   | Action                                                                             |
+|----------|------------------------------------------------------------------------------------|
+| `✅PASS` | Proceed to Step 4 (Review)                                                         |
+| `⚠️WARN` | Proceed to Step 4; record the Issues in the plan file's "Known Trade-offs" section |
+| `❌FAIL` | Loop back to Step 2 (see below); maximum **1 retry**                               |
 
 #### Loopback to Step 2 (on FAIL)
 
@@ -120,7 +120,7 @@ Assemble the plan file with the following sections:
 2. **Implementation Design** — from Step 2 Plan agent output
 3. **Test Cases** — pasted verbatim as one block from the `/design-tests` output.
    Do not rewrite, translate, or clean up the output — `/design-tests` already applies its content restrictions.
-4. **Known Trade-offs** — from `ASSESSMENT: WARN` issues (if any)
+4. **Known Trade-offs** — from `⚠️WARN` issues (if any)
 5. **Development Workflow** — Read `${CLAUDE_SKILL_DIR}/assets/development-workflow-template.md` and paste its full contents verbatim as the body of this section in the plan file, then add any project-specific steps per `CLAUDE.md`
 
 ### Step 6: Call ExitPlanMode
