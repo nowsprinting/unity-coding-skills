@@ -1,6 +1,6 @@
-### Integration tests
+### <ClassName, or scene/prefab/screen name>Test
 
-#### <ClassName, or scene/prefab/screen name>Test
+#### Assertion-based tests
 
 | Test Method                           | Verification                                  |
 |---------------------------------------|-----------------------------------------------|
@@ -17,15 +17,13 @@
 - undefined, ambiguous と書かれたテストケースからはテストコードを生成しません
 - 条件 `<条件>`、`<条件>` は明示的に未定義のためテストしない
 
-### Visual verification tests
-
-#### <ClassName, or scene/prefab/screen name>Test
+#### Visual verification tests
 
 | Test Method         | Image analysis by saved screenshot                                                                                   |
 |---------------------|----------------------------------------------------------------------------------------------------------------------|
 | `<条件>_<期待結果>` | <`test-designing-guide` の Visual aspects to verify に従う — 例: 文字と背景のコントラスト、フォントサイズ・スタイル> |
 
-### Manual tests
+#### Manual tests
 
 | Test Case                | Test perspectives / Verification method |
 |--------------------------|-----------------------------------------|

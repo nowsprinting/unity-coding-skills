@@ -54,7 +54,7 @@ Read the specification and extract the test targets it covers, e.g.:
 - A screen
 - A character (actor)
 - A component (class)
-- The data constraints of a `ScriptableObject` class (implemented as a validator)
+- A `ScriptableObject` class (its methods implemented as unit tests, the constraints on its data as a validator)
 
 Extract only targets the specification describes; do NOT derive targets at a level no specification describes — e.g., internal classes guessed from the external specification of a screen — because such tests couple to an implementation no specification fixes.
 When the input includes a software design, the classes and signatures it fixes are specifications, and are valid targets.
@@ -67,9 +67,10 @@ Record the test targets each target contains.
 
 Extract all the screen transitions as a single test target, whatever form the specification gives them in — a screen transition diagram, a sequence, a use case, or button operations written per screen.
 
-#### Validators for ScriptableObject Data
+#### ScriptableObject Classes
 
-Extract the constraints the specification states on the data of a `ScriptableObject` class as one test target (implemented as a validator); each constraint is a property of one asset (see `resources/validators.md` in `test-designing-guide`).
+Extract a `ScriptableObject` class as one test target holding both the specifications of its methods (unit tests) and the constraints the specification states on its data (a validator); each constraint is a property of one asset (see `resources/validators.md` in `test-designing-guide`).
+The unit tests and the validator then share the equivalence partitions of the fields both refer to, and a gap in a field reaches the user as one issue.
 A table listing each asset's concrete values is the source the assets are authored from, not a specification: extract no constraint from it.
 
 ### Step 2: Design Each Test Target
@@ -77,7 +78,7 @@ A table listing each asset's concrete values is the source the assets are author
 Design each test target in its own general-purpose subagent, launched in parallel, so the working material of one target stays out of the others' context.
 Instruct each subagent to load the `test-designing-guide` skill — do not rely on automatic skill triggering — and apply it:
 
-1. Determine the target's layer (Test Layers)
+1. Determine the layer of each of the target's specifications (Test Layers)
 2. Model its specifications with test techniques, and derive test cases from the results (Test Techniques)
 3. Name the test cases (Test Case Naming) and write their Verification column (Verification Column)
 4. Re-check every parameterized row against the one-partition-per-method rule (`resources/equivalence-partitioning.md`, Deriving test methods from equivalence partitions): if substituting any listed value would change the expected result, split the row

@@ -4,7 +4,7 @@ Covers deriving the test cases of a validator from the specifications that const
 
 Out of scope:
 
-- Specifications of the class's methods — design them as unit tests (see [Test Layers](../SKILL.md#test-layers))
+- Specifications of the class's methods — design them as unit tests of the same test target (see [Test Layers](../SKILL.md#test-layers))
 
 ## Properties
 
@@ -28,6 +28,8 @@ The equivalence partitions define the predicate instead of becoming test cases w
 
 - An equivalence partition the specification leaves unlabeled is a gap: design a separate undefined test case with it as the precondition, e.g., `DisplayNameIsWhitespaceOnly_UNDEFINED`, and keep the property's constraint to the labeled equivalence partitions
 - A constraint that admits more than one reading makes the property ambiguous (see [Unverifiable, Undefined, and Ambiguous Test Cases](../SKILL.md#unverifiable-undefined-and-ambiguous-test-cases))
+
+The unit tests of the class's methods in the same test target may partition the same fields: share those equivalence partitions, and derive the test cases separately — the unit tests take representative values from each partition, while the validator only labels them.
 
 ## Test Methods
 

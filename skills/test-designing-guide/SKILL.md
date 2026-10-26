@@ -31,7 +31,8 @@ Read only the following code, and no method bodies of production code:
 
 ## Test Layers
 
-A test target's layer follows its subject: a class, or an asset file's own consistency, is a unit test; the data of a `ScriptableObject` class a validator; a scene or a prefab an integration test.
+A specification's layer follows its subject: a class, or an asset file's own consistency, is a unit test; the data of a `ScriptableObject` class a validator; a scene or a prefab an integration test.
+The test target of a `ScriptableObject` class spans two layers: unit tests for its methods and a validator for its data.
 The external specification of a game usually describes a scene or a screen, so it lands in integration tests; when the external specification is an API itself (e.g., a package), it lands in unit tests only, with no integration tests.
 
 - **Unit tests** — for specifications whose subject is a **class or an asset**, written as an **API contract**: a class or method's inputs, return values, state changes, raised events, or calls to its dependencies.
@@ -39,7 +40,7 @@ The external specification of a game usually describes a scene or a screen, so i
   When the specification defines a class's collaboration with its dependencies, keep test density low and focus on those interactions.
   Specifications on the content of assets other than `ScriptableObject` data (asset file validation, cross-asset consistency) also belong here.
 - **Validators** — for specifications that constrain the data of a `ScriptableObject` class, e.g., "an attack card's attack is greater than 0", verified on the class's assets authored in the project.
-  Specifications of the class's methods stay unit tests.
+  Specifications of the class's methods stay unit tests of the same test target.
 - **Integration tests** — for specifications whose subject is a **scene or prefab** (or a screen the player sees): UI operations, on-screen display, scene transitions, and behavior emerging from components and the assets they reference.
   - Add the integration test method to the test class of the **primary class** when the specification names one; OR
   - Create a new dedicated test class named after the scene, prefab, or screen otherwise.
@@ -86,7 +87,7 @@ Select the techniques that fit the test target, and read the resource of each on
 Also read the following when they apply to the test target:
 
 - **Integration testing** — when the test target is an integration test → `resources/integration-testing.md`
-- **Validators** — when the test target is a validator → `resources/validators.md`
+- **Validators** — when the test target has constraints on the data of a `ScriptableObject` class → `resources/validators.md`
 - **Testing randomness** — when the SUT consumes a pseudo-random number generator → `resources/testing-randomness.md`
 - **Reproduction tests** — when the request is to reproduce a reported bug → `resources/reproduction-tests.md`
 
@@ -132,7 +133,7 @@ Example: `IsValidLevel_WithinRange_ReturnsTrue` (level: {1, 50, 99}) | `Returns 
 
 In the **Verification** column, state **which observable property or behavior** is checked and **what its expected value or state** is — this corresponds to the `<Expected>` segment of the test method name, not the `<Condition>` segment, which the method name already captures.
 Write the prose in the project language.
-Describe observable behavior only; do NOT include any of the following **anywhere in the test case output** — this prohibition applies to the Verification column, class header descriptions (text after `#### ClassName`), and any other field:
+Describe observable behavior only; do NOT include any of the following **anywhere in the test case output** — this prohibition applies to the Verification column, class header descriptions (text after `### ClassName`), and any other field:
 
 - Test framework attributes (`[Test]`, `[UnityTest]`, `[LoadScene]`, `[Category(...)]`, `[TakeScreenshot]`, etc.)
 - Sync vs async / coroutine choice
@@ -202,20 +203,17 @@ Design a test case even when it cannot be verified as specified, and mark it ins
 
 ## Output Format
 
-Output the test cases of a test target as the blocks of its layers that have test cases, in this order (omit blocks with none), followed by its [Assessment](#assessment):
+Output the test cases of a test target as one section per test class, in this order of layers (omit the layers with no test cases), followed by its [Assessment](#assessment):
 
-- Unit tests: `### Unit tests`
-- Validators: `### Validators`
-- Integration tests (including visual verification tests and manual tests): `### Integration tests`, `### Visual verification tests`, `### Manual tests` — one layer, split into blocks by the means of verification: assertions, image analysis, and a human
-
-> **Note:** Do NOT write "Edit Mode" or "Play Mode" in test case output — that is a test-writing concern, not a test design concern.
-
-Structure by layer:
-- **Unit tests**: `#### <ClassName>Test` → table
-- **Validators**: `#### <ClassName>Validator` → table
-- **Integration tests** (including visual verification tests and manual tests): `#### <ClassName>Test`, or the scene, prefab, or screen name followed by `Test` when the specification names no primary class (see [Test Layers](#test-layers)) → table; manual tests have no class/method section and use a table of test cases with a "Test perspectives / Verification method" column instead of "Verification"
+- **Unit tests**: `### <ClassName>Test` → table
+- **Validators**: `### <ClassName>Validator` → table
+- **Integration tests** (including visual verification tests and manual tests): `### <ClassName>Test`, or the scene, prefab, or screen name followed by `Test` when the specification names no primary class (see [Test Layers](#test-layers)) — one layer, split within the section by the means of verification: assertions (`#### Assertion-based tests`), image analysis (`#### Visual verification tests`), and a human (`#### Manual tests`)
+  - The section heading names the subject the manual tests verify, so write it even when the target has only manual tests
+  - Manual tests have no test methods and use a table of test cases with a "Test perspectives / Verification method" column instead of "Verification"
   - Test perspectives — *what* behavioral aspects, conditions, or interactions are verified for this target.
     NOT a test technique name
+
+> **Note:** Do NOT write "Edit Mode" or "Play Mode" in test case output — that is a test-writing concern, not a test design concern.
 
 **Output markers** — annotations that flag test case categories; append to the specified field only, not the Verification column:
 

@@ -317,7 +317,7 @@ The following maps the test-designing-guide notation to NUnit attributes:
 
 ### Validators
 
-A `#### <ClassName>Validator` section in the test design runs each test method on the project's assets of that `ScriptableObject` class.
+A `### <ClassName>Validator` section in the test design runs each test method on the project's assets of that `ScriptableObject` class.
 Implement validators as Edit Mode tests under `Tests/Editor/`: `AssetDatabase`, which finds and loads the assets, is Editor-only.
 The test design gives no parameter notation: read the assets to select from the method name's `<Condition>` segment — e.g., `AttackCard_AttackIsGreaterThanZero` selects the attack cards, i.e., the `Card` assets whose `Type` is `Attack` — and a method name without `<Condition>` covers every asset of the class.
 Supply the assets with `[TestCaseSource]`, naming each `TestCaseData` after its asset file, and load each asset in the test:

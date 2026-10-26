@@ -1,6 +1,6 @@
-### Integration tests
+### <ClassName, or scene/prefab/screen name>Test
 
-#### <ClassName, or scene/prefab/screen name>Test
+#### Assertion-based tests
 
 | Test Method                                | Verification                                |
 |--------------------------------------------|---------------------------------------------|
@@ -17,15 +17,13 @@
 - No test code is generated from the test cases marked undefined or ambiguous.
 - Conditions `<condition>` and `<condition>` are explicitly undefined in the specification, so they are not tested.
 
-### Visual verification tests
-
-#### <ClassName, or scene/prefab/screen name>Test
+#### Visual verification tests
 
 | Test Method              | Image analysis by saved screenshot                                                                                      |
 |--------------------------|-------------------------------------------------------------------------------------------------------------------------|
 | `<Condition>_<Expected>` | <visual aspects per `test-designing-guide` (Visual aspects to verify) — e.g. text/background contrast, font size/style> |
 
-### Manual tests
+#### Manual tests
 
 | Test Case                 | Test perspectives / Verification method           |
 |---------------------------|---------------------------------------------------|

@@ -54,6 +54,9 @@ A test whose subject is a scene or a prefab, verifying the behavior that emerges
 **Unit test**:
 A test whose subject is a class or an asset, verified through its API or content. An external specification given as an API is tested at this layer.
 
+**Test target**:
+The unit a test design is made for, designed as a whole: e.g., the screen transitions, a screen, a prefab, or a class. The test target of a `ScriptableObject` class spans two subjects: the class's API (unit tests) and its assets' data (a validator).
+
 **Contained test target**:
 A test target whose subject lies within another test target's subject, e.g., a class placed on a screen, or a screen within the screen transitions. The container's tests cover only the behavior that combines its contained test targets.
 _Avoid_: Component (a Unity component), child target
