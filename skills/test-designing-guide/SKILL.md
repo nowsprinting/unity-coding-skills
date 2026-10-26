@@ -82,7 +82,7 @@ Select the techniques that fit the test target, and read the resource of each on
 - **Decision table testing** — when a combination of multiple conditions produces different outcomes according to rules → `resources/decision-table-testing.md`
 - **Combinatorial testing** — only when the user explicitly asks to test the combinations of inputs whose expected result stays the same, e.g., the selected character and equipment → `resources/combinatorial-testing.md`
 - **State transition testing** — when the target has a finite-state-machine (FSM), including screen transitions → `resources/state-transition-testing.md`
-- **Error guessing** — to surface failure patterns common in game development that specification-based techniques don't reach → `resources/error-guessing.md`
+- **Error guessing** — only when the user explicitly asks to surface failure patterns common in game development that specification-based techniques don't reach, or to find the trigger of a reported bug (see [Reproduction tests](resources/reproduction-tests.md)) → `resources/error-guessing.md`
 
 Also read the following when they apply to the test target:
 

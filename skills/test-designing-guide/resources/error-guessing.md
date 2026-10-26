@@ -2,6 +2,7 @@
 
 Experience-based; derive cases from failure patterns common in game development.
 Use this to surface implementation concerns that specification-based techniques don't reach.
+Apply it only when the user explicitly asks, or to find the trigger of a reported bug (see [Reproduction tests](reproduction-tests.md)): a guessed failure pattern comes from no specification, so whether it is worth a test case is a risk judgment the user makes.
 
 Examples to consider:
 

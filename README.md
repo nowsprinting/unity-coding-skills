@@ -98,6 +98,12 @@ When the combinations need testing, name the inputs to combine in your instructi
 /design-tests @docs/equipment.md, and test the combinations of the character and the weapon with combinatorial testing
 ```
 
+By default, it applies no error guessing either: every test case comes from the specification, not from guessed failure patterns.
+When you need it, ask for it in your instruction, e.g.,
+```
+/design-tests @docs/title-screen.md, and add test cases with error guessing
+```
+
 Dependencies:
 
 ```text
