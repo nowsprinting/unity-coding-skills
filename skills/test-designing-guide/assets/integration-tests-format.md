@@ -2,15 +2,16 @@
 
 #### Assertion-based tests
 
-| Test Method                                | Verification                                |
-|--------------------------------------------|---------------------------------------------|
-| `<Condition>_<Expected>`                   | `<property>` is `<expected value or state>` |
-| `<Condition>_<Expected>` (acceptance test) | `<property>` is `<expected value or state>` |
-| `<Condition>_<Expected>` (existing)        | `<property>` is `<expected value or state>` |
-| `<Condition>_<Expected>` (test fix)        | `<property>` is `<expected value or state>` |
-| `<Condition>_<Expected>` (spec change)     | `<property>` is `<expected value or state>` |
-| `<Condition>_UNDEFINED`                    | **undefined**                               |
-| `<Condition>_AMBIGUOUS`                    | **ambiguous** `<reason>`                    |
+| Test Method                                | Verification                                                             |
+|--------------------------------------------|--------------------------------------------------------------------------|
+| `<Condition>_<Expected>`                   | `<property>` is `<expected value or state>`                              |
+| `<Condition>_<Expected>` (acceptance test) | `<property>` is `<expected value or state>`                              |
+| `<Condition>_<Expected>` (existing)        | `<property>` is `<expected value or state>`                              |
+| `<Condition>_<Expected>` (test fix)        | `<property>` is `<expected value or state>`                              |
+| `<Condition>_<Expected>` (spec change)     | `<property>` is `<expected value or state>`                              |
+| `<Condition>_<Expected>`                   | When `<input>` is `<value>`, `<property>` is `<expected value or state>` |
+| `<Condition>_UNDEFINED`                    | **undefined**                                                            |
+| `<Condition>_AMBIGUOUS`                    | **ambiguous** `<reason>`                                                 |
 
 **Notes:**
 

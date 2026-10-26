@@ -23,7 +23,7 @@ The most common derivation error is merging equivalence partitions with **differ
 One rule prevents it:
 
 **One test method = one equivalence partition = one definite expected result.**
-Never parameterize the expected result.
+Never parameterize the expected result, except a numeric value the specification computes by a formula from the inputs, whose rows share the formula (see [Parameterized Tests](../SKILL.md#parameterized-tests)).
 If the expected result changes with the input, the inputs belong to **different** equivalence partitions → **separate** test methods, each named after its own outcome.
 
 For each input variable:

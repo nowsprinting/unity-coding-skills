@@ -107,6 +107,7 @@ If no language is specified, default to English.
   - For **parameterized tests**, the `<Condition>` segment is the **equivalence partition name**, not an enumeration of individual argument values.
   - For **Validators**, the `<Condition>` segment is the precondition of the property (see [Validators](resources/validators.md#test-methods)).
   - The `<Expected>` segment names the **concrete resulting state or value** of that one partition (e.g. `IsNotInteractable`, `ReturnsFizz`), never a condition or comparison.
+    When the specification computes the value by a formula, name the quantity it defines, e.g., `ReturnsDamageValue`.
     **Exceptions**: an undefined or ambiguous test case uses `UNDEFINED` or `AMBIGUOUS` (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); a consolidated layout assertion test may use the generic `LayoutIsCorrect` (see [Integration testing](resources/integration-testing.md#perspectives), UI layout).
     Words like `Matches…`, `OnlyWhen…`, `DependingOn…`, `BasedOn…` in the name — or "only when / only if / depending on" in the verification description — signal that the outcome varies with input, meaning two partitions were merged into one method — split into one method per outcome (see [Deriving test methods from equivalence partitions](resources/equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)).
   - Write `<Expected>` in active voice: `ReturnsTrue`, `ThrowsArgumentException`, `ReducesHpBy3`, etc. For an exception, include its type: `ThrowsArgumentException`, not just `ThrowsException`.
@@ -128,6 +129,7 @@ Do NOT specify the framework mechanism (`TestCase`, `Values`, etc.) — that's a
 - **Enum parameter, all values**: `(direction: (Direction))`
 - **Multiple parameters, all combinations (exhaustive)**: `(param1: {0, 1, 2}, param2: {3, 4, 5})` — when a parameter is `bool` or enum covering all its values, use the shorthand in place of the braces: `(flag: (bool), count: {0, 1, 5})`
 - **Multiple parameters, limited to specific combinations**: `({param1: 0, param2: 3}, {param1: 1, param2: 4})`
+- **Expected value per row**: `({attack: 2, guard: 1, expected: 1}, {attack: 7, guard: 3, expected: 4})` — only when the expected result is a numeric value the specification computes by a formula from the inputs, e.g., `GetDamage_AttackGreaterThanGuard_ReturnsDamageValue`: the rows share the formula, not the value; the Verification column refers to the parameter, e.g., "returns `expected`"
 
 Example: `IsValidLevel_WithinRange_ReturnsTrue` (level: {1, 50, 99}) | `Returns true`
 
@@ -141,7 +143,7 @@ Describe observable behavior only; do NOT include any of the following **anywher
 - Sync vs async / coroutine choice
 - Construction details of test inputs (e.g., how to build `PointerEventData`, how to instantiate fixtures)
 - The test's **precondition or arranged state** — anything that restates the `<Condition>` segment already encoded in the method name (e.g., for `..._WhenBossNext_...`, do NOT write "When the holder RunState has IsBossNext true, …" in Verification).
-  State only the expected observable outcome.
+  State only the expected observable outcome, with the input values it depends on (see Hidden input values in Further notation rules).
 - Assertion helper class names (e.g., `LayoutAssert`, `GameObjectFinder`)
 - Exact private or serialized field names, or field-qualified member access (e.g., `drawPileButton.interactable`) whose owner is not present in the specification — name the element descriptively instead (e.g., "the draw pile button is not interactable").
   Exact identifiers are not required at design time; resolving the precise field name is a test-writing concern.
@@ -152,6 +154,8 @@ Describe observable behavior only; do NOT include any of the following **anywher
 
 Further notation rules:
 
+- **Hidden input values** — when the expected result depends on input values that neither the `<Condition>` segment nor the parameters show, e.g., the representative of an equivalence partition, write each such input and its value before the expected result, so the reader can check the expected result against them.
+  Write only the inputs the expected result depends on; the test-writing phase gives the others neutral values.
 - When a single test asserts multiple properties (the multi-property exception in [Test Case Naming](#test-case-naming)), list each property being verified in the Verification column.
 - If a test case uses a **spy** to verify an interaction the API specification defines, note it in the Verification column: e.g., `(uses spy: <TargetDependency>)`.
   Do NOT note stubs or fakes — those are arrange/action concerns. xUTP definitions for reference:
@@ -176,12 +180,15 @@ Further notation rules:
 | Good                     | `Sync_GivenPhase_PanelVisible` (phase: {Defeat, Victory}) | The panel is visible                                                                                                                                                                |
 | Bad (condition restated) | `MapScene_OnLoad_WhenBossNext_FloorTextIsBoss`            | When the holder RunState has IsBossNext true, the floor text shows "Boss"                                                                                                           |
 | Good                     | `MapScene_OnLoad_WhenBossNext_FloorTextIsBoss`            | the floor text shows "Boss"                                                                                                                                                         |
+| Bad (inputs hidden)      | `GetDamage_AttackGreaterThanGuard_ReturnsDamageValue`     | Returns 1                                                                                                                                                                           |
+| Good                     | `GetDamage_AttackGreaterThanGuard_ReturnsDamageValue`     | When Attack is 2 and Guard is 1, returns 1                                                                                                                                          |
 
 The Bad (mechanism) row leaks the test-writing mechanism (attribute choice, sync invocation, exact assertion form).
 The Bad (rationale) row leaks why the test exists and what the current behavior is — none of that belongs in Verification; `(reproduction test)` goes in the Test Method column instead.
 The Bad (not parameterized) row hides the concrete argument values in a vague phrase in Verification; they belong in the Test Method column as named parameters, e.g. `(phase: {Defeat, Victory})`.
 The Bad (condition restated) row repeats the method name's `<Condition>` segment ("WhenBossNext") as a precondition clause; Verification states only the expected result, since the condition already lives in the method name.
-The Good rows state the observable behavior only; all other concerns go in the Test Method column or the test-writing phase.
+The Bad (inputs hidden) row gives an expected value no reader can check, since the method name shows only the equivalence partition; the Good row writes the inputs that determine it.
+The Good rows state the observable behavior and the input values it depends on only; all other concerns go in the Test Method column or the test-writing phase.
 
 ## Unverifiable, Undefined, and Ambiguous Test Cases
 

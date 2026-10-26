@@ -282,6 +282,8 @@ Each tuple becomes one `[TestCase]` attribute:
 public void GetDamageFactor_WeaknessAttribute_Returns2x(Element defence, Element attack) { ... }
 ```
 
+A parameter named `expected` in the test design holds the row's expected value: take it as a parameter of the test method and use it as the expected value of the assertion.
+
 Use `TestCaseData` with `.SetName(...)` to give test cases readable names when using `[TestCaseSource]`.
 Start the name with `{m}`, the placeholder for the method name: a name set with `SetName` replaces the method name in the test's full name, so test methods sharing a source would otherwise report the same full name for a case.
 

@@ -44,7 +44,8 @@ Guide for writing test code for Unity projects.
 
 ### Neutral Values
 
-Give every value the test's outcome does not depend on — an argument of the SUT, a field of an object passed to the SUT, the default of a creation-method parameter — a value that declares "this value does not matter here":
+Arrange the input values the test design states — the parameters of a parameterized test and the input values in the Verification column — as given: the expected result depends on them.
+Give every other value — the values the test's outcome does not depend on, e.g., an argument of the SUT, a field of an object passed to the SUT, the default of a creation-method parameter — a value that declares "this value does not matter here":
 
 - Use a **neutral** value: `0`, `null`, `false`, empty string/collection.
   A domain-plausible value (e.g. `hp = 79`) reads as a deliberate Arrange choice, and no reader can tell it apart from a value the outcome depends on.
