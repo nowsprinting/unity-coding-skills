@@ -89,8 +89,9 @@ Give each subagent the test target with its assigned specifications and the requ
 Also have it write the modeling result to `<scratchpad>/modeling-results/<test target>.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally in the instruction): a subagent's context is gone once it returns, and you need the modeling result to show it when the user asks to see it, without holding every target's modeling result in your context.
 A subagent cannot ask the user, so it records every question as an issue in the Assessment.
 
-When a target's Assessment raises an issue — e.g., an undefined, ambiguous, unverifiable, or contradictory specification — ask the user via `AskUserQuestion`, presenting the Issues, then design that target again with the answer.
-When the user cannot resolve an issue that makes the Assessment `ASSESSMENT: FAIL` — it requires revising the specification — stop and report its Issues and modeling result to the user; revising the specification is up to the user or the caller.
+When a target's Assessment is `ASSESSMENT: FAIL` — e.g., a contradictory specification, or an undefined, ambiguous, or unverifiable acceptance test — ask the user via `AskUserQuestion`, presenting the Issues that make it FAIL, then design that target again with the answer.
+When the user cannot resolve them — they require revising the specification — stop and report the Issues and modeling result to the user; revising the specification is up to the user or the caller.
+Proceed with an `ASSESSMENT: WARN` target as it is: its Issues stay in its Assessment, which the output carries for the user or the caller to act on.
 
 ### Step 3: Assemble the Test Cases
 
