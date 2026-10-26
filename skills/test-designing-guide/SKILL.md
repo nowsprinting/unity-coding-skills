@@ -102,6 +102,8 @@ If no language is specified, default to English.
   - **Non-method target** — `<Condition>_<Expected>`: all **Integration tests** and **Visual verification tests** (multi-component interaction or on-screen rendering), **Unit tests whose target is an asset** (asset file validation, cross-asset consistency checks — the SUT is an asset or set of assets), and **Validators**.
     Do NOT include a method name.
     Do NOT add a feature-area or category prefix before `<Condition>` — the name starts directly with the condition (e.g., `OnVictoryForced_AllCardViewsAreFullyWithinHandArea`, not `Reward_OnVictoryForced_AllCardViewsAreFullyWithinHandArea`).
+  - The `<Condition>` segment names only the equivalence partitions the expected result depends on; leave out an input that does not affect it, e.g., a condition marked "don't care" in a decision table.
+    The test-writing phase gives such an input a neutral value, unless it is a factor of [combinatorial testing](resources/combinatorial-testing.md), which goes in the parameters instead.
   - For **parameterized tests**, the `<Condition>` segment is the **equivalence partition name**, not an enumeration of individual argument values.
   - For **Validators**, the `<Condition>` segment is the precondition of the property (see [Validators](resources/validators.md#test-methods)).
   - The `<Expected>` segment names the **concrete resulting state or value** of that one partition (e.g. `IsNotInteractable`, `ReturnsFizz`), never a condition or comparison.
