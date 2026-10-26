@@ -133,7 +133,7 @@ Do NOT specify the framework mechanism (`TestCase`, `Values`, etc.) — that's a
 - **Enum parameter, all values**: `(direction: (Direction))`
 - **Multiple parameters, all combinations (exhaustive)**: `(param1: {0, 1, 2}, param2: {3, 4, 5})` — when a parameter is `bool` or enum covering all its values, use the shorthand in place of the braces: `(flag: (bool), count: {0, 1, 5})`
 - **Multiple parameters, limited to specific combinations**: `({param1: 0, param2: 3}, {param1: 1, param2: 4})`
-- **Expected value per row**: `({attack: 2, guard: 1, expected: 1}, {attack: 7, guard: 3, expected: 4})` — only when the expected result is a numeric value the specification computes by a formula from the inputs, e.g., `GetDamage_AttackGreaterThanGuard_ReturnsDamageValue`: the rows share the formula, not the value; the Verification column refers to the parameter, e.g., "returns `expected`"
+- **Expected value per row**: `({attack: 2, guard: 1, expected: 1}, {attack: 7, guard: 3, expected: 4})` — only when the specification derives the expected result from the inputs by one formula for a numeric value, e.g., `GetDamage_AttackGreaterThanGuard_ReturnsDamageValue`, or by one template or format for a string, e.g., `"Deal {Damage} damage"`: the rows share the formula or the template, not the value, so they stay in one output equivalence partition; the Verification column refers to the parameter, e.g., "returns `expected`"
 
 Example: `IsValidLevel_WithinRange_ReturnsTrue` (level: {1, 50, 99}) | `Returns true`
 
