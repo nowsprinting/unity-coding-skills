@@ -125,6 +125,8 @@ Do NOT over-consolidate: keep separate rows for tests that belong to **different
 Write each parameterized test as a single table row, with its parameter names and values after the method name in the Test Method column.
 Do NOT specify the framework mechanism (`TestCase`, `Values`, etc.) — that's a test-writing decision.
 
+Leave out of the parameters an input the expected result does not depend on, e.g., a condition marked "don't care" in a decision table: the test-writing phase gives it a neutral value.
+The factors of [combinatorial testing](resources/combinatorial-testing.md) are the exception: they go in the parameters.
 - **Bool parameter, all values**: `(flag: (bool))`
 - **Enum parameter, all values**: `(direction: (Direction))`
 - **Multiple parameters, all combinations (exhaustive)**: `(param1: {0, 1, 2}, param2: {3, 4, 5})` — when a parameter is `bool` or enum covering all its values, use the shorthand in place of the braces: `(flag: (bool), count: {0, 1, 5})`
