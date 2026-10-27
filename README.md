@@ -16,6 +16,7 @@ A [Claude Code](https://claude.ai/code) plugin for Unity development that enable
 | `code-writing-guide`       | Coding conventions and guidelines for Unity C# projects                                                        |                                                                                                                                                                                               |                |
 | `design-tests`             | Designs tests from a specification and produces the test design document                                       |                                                                                                                                                                                               |       ✅       |
 | `edit-scene`               | Creates or modifies scene and prefab files using the `run_method_in_unity` tool                                | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html) and [Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |       ✅       |
+| `find-diagnostic`          | Finds an IDE inspection or a Roslyn analyzer that flags a coding pattern and enables it                        |                                                                                                                                                                                               |       ✅       |
 | `fix-bug`                  | Reproduces and fixes bugs using a test-first workflow                                                          |                                                                                                                                                                                               |       ✅       |
 | `implement`                | Implements a feature test-first, from test design through refactoring                                          |                                                                                                                                                                                               |       ✅       |
 | `resolve-diagnostics`      | Resolves compiler, Roslyn analyzer, and IDE diagnostics at `warning` or higher severity                        | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html)                                                                                                             |       ✅       |
@@ -198,6 +199,14 @@ It runs the tests in the Unity Editor or on the player.
 ```
 
 It creates or modifies scene and prefab files through a temporary editor script instead of hand-editing YAML.
+
+### Find a diagnostic for a coding pattern
+
+```bash
+/find-diagnostic [PATTERN]
+```
+
+It searches for an IDE inspection or a Roslyn analyzer that flags the coding pattern, and enables it at `warning` or higher severity.
 
 ## Installation
 

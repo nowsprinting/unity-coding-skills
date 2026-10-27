@@ -179,3 +179,7 @@ Before applying the fix, cover the adjacent behavior the fix could disturb:
    Write `- None` for any category with nothing recorded, and add any last-minute Open questions before finalizing.
    If the file was never created, report every category as "None"
 3. Delete the temporary notes file if it exists
+
+### Step 10: Preventing Recurrence
+
+When the root cause lies in how the code is written or how a library or framework is used, e.g., `?.` on a destroyed `UnityEngine.Object`, tell the user under a `## Preventing Recurrence` heading that an IDE inspection or a Roslyn analyzer may keep the bug from recurring, and that `/find-diagnostic` searches for one.
