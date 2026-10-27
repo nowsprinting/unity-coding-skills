@@ -35,27 +35,36 @@ This plugin provides the methodology, conventions, and tools to make that signal
 
 ```mermaid
 flowchart LR
-    D1["D1. Requirements and/or specifications"]
-    D2["D2. Test design doc"]
-    D3["D3. Design doc"]
-    D4["D4. Test code"]
-    D5["D5. Production code"]
+    D1["D1. Requirements/ External specifications"]
+    D2["D2. Test design"]
+    D3["D3. Reviewed test design"]
+    D4["D4. Design docs/ ADRs"]
+    D5["D5. Test code"]
+    D6["D6. Production code"]
     P1(("P1. /design-tests"))
-    P2(("P2. Design<sup>1</sup>"))
-    P3(("P3. /implement"))
+    P2(("P2. Review test design"))
+    P3(("P3. Design<sup>1</sup>"))
+    P4(("P4. /implement"))
     D1 --> P1
-    D3 -. optional .-> P1
+    D4 -. "optional<sup>2</sup>" .-> P1
     P1 --> D2
-    D2 --> P3
-    D1 --> P2
-    D1 --> P3
+    D2 --> P2
+    D1 <--> P2
+    D4 <-. optional .-> P2
     P2 --> D3
-    D3 --> P3
+    D3 --> P4
+    D1 --> P3
+    D1 --> P4
     P3 --> D4
-    P3 --> D5
+    D4 --> P4
+    P4 --> D5
+    P4 --> D6
 ```
 
-<sup>1</sup> Use any design skills you prefer, e.g., `grilling`, `pstack`, or `modularity:design`.
+<sup>1</sup> Use any design skills you prefer, e.g., [grilling](https://github.com/mattpocock/skills), [pstack](https://github.com/cursor/plugins/tree/main/pstack), or [modularity](https://github.com/vladikk/modularity).
+
+<sup>2</sup> Giving `/design-tests` the design docs makes the test design more accurate, but adds test cases for you to review.
+Without them, `/implement` designs the test cases for the classes the design docs add on its own, internally.
 
 ### Test design
 
