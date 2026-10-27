@@ -2,7 +2,7 @@
 name: design-tests
 description: >-
   Designs tests from a specification, whatever document states it — a
-  requirements document, a software design document, an ADR, or a bug report:
+  requirements document, a software design document, or an ADR:
   extracts the test targets, then creates test cases for each target at the
   test layer of its subject — e.g., integration tests for a scene or prefab,
   unit tests for a class's API.
@@ -35,7 +35,7 @@ In this skill and `test-designing-guide`, the terms mean:
 - **Requirement** — what users need to hold true, e.g., "defeating an enemy feels satisfying".
   A requirement alone has no pass/fail criterion; the specification that realizes it does.
 
-The input may state the specification in any document: a requirements document, a software design document, an ADR, or a bug report (its Expected is the specification; see `resources/reproduction-tests.md` in `test-designing-guide`).
+The input may state the specification in any document: a requirements document, a software design document, or an ADR.
 Note which specifications are external specifications and, when the input also states requirements, which specifications realize them; `test-designing-guide` marks the test cases of their normal outcomes as acceptance tests.
 
 Read existing code and tests only as `test-designing-guide` allows (Reading Code).
