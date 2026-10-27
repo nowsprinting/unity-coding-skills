@@ -164,9 +164,6 @@ fix-bug
     └── run-tests
 ```
 
-> [!IMPORTANT]\
-> This skill must be used outside plan mode.
-
 > [!NOTE]\
 > Depending on the incident, the root cause may be identified before writing a reproduction test. Under adjustment.
 

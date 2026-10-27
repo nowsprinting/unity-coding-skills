@@ -16,15 +16,6 @@ metadata:
 Guide for diagnosing and fixing bugs.
 This skill defines a test-first debugging workflow: reproduce the bug with a failing test, diagnose the root cause, then fix it.
 
-## Mode Check
-
-This skill must be used **outside plan mode**.
-Before doing anything else, check the current mode:
-
-- `ExitPlanMode` is NOT in the deferred tools list (i.e., directly callable) → **in plan mode** → stop immediately and tell the user:
-  > "This skill (`/fix-bug`) must be used outside plan mode. Please exit plan mode first."
-- `ExitPlanMode` is in the deferred tools list → not in plan mode → proceed.
-
 ## Task Type Check
 
 If the user's request is to implement a new feature, change a specification, or refactor rather than investigate or fix a bug, stop and guide the user to invoke the `/implement` skill instead.
