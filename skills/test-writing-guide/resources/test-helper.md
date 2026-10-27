@@ -4,10 +4,12 @@ Covers the attributes, constraints, comparers, and runtime utilities of the `com
 
 Out of scope:
 
-- Finding and operating UI GameObjects — see `test-helper-ui.md`
+- Sampling a SUT and verifying statistical properties (`TestHelper.Statistics`) — see `test-helper-statistics.md`
 - Replacing `UnityEngine.Random` with a test double — see `test-helper-random.md`
+- Finding and operating UI GameObjects — see `test-helper-ui.md`
 
-Package: `com.nowsprinting.test-helper`
+Package: `com.nowsprinting.test-helper` (<https://github.com/nowsprinting/test-helper>)
+Assumes **v1.6.4** or later.
 
 Add `TestHelper` to Assembly Definition References to use attributes and constraints.
 Add `TestHelper.RuntimeInternals` to also use `SceneManagerHelper`, `ScreenshotHelper`, and `PathHelper`.
@@ -147,7 +149,6 @@ Add `using Is = TestHelper.Constraints.Is;` to use these alongside NUnit's `Is`.
 
 ### Layout constraints
 
-Requires test-helper **v1.6.2 or later**.
 These implement the recipes referenced by `test-writing-guide` → **Layout assertion tests**.
 
 | Goal                                                  | Constraint                                            |
@@ -216,10 +217,6 @@ Assert.That(actual, Is.EqualTo(expected).Using(new XmlComparer()));
 `FlipTexture2dEqualityComparer` requires the `FlipBinding.CSharp` NuGet package and `ENABLE_FLIP_BINDING` scripting symbol.
 
 ---
-
-## Statistics APIs
-
-To sample a SUT and verify statistical properties (`Experiment`, `DescriptiveStatistics`, `PixelPlot` in the `TestHelper.Statistics` namespace), see `test-helper-statistics.md`.
 
 ## Runtime Utilities
 

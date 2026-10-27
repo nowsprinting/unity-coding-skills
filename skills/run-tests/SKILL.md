@@ -49,10 +49,10 @@ A skipped test does not count as a failure: it is excluded on purpose, e.g., by 
 
 ### Performance Test Results
 
-When `com.unity.test-framework.performance` is installed, each run writes its measurements to `Application.persistentDataPath/PerformanceTestResults.json` (alongside the `TestResults.xml` they are parsed from).
+When `com.unity.test-framework.performance` is installed, each run writes its measurements to `PerformanceTestResults.json` under `Application.persistentDataPath`.
 Resolve that directory with `${CLAUDE_SKILL_DIR}/scripts/get-persistent-data-path.sh <unity-project-root>`.
 
-For the package's measurement pitfalls, see the `test-writing-guide` skill's `resources/unity-test-framework-performance.md`.
+For the other locations the package writes the file to, and for its measurement pitfalls, see the `test-writing-guide` skill's `resources/unity-test-framework-performance.md`.
 
 ## Run Tests on the Player
 

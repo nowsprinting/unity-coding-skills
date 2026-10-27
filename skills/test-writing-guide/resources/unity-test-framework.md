@@ -580,3 +580,9 @@ When using `[Repeat(n)]`, set `[Timeout]` to at least `n × per-iteration-budget
 
 `LogAssert.ignoreFailingMessages` resets to `false` before each test.
 Set it explicitly inside the test method where it is needed — it cannot be applied globally via `[SetUp]`.
+
+### A test run freezes or behaves inexplicably
+
+If a test run freezes the Editor or behaves inexplicably, the `com.unity.test-framework` or [UTF Analyzers](https://github.com/nowsprinting/test-framework.analyzers) package may be too old; this skill provides no information for avoiding the bugs in older versions.
+Upgrade `com.unity.test-framework` to **v1.4.6** or later in `Packages/manifest.json`.
+Upgrade UTF Analyzers to **v1.4.0** or later: `com.nowsprinting.test-framework.analyzers` in `Packages/manifest.json` (UPM) or `UTFAnalyzers` in `Assets/packages.config` (NuGetForUnity).

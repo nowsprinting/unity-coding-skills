@@ -6,7 +6,9 @@ Out of scope:
 
 - Attributes, constraints, and comparers — see `test-helper.md`
 
-Package: `com.nowsprinting.test-helper.ui`
+Package: `com.nowsprinting.test-helper.ui` (<https://github.com/nowsprinting/test-helper.ui>)
+Assumes **v1.5.2** or later.
+
 Add `TestHelper.UI` to Assembly Definition References.
 
 ---
@@ -185,16 +187,16 @@ Enable verbose logging with `config.Verbose = true`.
 Attach to GameObjects in scenes to control test behavior without code changes.
 Assembly reference: `TestHelper.UI.Annotations`
 
-| Goal | Component |
-|------|-----------|
-| Exclude from monkey testing | `IgnoreAnnotation` — children are also excluded |
-| Mark as preferred drag-drop target | `DropAnnotation` |
-| Configure character kind/length for text input | `InputFieldAnnotation` |
-| Exclude from blocking reachability raycasts | `NonBlockingAnnotation` |
-| Offset the raycast point from pivot (screen space) | `ScreenOffsetAnnotation` |
-| Offset the raycast point from pivot (world space) | `WorldOffsetAnnotation` |
-| Override the raycast point (screen space) | `ScreenPositionAnnotation` |
-| Override the raycast point (world space) | `WorldPositionAnnotation` |
+| Goal                                               | Component                                       |
+|----------------------------------------------------|-------------------------------------------------|
+| Exclude from monkey testing                        | `IgnoreAnnotation` — children are also excluded |
+| Mark as preferred drag-drop target                 | `DropAnnotation`                                |
+| Configure character kind/length for text input     | `InputFieldAnnotation`                          |
+| Exclude from blocking reachability raycasts        | `NonBlockingAnnotation`                         |
+| Offset the raycast point from pivot (screen space) | `ScreenOffsetAnnotation`                        |
+| Offset the raycast point from pivot (world space)  | `WorldOffsetAnnotation`                         |
+| Override the raycast point (screen space)          | `ScreenPositionAnnotation`                      |
+| Override the raycast point (world space)           | `WorldPositionAnnotation`                       |
 
 ---
 
@@ -204,11 +206,11 @@ Use these extension points when the game uses a custom UI framework or requires 
 
 ### Strategy functions / interfaces
 
-| Extension point | Purpose | When to replace |
-|-----------------|---------|-----------------|
-| `IsInteractable` function | Returns whether a `Component` is interactable. Default: true for uGUI components whose `interactable` property is true. | When you have non-uGUI components that need interactability checks |
-| `IIgnoreStrategy` | `IsIgnored` returns whether a `GameObject` should be skipped by Monkey. Default: true if `IgnoreAnnotation` is attached. | When you need name/path-based exclusion rules |
-| `IReachableStrategy` | `IsReachable` returns whether a `GameObject` is reachable from the user. Default: raycast from `Camera.main` to pivot; if a uGUI target is partially hidden by uGUI objects, retries at unblocked points inside its visible rect. | When you need a different camera or randomized raycast point |
+| Extension point           | Purpose                                                                                                                                                                                                                                               | When to replace                                                    |
+|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------|
+| `IsInteractable` function | Returns whether a `Component` is interactable. Default: true for uGUI components whose `interactable` property is true.                                                                                                                               | When you have non-uGUI components that need interactability checks |
+| `IIgnoreStrategy`         | `IsIgnored` returns whether a `GameObject` should be skipped by Monkey. Default: true if `IgnoreAnnotation` is attached.                                                                                                                              | When you need name/path-based exclusion rules                      |
+| `IReachableStrategy`      | `IsReachable` returns whether a `GameObject` is reachable from the user. Default: `EventSystem.RaycastAll` at the pivot's screen position; if a uGUI target is partially hidden by uGUI objects, retries at unblocked points inside its visible rect. | When you need a different camera or randomized raycast point       |
 
 Pass custom strategies to the `GameObjectFinder` or `MonkeyConfig` constructors:
 
@@ -224,13 +226,15 @@ Pass the instance to `FindByMatcherAsync`.
 
 ### IPaginator interface
 
-Implement `IPaginator` to support custom scrollable or pageable components.
-Required methods:
-- `ResetAsync` — navigate to the first page
-- `NextPageAsync` — navigate to the next page
-- `HasNextPage` — returns whether a next page exists
+Implement `IPaginator<TComponent>` to support custom scrollable or pageable components.
+Required members:
 
-Constructor requirements: first parameter must be a `MonoBehaviour` subclass (the pageable component to control).
+- `ResetAsync` — navigate to the first page
+- `NextPageAsync` — navigate to the next page; must return `false` when the page position cannot advance, or `GameObjectFinder` loops forever
+- `HasNextPage` — returns whether a next page exists
+- `TargetComponent` setter — accepts the pageable component, including `null`; resets state tied to the previous target, since `PaginatorPool` reassigns pooled instances; throws `ArgumentException` for an unsupported component type
+
+`ResetAsync`, `NextPageAsync`, and `HasNextPage` throw `InvalidOperationException` when no target component is set.
 
 ### IOperator interface
 
@@ -239,14 +243,14 @@ Implement:
 - `CanOperate(GameObject)` — whether the operation applies to this object
 - `OperateAsync(GameObject, RaycastResult, CancellationToken)` — execute the operation
 
-Register custom operators via `MonkeyConfig.Operators` or `OperatorPool.Register<T>()`.
+Register custom operators via `OperatorPool.Register<T>()`.
 
 ---
 
 ## Debugging
 
-| Goal | Solution |
-|------|----------|
-| Visualize "not reachable" / "not interactable" on screen | Pass `new DefaultDebugVisualizer()` to `GameObjectFinder` constructor |
-| Visualize operator tap/swipe points | Pass `new DefaultDebugVisualizer()` to operator constructor or `OperatorPool` constructor |
-| Visualize during monkey testing | Set both `MonkeyConfig.Visualizer` and `MonkeyConfig.OperatorPool` with the same `DefaultDebugVisualizer` instance |
+| Goal                                                     | Solution                                                                                                           |
+|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|
+| Visualize "not reachable" / "not interactable" on screen | Pass `new DefaultDebugVisualizer()` to `GameObjectFinder` constructor                                              |
+| Visualize operator tap/swipe points                      | Pass `new DefaultDebugVisualizer()` to operator constructor or `OperatorPool` constructor                          |
+| Visualize during monkey testing                          | Set both `MonkeyConfig.Visualizer` and `MonkeyConfig.OperatorPool` with the same `DefaultDebugVisualizer` instance |

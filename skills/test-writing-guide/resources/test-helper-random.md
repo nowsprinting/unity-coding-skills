@@ -1,6 +1,7 @@
 # Random Test Helper — Quick Reference
 
 Package: `com.nowsprinting.test-helper.random` (<https://github.com/nowsprinting/test-helper.random>)
+Assumes **v1.1.0** or later.
 
 `UnityEngine.Random` exposes only `static` members, so a test cannot replace it with a test double (see `test-doubles.md`).
 This package provides the `IRandom` interface, which covers the members of both `UnityEngine.Random` and `System.Random`, and `RandomWrapper`, its implementation.

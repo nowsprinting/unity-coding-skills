@@ -6,13 +6,18 @@ Out of scope:
 
 - General Unity Test Framework usage — see `unity-test-framework.md`
 - Asserting that a delegate allocates nothing — see "GC Allocation Constraint" in `unity-test-framework.md`
+- The core package bundled with the Editor (v6.6.0 and later)
 
-**Observed on**: package **3.5.0**, Unity **6000.4.12f1**, macOS (OSXEditor, Play Mode).
+Package: `com.unity.test-framework.performance` (<https://docs.unity3d.com/Packages/com.unity.test-framework.performance@3.5/manual/index.html>)
+Assumes **v3.5.0** or later.
+
+**Observed on**: Unity **6000.4.12f1**, macOS (OSXEditor, Play Mode).
 Re-check before assuming these still hold.
 
 ## Results are written to `persistentDataPath`
 
 `RunFinished` always writes `Application.persistentDataPath/PerformanceTestResults.json` (parsed from a `TestResults.xml` beside it).
+From 3.6.0, the file is also updated as each test finishes, and a command-line run given `-testResults` without `-perfTestResults` also writes it next to the NUnit results file.
 Resolve the directory with the `run-tests` skill's `get-persistent-data-path.sh`.
 
 ## `Measure.Method()` takes synchronous delegates only (3.5.0)
@@ -24,6 +29,10 @@ Sample manually with `Measure.Custom` instead; see **Measuring async allocations
 
 `Measure.Method().GC()` samples `ProfilerRecorder.GetSample(0).Count` into a group named `Time.GC()` with unit `Undefined`.
 Read it as "how many times this allocated", never as a byte figure.
+
+## `.GC()` forces a full collection before each timed region (3.6.0)
+
+Times of an allocating method measured with `Measure.Method().GC()` are not comparable with baselines from 3.2.1 through 3.5.0, which skip that collection.
 
 ## `GC.GetAllocatedBytesForCurrentThread()` always returns 0 (Unity 6000.4.12f1)
 

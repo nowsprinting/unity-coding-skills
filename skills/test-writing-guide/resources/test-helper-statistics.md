@@ -3,6 +3,9 @@
 Part of the `com.nowsprinting.test-helper` package (see `test-helper.md`): the `TestHelper` assembly, namespace `TestHelper.Statistics`.
 Use it to verify statistical properties of a SUT that consumes a pseudo-random number generator (PRNG), e.g., a drop rate or the shape of a damage distribution.
 
+Package: `com.nowsprinting.test-helper` (<https://github.com/nowsprinting/test-helper>)
+Assumes **v1.6.4** or later.
+
 > The APIs are experimental, and may change without following SemVer.
 > They summarize samples; they are not a statistical hypothesis testing tool.
 
