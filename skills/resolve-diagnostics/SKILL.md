@@ -1,7 +1,7 @@
 ---
 name: resolve-diagnostics
 description: >-
-  Resolves IDE diagnostics (inspections and analyzer findings) at the `warning` or higher severity level for a given set of files.
+  Resolves diagnostics (compiler errors and warnings, Roslyn analyzer findings, and IDE inspections) at the `warning` or higher severity level for a given set of files.
   Use this skill when a workflow's refactoring step calls for resolving diagnostics, or when the user asks to fix warnings,
   inspections, or static analysis findings in specific files.
 argument-hint: "<file paths>"
@@ -10,7 +10,7 @@ metadata:
   author: Koji Hasegawa
 ---
 
-Resolves IDE diagnostics at the `warning` or higher severity level for the given files, reformats them to the solution's code style, then runs the tests.
+Resolves diagnostics from the compiler, Roslyn analyzers, and IDE inspections at the `warning` or higher severity level for the given files, reformats them to the solution's code style, then runs the tests.
 
 ## Input
 
