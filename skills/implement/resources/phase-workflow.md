@@ -2,7 +2,7 @@
 
 Implements the test targets of one phase test-first: designs their missing test cases, writes failing tests, then the production code that passes them, and refactors it.
 
-The caller gives you the phase's test targets with their specifications, the test targets of the earlier phases (already implemented), the input (the specification and the test design document, if any), the user's instructions on the test techniques, if any, and the notes file.
+The caller gives you the phase's test targets with their specifications and test bases, the test targets of the earlier phases (already implemented), the input (the specification and the test design document, if any), the user's instructions on the test techniques, if any, and the notes file.
 You cannot ask the user: return `STATUS: QUESTION` instead (see [Report](#report)).
 
 ## Notes
@@ -49,7 +49,7 @@ Step 1 is complete when every test target of the phase and every class you desig
    **New methods: empty body only** (no logic, no exceptions; value-returning methods must return a literal default: `0`, `false`, or `null`); **modify: signature only, body unchanged**; **delete: remove the entire method**.
    For a `ScriptableObject` class with a validator, also declare the fields the validator reads.
    Place each file at the path and in the assembly of the software design
-3. Write the test code of the test cases, including the updates to existing tests marked `(test fix)` or `(spec change)`.
+3. Write the test code of the test cases, including the updates to existing tests marked `(test fix)` or `(spec change)`, and list the test bases of its test target in each test file (`test-writing-guide`, Test Basis).
    Use the real classes of the earlier phases as the dependencies of the test targets
 4. Run the added and modified tests with `/run-tests` and confirm they **fail**.
    A test marked `(test fix)` or `(spec change)` whose expected result stays the same may pass — only its name, arguments, or construction changed.

@@ -75,6 +75,14 @@ _Avoid_: Component (a Unity component), child target
 A test whose subject is the project's assets of a `ScriptableObject` class, verifying that the data each holds satisfies the class's specification.
 _Avoid_: Unit test (for the data of a `ScriptableObject` class)
 
+**Test basis**:
+A file or an issue that states the specification, software design, or test design that test code or a test design document was written from, listed on it to find it by. It may be outdated or incomplete, so nothing trusts it beyond searching. Text written directly or taken from the conversation is no test basis.
+_Avoid_: Source, reference, origin, trace link
+
+**Specification coverage**:
+The share of the elements of one specification document's model — equivalence partitions, boundary values, decision table rules, and state transitions — that the tests verify.
+_Avoid_: Requirement coverage, test coverage (code coverage)
+
 ### Code
 
 **Implementation**:

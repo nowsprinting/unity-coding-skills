@@ -78,6 +78,9 @@ If the documentation and the report conflict, use `AskUserQuestion` to clarify w
 If the user answers that the specification itself is to change, rather than that the documentation misstates it, the request is a specification change: stop and guide the user to invoke the `/implement` skill instead.
 If the docs contain errors or are missing relevant information, add them to the list of files to be modified in this bug fix.
 
+Note the **test bases** of this bug fix: the files and issue URLs of the bug report and of this documentation.
+List them in each test file you write or modify in this run (`test-writing-guide`, Test Basis).
+
 ### Step 2: Write the Reproduction Test
 
 > **Skip this step** if Step 1 identified this as an **existing test failure** case.

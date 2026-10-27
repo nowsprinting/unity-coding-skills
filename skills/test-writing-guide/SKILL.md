@@ -33,6 +33,27 @@ Guide for writing test code for Unity projects.
 - For a test case marked `(test fix)` or `(spec change)`, change the existing test to match the test case instead of adding a new one.
 - Do not implement a test case whose Verification column starts with `**unverifiable**`, `**undefined**`, or `**ambiguous**`: it has no API to observe the actual result through, or no single expected result to assert.
 
+### Test Basis
+
+A **test basis** is a file or an issue that states the specification, software design, or test design document the test code is written from; text written directly or taken from the conversation is no test basis.
+List the test bases at the top of each test file you write or modify, below its header comment if any, one `// Test-basis:` line each:
+
+```csharp
+// Copyright (c) 2026 Example Inc.
+
+// Test-basis: docs/battle.md
+// Test-basis: docs/battle-tests.md
+// Test-basis: https://github.com/owner/repo/issues/42
+
+using NUnit.Framework;
+```
+
+The file is the unit: `/measure-spec-coverage` finds a file by these lines and reads every test class in it, so one file needs no rule on which of its classes is the test class.
+
+- Write a file as its path from the root of the repository you work in (the superproject, when the file lies in a submodule), and an issue as its URL
+- For a test design document, also list each test basis in its `test-basis` frontmatter
+- Add only the test bases not yet listed, and keep the existing lines even when they look outdated: `/measure-spec-coverage` uses them only to find the tests of a specification, and reads the tests themselves to judge what they cover
+
 ### Categories
 
 - For a test case marked `(acceptance test)` in the test design, apply `[Category("Acceptance")]` to the test method.

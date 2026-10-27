@@ -76,6 +76,7 @@ Instruct the subagent to read `${CLAUDE_SKILL_DIR}/resources/phase-workflow.md` 
 Give it:
 
 - The phase's test targets, each with its assigned specifications, which of them are external specifications, and the requirements they realize, if any
+- The test bases of each test target: the input files and issue URLs that state its assigned specifications or its test cases, not every input, so that the tests of a specification do not list the specifications of other phases
 - The test targets of the earlier phases, already implemented
 - The input — the path of each file, or the full text when written directly, fetched from an issue, or taken from the conversation
 - The user's instructions on the test techniques, if any

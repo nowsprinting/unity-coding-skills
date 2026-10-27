@@ -19,6 +19,7 @@ A [Claude Code](https://claude.ai/code) plugin for Unity development that enable
 | `find-diagnostic`          | Finds an IDE inspection or a Roslyn analyzer that flags a coding pattern and enables it                        |                                                                                                                                                                                               |       ✅       |
 | `fix-bug`                  | Reproduces and fixes bugs using a test-first workflow                                                          |                                                                                                                                                                                               |       ✅       |
 | `implement`                | Implements a feature test-first, from test design through refactoring                                          |                                                                                                                                                                                               |       ✅       |
+| `measure-spec-coverage`    | Measures how well the tests cover a specification document                                                     |                                                                                                                                                                                               |       ✅       |
 | `resolve-diagnostics`      | Resolves compiler, Roslyn analyzer, and IDE diagnostics at `warning` or higher severity                        | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html)                                                                                                             |       ✅       |
 | `run-tests`                | Runs Unity tests using the `run_unity_tests` tool                                                              | Rider built-in [MCP Server](https://www.jetbrains.com/help/rider/mcp-server.html) and [Extension for Unity](https://plugins.jetbrains.com/plugin/30357-mcp-server-extension-for-unity) plugin |       ✅       |
 | `test-designing-guide`     | Test design by modeling specifications with test techniques                                                    |                                                                                                                                                                                               |                |
@@ -210,6 +211,32 @@ It creates or modifies scene and prefab files through a temporary editor script 
 ```
 
 It searches for an IDE inspection or a Roslyn analyzer that flags the coding pattern, and enables it at `warning` or higher severity.
+
+### Measure specification coverage
+
+```bash
+/measure-spec-coverage <PATH>
+```
+
+It measures how much of the specification document at `PATH` the test code covers, and lists the elements left unchecked:
+
+1. Models the specification with test techniques (equivalence partitioning, boundary value analysis, decision table testing, and state transition testing) into elements.
+2. Checks off each element the test code covers, in two passes:
+   1. Reads the test code files whose `// Test-basis:` comments name the specification document, and checks off each element their tests cover.
+      `/implement` and `/fix-bug` write these comments at the top of each test code file, listing the specification docs, design docs, and test design docs the tests were written from.
+   2. Searches the test classes named after each test target, e.g., `InventoryTest`, and checks off each element still unchecked that their tests cover.
+      This finds the tests written without the comments, e.g., before you installed this plugin.
+
+> [!IMPORTANT]\
+> It models the specification on every run to count the elements, so the results vary between runs.
+> Compare the unchecked elements between runs, not the percentages.
+
+Dependencies:
+
+```text
+measure-spec-coverage
+└── test-designing-guide
+```
 
 ## Installation
 

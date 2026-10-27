@@ -115,6 +115,18 @@ Choose the destination in this order:
    When a file of that name already exists, ask the user via `AskUserQuestion` whether to overwrite it or to write to a file name they specify.
 3. Otherwise (the specification was written directly in the argument, fetched from issues, or taken from the conversation) → output in the conversation.
 
-Write the output verbatim per Step 3; when writing a file, add only a top-level heading naming the source document above it.
+Write the output verbatim per Step 3; when writing a file, add only a frontmatter listing the test bases and a top-level heading naming the input above it.
+The test bases are the input files, as paths from the root of the repository you work in (the superproject, when the file lies in a submodule), and the issue URLs; text written directly or taken from the conversation is no test basis.
+`test-writing-guide` copies them into the test files written from the test design document:
+
+```markdown
+---
+test-basis:
+  - docs/inventory.md
+  - https://github.com/owner/repo/issues/42
+---
+
+# Test design of docs/inventory.md
+```
 
 End your reply by telling the user that you can show the modeling result of each target on request: the test design document leaves it out, so the user has no other way to learn it exists.
