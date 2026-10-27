@@ -96,6 +96,10 @@ design-tests
 └── test-designing-guide
 ```
 
+> [!TIP]\
+> To leave an item out of the test design, write "TBD" on it in the specification; no test case is designed for it.
+> To leave the behavior under a condition open, state it as undefined, e.g., "the result is undefined when HP is negative"; no test case is designed for the condition, and it is listed in the Notes.
+
 ### Test-first feature implementation
 
 ```bash
@@ -126,6 +130,10 @@ implement
     ├── code-writing-guide
     └── run-tests
 ```
+
+> [!TIP]\
+> To defer an item, write "TBD" on it in the specification; it is neither tested nor implemented.
+> It asks you only when the TBD item blocks the implementation.
 
 ### Bug fixing through reproduction tests
 

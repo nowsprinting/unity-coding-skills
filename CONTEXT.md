@@ -30,6 +30,16 @@ _Avoid_: Design (unqualified)
 The structure of a unit under test chosen to satisfy its specification, at any level: the smaller units it divides into (modules, scenes, prefabs, classes), how they depend on one another, and method signatures. It covers the production code and assets, not the test design. Unqualified "design" means software design.
 _Avoid_: Implementation design, product design, architecture (only its high-level part)
 
+### Keywords in a specification
+
+**TBD**:
+The text a specification puts on an item not decided yet. The skills treat the item as non-existent: they design no test case for it, and neither test nor implement it.
+_Avoid_: TBA, TODO, pending (the skills recognize only "TBD")
+
+**Undefined**:
+The text a specification states for the behavior under a condition it deliberately leaves open, e.g., "the result is undefined when HP is negative". It leaves no gap: the test design has no test case for the condition and lists it in the Notes. An undefined test case, marked `_UNDEFINED`, is the opposite: a gap where the specification states no expected result.
+_Avoid_: Unspecified, out of scope
+
 ### Tests
 
 **Test design**:
