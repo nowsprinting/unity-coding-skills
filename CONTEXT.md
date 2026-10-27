@@ -27,8 +27,8 @@ The intended appearance of UI: layout, typography, contrast.
 _Avoid_: Design (unqualified)
 
 **Software design**:
-The internal structure of a unit (classes, method signatures, dependencies) chosen to satisfy its specification. Unqualified "design" means software design.
-_Avoid_: Implementation design, product design
+The structure of a unit under test chosen to satisfy its specification, at any level: the smaller units it divides into (modules, scenes, prefabs, classes), how they depend on one another, and method signatures. It covers the production code and assets, not the test design. Unqualified "design" means software design.
+_Avoid_: Implementation design, product design, architecture (only its high-level part)
 
 ### Tests
 

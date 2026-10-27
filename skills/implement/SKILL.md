@@ -34,7 +34,7 @@ Take the input from the arguments, each a file path or the text written directly
   - **Requirement** — what users need to hold true, e.g., "defeating an enemy feels satisfying"; it has no pass/fail criterion of its own.
   - **Specification** — the observable behavior at the boundary of a unit (a scene, prefab, class, or asset).
     The **external specification** is the one at the outermost boundary of the product, as the player or the API user observes it.
-  - **Software design** — the internal structure of a unit: classes, method signatures, dependencies, and the file and assembly (`.asmdef`) of each class.
+  - **Software design** — the structure of a unit under test, at any level: the smaller units it divides into (modules, scenes, prefabs, classes), how they depend on one another, method signatures, and the file and assembly (`.asmdef`) of each class; it covers the production code and assets, not the test design.
     The classes and signatures it fixes are the specifications of the units below.
 - `TEST-DESIGN` (optional) — a test design document: the test cases of each **test target** (the unit a test design is made for, e.g., the screen transitions, a screen, a prefab, or a class), as the `design-tests` skill outputs it.
 
