@@ -1,13 +1,13 @@
 # unity-coding-skills
 
-A [Claude Code](https://claude.ai/code) plugin for Unity development that enables coding agents to work autonomously through a test-first workflow — writing reliable, maintainable tests before production code, then iterating to completion without constant oversight.
+A [Claude Code](https://claude.ai/code) plugin for Unity development that enables coding agents to work autonomously through a test-first workflow, without constant oversight:
 
-Reliable tests give the agent a clear signal: green means done.
-This plugin provides the methodology, conventions, and tools to make that signal trustworthy.
+- **Test design** — designing the tests before implementation surfaces gaps and contradictions in the specification, and lets you review the behavior it requires as test cases.
+- **Test first** — the agent writes reliable, maintainable tests before production code, then iterates until they all pass: passing tests means done.
 
 > [!IMPORTANT]\
 > This plugin relies on Claude Code-specific features, such as the bundled `/simplify` skill and frontmatter fields of skills.
-> If you use the skills with a different coding agent, please modify them accordingly.
+> If you use the skills with a different coding agent, please adapt them accordingly.
 
 ## Skills
 
@@ -66,28 +66,31 @@ flowchart LR
 <sup>2</sup> Giving `/design-tests` the design docs makes the test design more accurate, but adds test cases for you to review.
 Without them, `/implement` designs the test cases for the classes the design docs add on its own, internally.
 
-### Test design
+### Design tests from specifications
 
 ```bash
 /design-tests [SPECIFICATION]
 ```
 
-Creates test cases at the layer of each specification's subject — e.g., integration tests for a scene or prefab, unit tests for a class's API — via test design by modeling specifications with test techniques in `test-designing-guide`.
-
-The `SPECIFICATION` can be stated in any document — a requirements document, a software design document, an ADR, or a bug report — given as a file path or written directly; when omitted, it is read from the conversation.
+You can state the `SPECIFICATION` in any document—a requirements document, a software design document, or an ADR—given as a file path or written directly; if omitted, it is read from the conversation.
 For a file path, the output goes to a Markdown file with a `-tests` suffix next to it; otherwise, to the conversation.
 
-By default, it designs no combinatorial tests: inputs that do not affect the expected result are left out of the test cases.
-When the combinations need testing, name the inputs to combine in your instruction, e.g.,
-```
-/design-tests @docs/equipment.md, and test the combinations of the character and the weapon with combinatorial testing
-```
+It designs tests that match the passed specification layer: integration tests (including the UI) from the external specifications, and unit tests from the design docs.
 
-By default, it applies no error guessing either: every test case comes from the specification, not from guessed failure patterns.
-When you need it, ask for it in your instruction, e.g.,
-```
-/design-tests @docs/title-screen.md, and add test cases with error guessing
-```
+Test cases are designed to verify that the implementation conforms to the specifications(easy to review!), not that they uncover implementation flaws.
+They come from modeling the specifications with equivalence partitioning, boundary value analysis, decision table testing, and state transition testing, selected per test target.
+To focus on finding defects, ask for the following techniques in your instruction:
+
+- **Combinatorial testing** — tests the combinations of inputs that do not affect the expected result(using only neutral values by default), e.g.,
+  ```
+  /design-tests @docs/equipment.md, and test the combinations of the character and the weapon with combinatorial testing
+  ```
+- **Error guessing** — adds test cases from failure patterns common in game development, not from the specification, e.g.,
+  ```
+  /design-tests @docs/title-screen.md, and add test cases with error guessing
+  ```
+
+Modeling the specifications also assesses them: the gaps and contradictions it finds go into the Assessment of each test target, and it asks you when the Assessment fails.
 
 Dependencies:
 
@@ -100,15 +103,15 @@ design-tests
 > To leave an item out of the test design, write "TBD" on it in the specification; no test case is designed for it.
 > To leave the behavior under a condition open, state it as undefined, e.g., "the result is undefined when HP is negative"; no test case is designed for the condition, and it is listed in the Notes.
 
-### Test-first feature implementation
+### Implement features test-first
 
 ```bash
 /implement [SPECIFICATION] [TEST-DESIGN]
 ```
 
-Implements a feature or a specification change test-first.
-The `SPECIFICATION` can state requirements, specifications, and a software design; the `TEST-DESIGN` is a test design document, e.g., the output of `/design-tests`.
+The `SPECIFICATION` can state requirements, specifications, and a software design, for a new feature or a specification change; the `TEST-DESIGN` is a test design document, e.g., the output of `/design-tests`.
 Each is given as a file path or written directly; when omitted, it is read from the conversation.
+It writes no test code for the test cases marked "unverifiable", "undefined", or "ambiguous", and lists them in the Open questions of its report.
 
 1. Splits the test targets into phases, from the ones with no dependencies up, so that tests run against real implemented classes instead of test doubles
 2. Runs each phase in a subagent:
@@ -135,13 +138,14 @@ implement
 > To defer an item, write "TBD" on it in the specification; it is neither tested nor implemented.
 > It asks you only when the TBD item blocks the implementation.
 
-### Bug fixing through reproduction tests
+### Fix bugs through reproduction tests
 
 ```bash
 /fix-bug <INCIDENT>
 ```
 
-Create, run, and verify tests to reproduce the bug, then fix it.
+The `INCIDENT` can specify an issue description or the failed test name.
+It creates, runs, and verifies tests that reproduce the bug before fixing it.
 
 Dependencies:
 
@@ -160,19 +164,16 @@ fix-bug
 > [!IMPORTANT]\
 > This skill must be used outside plan mode.
 
-> [!TIP]\
-> The `INCIDENT` can specify an issue description or the failed test name.
-
 > [!NOTE]\
 > Depending on the incident, the root cause may be identified before writing a reproduction test. Under adjustment.
 
-### IDE diagnostics resolution
+### Resolve diagnostics
 
 ```bash
 /resolve-diagnostics <PATH>
 ```
 
-Resolves IDE diagnostics at `warning` or higher severity in the specified files.
+It targets the diagnostics from the compiler, Roslyn analyzers, and IDE inspections at `warning` or higher severity in the files at `PATH`.
 
 Dependencies:
 
@@ -182,21 +183,21 @@ resolve-diagnostics
 └── run-tests
 ```
 
-### Running tests
+### Run tests
 
 ```bash
 /run-tests [CONDITION]
 ```
 
-Runs tests in the Unity Editor or on the player.
+It runs the tests in the Unity Editor or on the player.
 
-### Scene and prefab editing
+### Edit scenes and prefabs
 
 ```bash
 /edit-scene <INSTRUCTION>
 ```
 
-Creates or modifies scene and prefab files through a temporary editor script instead of hand-editing YAML.
+It creates or modifies scene and prefab files through a temporary editor script instead of hand-editing YAML.
 
 ## Installation
 
