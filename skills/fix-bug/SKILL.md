@@ -6,7 +6,8 @@ description: >-
   investigate or fix a defect. Even if the user says "something's broken", "this isn't working",
   "fix this bug", or "why does X happen", load this skill to guide the full
   reproduce → diagnose → fix cycle.
-argument-hint: "<incident or failing-test-name>"
+  Typically invoked as `/fix-bug [INCIDENT]`.
+argument-hint: "[incident, failing test name, file paths, or issue URLs]"
 license: Unlicense
 metadata:
   author: Koji Hasegawa
@@ -27,6 +28,12 @@ Before doing anything else, check the current mode:
 ## Task Type Check
 
 If the user's request is to implement a new feature, change a specification, or refactor rather than investigate or fix a bug, stop and guide the user to invoke the `/implement` skill instead.
+
+## Input
+
+Take the bug report from the `INCIDENT` argument: the report written directly, the name of a failing test, file paths, or the URLs of issues in an issue tracker, in any combination.
+For an issue URL, fetch its body and comments (e.g., `gh issue view <URL> --comments` for GitHub Issues): the comments often correct the body.
+When the argument is omitted, take it from the conversation.
 
 ## Workflow
 
@@ -58,19 +65,19 @@ When a step delegates to a subagent or another skill (the test design subagent i
 > Work from the user's report and the documents that state the specification (external specification, software design) only — do not read code yet.
 > Reading the implementation here biases "Expected" toward what the code does rather than what the specification says.
 
-Extract the following from the user's prompt:
+Extract the following from the bug report (see [Input](#input)):
 
 - **Condition**: the setup or scenario that triggers the bug
 - **Expected**: the expected behavior
 - **Actual**: the observed behavior
 
-If any of the three cannot be determined from the prompt, use `AskUserQuestion` to ask the user before proceeding.
+If any of the three cannot be determined from the bug report, use `AskUserQuestion` to ask the user before proceeding.
 All three must be known before moving to Step 2.
 
 Also determine the **report type**:
 
 - **Existing test failure** — the user reports that an existing test is failing.
-  The specific failing test method need not be known at this stage; note the scope (class name, scene name, or test assembly) from the prompt.
+  The specific failing test method need not be known at this stage; note the scope (class name, scene name, or test assembly) from the bug report.
   **Step 2 is skipped** — proceed directly to Step 3.
 - **Behavioral bug** — the user describes unexpected runtime behavior with no mention of a failing test.
   Proceed normally through Step 2.

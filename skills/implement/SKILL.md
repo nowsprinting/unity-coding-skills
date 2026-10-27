@@ -6,10 +6,10 @@ description: >-
   cases, then writes failing tests and the production code that passes them.
   Use this skill whenever the user asks to implement or add a feature, or to
   change an existing specification, whether the input is a requirements
-  document, a specification, a software design, a test design document, or the
-  current conversation.
-  Typically invoked as `/implement [SPECIFICATION] [TEST-DESIGN]`.
-argument-hint: "[specification or its path] [test design or its path]"
+  document, a specification, a software design, a test design document, an
+  issue URL, or the current conversation.
+  Typically invoked as `/implement [SPECIFICATION]`.
+argument-hint: "[specification, design, and test design, file paths, or issue URLs]"
 license: Unlicense
 metadata:
   author: Koji Hasegawa
@@ -28,15 +28,17 @@ If the user's request is to investigate or fix a bug rather than implement a new
 
 ## Input
 
-Take the input from the arguments, each a file path or the text written directly; when an argument is omitted, take it from the conversation:
+Take the input from the `SPECIFICATION` argument: the text written directly, file paths, or the URLs of issues in an issue tracker, in any combination.
+For an issue URL, fetch its body and comments (e.g., `gh issue view <URL> --comments` for GitHub Issues) and treat them as text written directly: the comments often revise the body, and a subagent may lack the credentials to fetch them.
+When the argument is omitted, take it from the conversation.
+The input states any of the following:
 
-- `SPECIFICATION` — any of the following:
-  - **Requirement** — what users need to hold true, e.g., "defeating an enemy feels satisfying"; it has no pass/fail criterion of its own.
-  - **Specification** — the observable behavior at the boundary of a unit (a scene, prefab, class, or asset).
-    The **external specification** is the one at the outermost boundary of the product, as the player or the API user observes it.
-  - **Software design** — the structure of a unit under test, at any level: the smaller units it divides into (modules, scenes, prefabs, classes), how they depend on one another, method signatures, and the file and assembly (`.asmdef`) of each class; it covers the production code and assets, not the test design.
-    The classes and signatures it fixes are the specifications of the units below.
-- `TEST-DESIGN` (optional) — a test design document: the test cases of each **test target** (the unit a test design is made for, e.g., the screen transitions, a screen, a prefab, or a class), as the `design-tests` skill outputs it.
+- **Requirement** — what users need to hold true, e.g., "defeating an enemy feels satisfying"; it has no pass/fail criterion of its own.
+- **Specification** — the observable behavior at the boundary of a unit (a scene, prefab, class, or asset).
+  The **external specification** is the one at the outermost boundary of the product, as the player or the API user observes it.
+- **Software design** — the structure of a unit under test, at any level: the smaller units it divides into (modules, scenes, prefabs, classes), how they depend on one another, method signatures, and the file and assembly (`.asmdef`) of each class; it covers the production code and assets, not the test design.
+  The classes and signatures it fixes are the specifications of the units below.
+- **Test design document** — the test cases of each **test target** (the unit a test design is made for, e.g., the screen transitions, a screen, a prefab, or a class), as the `design-tests` skill outputs it.
 
 If no specification can be found, use `AskUserQuestion` to ask the user before proceeding.
 
@@ -75,7 +77,7 @@ Give it:
 
 - The phase's test targets, each with its assigned specifications, which of them are external specifications, and the requirements they realize, if any
 - The test targets of the earlier phases, already implemented
-- The `SPECIFICATION` and the `TEST-DESIGN` — the path of each file, or the full text when written directly or taken from the conversation
+- The input — the path of each file, or the full text when written directly, fetched from an issue, or taken from the conversation
 - The user's instructions on the test techniques, if any
 - The absolute path of the notes file (see [Implementation Notes](#implementation-notes))
 

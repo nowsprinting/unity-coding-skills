@@ -72,7 +72,7 @@ Without them, `/implement` designs the test cases for the classes the design doc
 /design-tests [SPECIFICATION]
 ```
 
-You can state the `SPECIFICATION` in any document—a requirements document, a software design document, or an ADR—given as a file path or written directly; if omitted, it is read from the conversation.
+You can state the `SPECIFICATION` in any document—a requirements document, a software design document, or an ADR—given as file paths, issue URLs, or written directly; if omitted, it is read from the conversation.
 For a file path, the output goes to a Markdown file with a `-tests` suffix next to it; otherwise, to the conversation.
 
 It designs tests that match the passed specification layer: integration tests (including the UI) from the external specifications, and unit tests from the design docs.
@@ -106,19 +106,21 @@ design-tests
 ### Implement features test-first
 
 ```bash
-/implement [SPECIFICATION] [TEST-DESIGN]
+/implement [SPECIFICATION]
 ```
 
-The `SPECIFICATION` can state requirements, specifications, and a software design, for a new feature or a specification change; the `TEST-DESIGN` is a test design document, e.g., the output of `/design-tests`.
-Each is given as a file path or written directly; when omitted, it is read from the conversation.
+The `SPECIFICATION` can state requirements, specifications, a software design, and a test design document (e.g., the output of `/design-tests`), for a new feature or a specification change.
+It is given as file paths, issue URLs, or written directly; when omitted, it is read from the conversation.
 It writes no test code for the test cases marked "unverifiable", "undefined", or "ambiguous", and lists them in the Open questions of its report.
+
+Steps:
 
 1. Splits the test targets into phases, from the ones with no dependencies up, so that tests run against real implemented classes instead of test doubles
 2. Runs each phase in a subagent:
-   - Test design of the test cases the `TEST-DESIGN` lacks, including those of the classes the phase adds
-   - Test First: a compilable skeleton and failing test code (effective, failable tests)
-   - Implementation until all tests pass (Definition of Done)
-   - Safe refactoring to improve internal quality (uses `/simplify` skill and static analysis)
+   1. Test design of the test cases the test design document lacks, including those of the classes the phase adds
+   2. Test First: a compilable skeleton and failing test code (effective, failable tests)
+   3. Implementation until all tests pass (Definition of Done)
+   4. Safe refactoring to improve internal quality (uses `/simplify` skill and static analysis)
 
 Dependencies:
 
@@ -141,11 +143,12 @@ implement
 ### Fix bugs through reproduction tests
 
 ```bash
-/fix-bug <INCIDENT>
+/fix-bug [INCIDENT]
 ```
 
-The `INCIDENT` can specify an issue description or the failed test name.
-It creates, runs, and verifies tests that reproduce the bug before fixing it.
+The `INCIDENT` can specify a bug report or the failed test name, given as file paths, issue URLs, or written directly; when omitted, it is read from the conversation.
+
+Before fixing the bug, it writes a test that reproduces it, runs it to confirm it fails, and shows you the test and its failure message; it starts the fix only after you confirm the reproduction.
 
 Dependencies:
 

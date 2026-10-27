@@ -7,10 +7,10 @@ description: >-
   test layer of its subject — e.g., integration tests for a scene or prefab,
   unit tests for a class's API.
   Use this skill whenever the specification is settled and the next step is to
-  design the tests, whether the input is a file path, a specification written
-  directly in the argument, or the current conversation.
+  design the tests, whether the input is written directly in the argument,
+  given as file paths or issue URLs, or taken from the current conversation.
   Typically invoked as `/design-tests [SPECIFICATION]`.
-argument-hint: "[specification or its path]"
+argument-hint: "[specification, file paths, or issue URLs]"
 license: Unlicense
 metadata:
   author: Koji Hasegawa
@@ -21,7 +21,8 @@ The test design knowledge lives in the `test-designing-guide` skill; this skill 
 
 ## Input
 
-Take the specification to test against from the `SPECIFICATION` argument: either a file path or the specification written directly.
+Take the specification to test against from the `SPECIFICATION` argument: the specification written directly, file paths, or the URLs of issues in an issue tracker, in any combination.
+For an issue URL, fetch its body and comments (e.g., `gh issue view <URL> --comments` for GitHub Issues) and treat them as text written directly: the comments often revise the body, and a subagent may lack the credentials to fetch them.
 When the argument is omitted, take it from the conversation.
 The argument or the conversation may also include instructions on the test techniques to apply, e.g., combinatorial testing.
 If no specification can be found, use `AskUserQuestion` to ask the user before proceeding.
@@ -86,7 +87,7 @@ Instruct each subagent to load the `test-designing-guide` skill — do not rely 
 5. Assess the target (Assessment)
 6. Write the test cases and the Assessment in the output format (Output Format)
 
-Give each subagent the test target with its assigned specifications, which of them are external specifications, and the requirements they realize if any, the test targets it contains with their assigned specifications if any, the user's instructions on the test techniques if any, and the input — its file path, or the full text when it was written directly or taken from the conversation — and have it return its output verbatim.
+Give each subagent the test target with its assigned specifications, which of them are external specifications, and the requirements they realize if any, the test targets it contains with their assigned specifications if any, the user's instructions on the test techniques if any, and the input — the path of each file, or the full text when it was written directly, fetched from an issue, or taken from the conversation — and have it return its output verbatim.
 Also have it write the modeling result to `<scratchpad>/modeling-results/<test target>.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally in the instruction): a subagent's context is gone once it returns, and you need the modeling result to show it when the user asks to see it, without holding every target's modeling result in your context.
 A subagent cannot ask the user, so it records every question as an issue in the Assessment.
 
@@ -109,10 +110,10 @@ When one is not covered, run Step 2 again for that target.
 Choose the destination in this order:
 
 1. The user or the caller specified a destination → write there.
-2. The specification came from a file → write a Markdown file next to it, named after the input file with a `-tests` suffix (e.g., `docs/inventory.md` → `docs/inventory-tests.md`).
+2. The input includes a file → write a Markdown file next to it, named after the input file with a `-tests` suffix (e.g., `docs/inventory.md` → `docs/inventory-tests.md`).
    When several input files were given, name it after the first one.
    When a file of that name already exists, ask the user via `AskUserQuestion` whether to overwrite it or to write to a file name they specify.
-3. Otherwise (the specification was written directly in the argument, or taken from the conversation) → output in the conversation.
+3. Otherwise (the specification was written directly in the argument, fetched from issues, or taken from the conversation) → output in the conversation.
 
 Write the output verbatim per Step 3; when writing a file, add only a top-level heading naming the source document above it.
 

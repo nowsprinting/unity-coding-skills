@@ -2,7 +2,7 @@
 
 Implements the test targets of one phase test-first: designs their missing test cases, writes failing tests, then the production code that passes them, and refactors it.
 
-The caller gives you the phase's test targets with their specifications, the test targets of the earlier phases (already implemented), the specification and the test design document, the user's instructions on the test techniques, if any, and the notes file.
+The caller gives you the phase's test targets with their specifications, the test targets of the earlier phases (already implemented), the input (the specification and the test design document, if any), the user's instructions on the test techniques, if any, and the notes file.
 You cannot ask the user: return `STATUS: QUESTION` instead (see [Report](#report)).
 
 ## Notes
