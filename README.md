@@ -37,11 +37,12 @@ A [Claude Code](https://claude.ai/code) plugin for Unity development that enable
 ```mermaid
 flowchart LR
     D1["D1. Requirements/ External specifications"]
-    D2["D2. Test design"]
+    D2["D2. Integration test design"]
     D3["D3. Reviewed test design"]
-    D4["D4. Design docs/ ADRs"]
-    D5["D5. Test code"]
-    D6["D6. Production code"]
+    D4["D4. Design docs"]
+    D5["D5. Unit test design"]
+    D6["D6. Test code"]
+    D7["D7. Production code"]
     P1(("P1. /design-tests"))
     P2(("P2. Review test design"))
     P3(("P3. Design<sup>1</sup>"))
@@ -50,16 +51,18 @@ flowchart LR
     D4 -. "optional<sup>2</sup>" .-> P1
     P1 --> D2
     D2 --> P2
+    P1 -.-> D5
+    D5 -.-> P2
     D1 <--> P2
-    D4 <-. optional .-> P2
+    D4 <-.-> P2
     P2 --> D3
     D3 --> P4
     D1 --> P3
     D1 --> P4
     P3 --> D4
     D4 --> P4
-    P4 --> D5
     P4 --> D6
+    P4 --> D7
 ```
 
 <sup>1</sup> Use any design skills you prefer, e.g., [grilling](https://github.com/mattpocock/skills), [pstack](https://github.com/cursor/plugins/tree/main/pstack), or [modularity](https://github.com/vladikk/modularity).
