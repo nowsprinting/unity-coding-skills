@@ -150,7 +150,8 @@ With the reproduction confirmed, investigate the root cause:
 Before applying the fix, cover the adjacent behavior the fix could disturb:
 
 1. Run a general-purpose subagent that loads the `test-designing-guide` skill — do not rely on automatic skill triggering — and designs the test cases of each test target the fix formulated in Step 5 changes, e.g., the class that owns the changed lines.
-   Give it the test targets, the documentation from Step 1 — its file path, or the full text when it came from the conversation — and the user's instructions on the test techniques, if any (e.g., error guessing); have it return the test cases verbatim.
+   Give it the test targets, their specifications from the documentation of Step 1, and the user's instructions on the test techniques, if any (e.g., error guessing); have it return the test cases verbatim.
+   Quote each specification verbatim with its source, e.g., the file path and heading or the issue URL, together with the passages it depends on, e.g., the definitions of the terms it uses, and instruct the subagent not to read the source documents or follow the links in the quoted passages: a subagent reading a whole document would fill its context with the specifications of units the fix does not change.
    Designing in a subagent keeps the method bodies you read in Step 5 out of the test design: a test case derived from the implementation passes whatever the implementation does
 2. Read the test files for the affected production code
 3. From the returned test cases, choose those that verify behavior the fix could disturb and no existing test covers

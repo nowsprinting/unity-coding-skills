@@ -22,6 +22,7 @@ The test design knowledge lives in the `test-designing-guide` skill; this skill 
 ## Input
 
 Take the specification to test against from the `SPECIFICATION` argument: the specification written directly, file paths, or the URLs of issues in an issue tracker, in any combination.
+When an input file links to other documents for its specification, e.g., another file or an issue, read them as part of the input.
 For an issue URL, fetch its body and comments (e.g., `gh issue view <URL> --comments` for GitHub Issues) and treat them as text written directly: the comments often revise the body, and a subagent may lack the credentials to fetch them.
 When the argument is omitted, take it from the conversation.
 The argument or the conversation may also include instructions on the test techniques to apply or to suppress, e.g., combinatorial testing.
@@ -87,7 +88,9 @@ Instruct each subagent to load the `test-designing-guide` skill — do not rely 
 5. Assess the target (Assessment)
 6. Write the test cases and the Assessment in the output format (Output Format)
 
-Give each subagent the test target with its assigned specifications, which of them are external specifications, and the requirements they realize if any, the test targets it contains with their assigned specifications if any, the user's instructions on the test techniques if any, and the input — the path of each file, or the full text when it was written directly, fetched from an issue, or taken from the conversation — and have it return its output verbatim.
+Give each subagent the test target with its assigned specifications, which of them are external specifications, and the requirements they realize if any, the test targets it contains with their assigned specifications if any, and the user's instructions on the test techniques if any, and have it return its output verbatim.
+Quote each specification and requirement verbatim with its source, e.g., the file path and heading or the issue URL, together with the passages it depends on, e.g., the definitions of the terms it uses — whatever form the input takes, including the documents an input file links to (see Input).
+Instruct the subagent not to read the source documents or follow the links in the quoted passages: a subagent reading a whole document would see the specifications Step 1 assigned to other targets, and could design duplicate test cases for them.
 Also have it write the modeling result to `<scratchpad>/modeling-results/<test target>.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally in the instruction): a subagent's context is gone once it returns, and you need the modeling result to show it when the user asks to see it, without holding every target's modeling result in your context.
 A subagent cannot ask the user, so it records every question as an issue in the Assessment.
 
