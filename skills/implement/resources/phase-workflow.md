@@ -50,11 +50,13 @@ Step 1 is complete when every test target of the phase and every class you desig
    For a `ScriptableObject` class with a validator, also declare the fields the validator reads.
    Place each file at the path and in the assembly of the software design
 3. Write the test code of the test cases, including the updates to existing tests tagged `test fix` or `spec change`, and list the test bases of its test target in each test file (`test-writing-guide`, Test Basis).
-   Use the real classes of the earlier phases as the dependencies of the test targets
+   Use the real classes of the earlier phases as the dependencies of the test targets.
+   When the structure of the existing production code keeps a test case from being written as designed, e.g., a class creates its dependency itself, weigh the approaches *Working Effectively with Legacy Code* (Michael Feathers) gives and take the one that fits; when none fits, return `STATUS: QUESTION` with the approaches you weighed
 4. Run the added and modified tests with `/run-tests` and confirm they **fail**.
    A test tagged `test fix` or `spec change` whose expected result stays the same may pass — only its name, arguments, or construction changed.
    A validator may pass too: it verifies the data of the assets, not the production code, so assets that already satisfy the specification pass it.
-   When any other test passes — a new test, or a test whose expected result changed — return `STATUS: BLOCKED` with the unexpected passes.
+   A new test that runs no method the skeleton added may pass too: the production code from before this phase already produces its expected result, e.g., for a test case of an unchanged specification that no existing test covered.
+   When any other test passes, return `STATUS: BLOCKED` with the unexpected passes.
    When the tests fail to compile repeatedly, return `STATUS: BLOCKED` with the blocker rather than looping
 5. Commit the skeleton and the test code to git — if test code is modified in Step 3 or later, the integrity of Test First is compromised; commit here without fail so the diff remains verifiable
 
@@ -77,7 +79,7 @@ Return a report with the `STATUS:` line first:
 
 ```
 STATUS: DONE      ← all steps completed
-STATUS: QUESTION  ← Step 1 found a problem only the user can settle
+STATUS: QUESTION  ← Step 1 or 2 found a problem only the user can settle
 STATUS: BLOCKED   ← Step 2 found an unexpected pass or a compile blocker
 ```
 

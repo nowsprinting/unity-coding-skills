@@ -85,8 +85,8 @@ Give it:
 Act on the `STATUS:` line the subagent returns:
 
 - `STATUS: DONE` → proceed to the next phase
-- `STATUS: QUESTION` → ask the user via `AskUserQuestion`, presenting its issues, then run the phase again with the answer.
-  When the user cannot resolve them, stop and report them: the specification needs revising before it can be implemented
+- `STATUS: QUESTION` → ask the user via `AskUserQuestion`, presenting its issues, then send the answer to the same subagent with `SendMessage` so it continues the phase: a new subagent would find the phase's uncommitted skeleton and test code, and take those tests for existing ones.
+  When the user cannot resolve them, stop and report them
 - `STATUS: BLOCKED` → stop, and report the blocker to the user
 
 ### Step 3: Report the Implementation Notes
