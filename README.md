@@ -83,10 +83,20 @@ For a file path, the output goes to a Markdown file with a `-tests` suffix next 
 It designs tests that match the passed specification layer: integration tests (including the UI) from the external specifications, and unit tests from the design docs.
 
 Test cases are designed to verify that the implementation conforms to the specifications(easy to review!), not that they uncover implementation flaws.
-They come from modeling the specifications with equivalence partitioning, boundary value analysis, decision table testing, and state transition testing, selected per test target.
-To leave out one of them except equivalence partitioning, say so in your instruction, e.g., `/design-tests @docs/hud.md, without boundary value analysis`.
-To focus on finding defects, ask for the following techniques in your instruction:
+They come from modeling the specifications with equivalence partitioning, boundary value analysis, decision table testing, and state transition testing(0-switch coverage), selected per test target.
 
+**Options**
+
+Ask for the following in your instruction:
+
+- **Without a technique** — leaves out one of the techniques above except equivalence partitioning, e.g.,
+  ```
+  /design-tests @docs/hud.md, without boundary value analysis
+  ```
+- **N-switch coverage** — tests the sequences of N+1 consecutive state transitions, in addition to each transition alone; the test cases grow exponentially with N, e.g.,
+  ```
+  /design-tests @docs/screen-transitions.md, with 1-switch coverage
+  ```
 - **Combinatorial testing** — tests the combinations of inputs that do not affect the expected result(using only neutral values by default), e.g.,
   ```
   /design-tests @docs/equipment.md, and test the combinations of the character and the weapon with combinatorial testing
