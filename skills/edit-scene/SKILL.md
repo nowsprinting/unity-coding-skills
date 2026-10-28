@@ -39,8 +39,6 @@ Guide for creating and editing Unity scene files in Unity projects.
   - Confirm the change landed: `git diff` for an existing scene/prefab; for a newly created one (untracked, so no diff) confirm the file exists and its saved hierarchy matches the intent.
   - If the run failed, or the change did not fully land, keep the script until a fix succeeds — don't delete a script you may still need to correct and re-run.
   - The same applies when a fallback runner (`execute_run_configuration`, etc.) was used instead of `run_method_in_unity`.
-- For uGUI buttons and text, use the **legacy variants** (`UnityEngine.UI.Button` / `UnityEngine.UI.Text`).
-  Do not use TextMeshPro unless the user explicitly requests it.
 - Apply context-menu-equivalent defaults when creating uGUI components (see Resources below).
 - Give every GameObject the user operates (buttons, toggles, input fields, etc.) a name that makes its hierarchy path unique within the scene/prefab.
   Otherwise, automated tests cannot identify the GameObject.
@@ -68,7 +66,7 @@ Guide for creating and editing Unity scene files in Unity projects.
 - **Edit existing scene**: `EditorSceneManager.OpenScene(path, OpenSceneMode.Single)` → make changes → `EditorSceneManager.SaveScene(scene)`.
 - **New prefab**: build the GameObject hierarchy in memory, then save with `PrefabUtility.SaveAsPrefabAsset(go, "Assets/YourFeature/Prefabs/XxxPrefab.prefab")`.
 - **Edit existing prefab**: open with `PrefabUtility.LoadPrefabContents(path)` → modify → `PrefabUtility.SaveAsPrefabAsset(root, path)` → `PrefabUtility.UnloadPrefabContents(root)`.
-- Use `ObjectFactory.CreateGameObject` / `ObjectFactory.AddComponent` so Undo history and Presets are applied automatically.
+- Use `ObjectFactory.CreateGameObject` / `ObjectFactory.AddComponent` instead of `new GameObject(...)` / `gameObject.AddComponent<T>()` so Undo history and Presets are applied automatically.
 - Parent child objects with `transform.SetParent(parent, worldPositionStays: false)`.
 
 ## Resources

@@ -4,11 +4,9 @@ Reference for creating uGUI components that match the Unity editor's **GameObjec
 
 ## Principles
 
-- For **Button** and **Text**: use the legacy variants (`UnityEngine.UI.Button` / `UnityEngine.UI.Text`) by default.
-  Switch to TextMesh Pro (`TMPro.TextMeshProUGUI` etc.) only when the user explicitly requests it.
-  - When TMP is requested and the project lacks TMP Essential Resources, import them with `TMPro.TMP_PackageResourceImporter.ImportResources(importEssentials: true, importExtras: false, interactive: false)`.
+- For **Button** and **Text**: follow the variants the project's existing UI uses, and the legacy variants (`UnityEngine.UI.Button` / `UnityEngine.UI.Text`) when it has none yet.
+  - When using TextMesh Pro (`TMPro.TextMeshProUGUI` etc.) and the project lacks TMP Essential Resources, import them with `TMPro.TMP_PackageResourceImporter.ImportResources(importEssentials: true, importExtras: false, interactive: false)`.
     Never use `EditorApplication.ExecuteMenuItem("Window/TextMeshPro/Import TMP Essential Resources")` — it opens a modal dialog that blocks the `run_method_in_unity` call until a human dismisses it.
-- Use `ObjectFactory.CreateGameObject` / `ObjectFactory.AddComponent` (editor-only) instead of `new GameObject(...)` / `gameObject.AddComponent<T>()` so that Undo history and user Presets are applied automatically.
 - `DefaultControls.Create*` methods are the public API equivalent of the context menu — use them for all standard controls.
 
 ## Public API map
@@ -72,14 +70,14 @@ Only the color block values are set; `transition` stays at its component default
 
 ### Font
 
-If the user has specified a project font (e.g. in CLAUDE.md, a task description, or earlier in the conversation), assign it to every `Text` component you create.
-Otherwise use the built-in font — it requires no font assets to be installed and works on Windows/macOS/Linux in Unity 2019+:
+Assign to every `Text` component you create the font the user has specified (e.g. in CLAUDE.md, a task description, or earlier in the conversation), or else the font the project's existing UI uses.
+When there is neither, use the built-in font — it requires no font assets to be installed and works on Windows/macOS/Linux in Unity 2019+:
 
 ```csharp
 // Project font (example — use the project's actual asset path):
 var font = AssetDatabase.LoadAssetAtPath<Font>("Assets/MyGame/Fonts/MyFont.otf");
 
-// Built-in font when no project font is specified.
+// Built-in font when neither the user nor the existing UI gives one.
 // The resource was renamed in Unity 2022.2 (Arial.ttf fails there, and vice versa):
 #if UNITY_2022_2_OR_NEWER
 var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
@@ -89,7 +87,7 @@ var font = Resources.GetBuiltinResource<Font>("Arial.ttf");
 ```
 
 **TextMesh Pro** (`TMPro.TextMeshProUGUI`) does not use `Font` assets, so the names above do not apply.
-Leave `font` unassigned and it falls back to `TMP_Settings.defaultFontAsset` (LiberationSans SDF from TMP Essential Resources); assign a project `TMP_FontAsset` only when one is specified.
+Leave `font` unassigned and it falls back to `TMP_Settings.defaultFontAsset` (LiberationSans SDF from TMP Essential Resources); assign a `TMP_FontAsset` only when the user has specified one or the project's existing UI uses one.
 
 ### FontData defaults (from `FontData.defaultFontData`)
 
@@ -330,9 +328,8 @@ If Undo fidelity is not a concern for a one-shot scene-generation script, the fa
 
 ## Minimal sample
 
-Editor script that creates a Canvas with a Button under `Assets/UnityCodingSkills/Editor/`.
-Call it via `run_method_in_unity`.
-Delete the file and its `.meta` from the filesystem once the run returns without errors (see `## Rules` in SKILL.md) — do not add a self-deleting `AssetDatabase.DeleteAsset` call to the script itself.
+Editor script that creates a Canvas with a Button.
+Place, run, and delete it as `## Rules` in SKILL.md describes.
 
 ```csharp
 using UnityEditor;
