@@ -185,4 +185,4 @@ Before applying the fix, cover the adjacent behavior the fix could disturb:
 
 ### Step 10: Preventing Recurrence
 
-When the root cause lies in how the code is written or how a library or framework is used, e.g., `?.` on a destroyed `UnityEngine.Object`, tell the user under a `## Preventing Recurrence` heading that an IDE inspection or a Roslyn analyzer may keep the bug from recurring, and that `/find-diagnostic` searches for one.
+When the root cause lies in how the code is written or how a library or framework is used, e.g., `?.` on a destroyed `UnityEngine.Object`, tell the user under a `## Preventing Recurrence` heading that an IDE inspection or a Roslyn analyzer may keep the bug from recurring, and that `/find-and-setup-analysis-rule` searches for one.

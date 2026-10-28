@@ -1,32 +1,33 @@
 ---
-name: find-diagnostic
+name: find-and-setup-analysis-rule
 description: >-
-  Finds a diagnostic that flags a given coding pattern — an IDE inspection, a Roslyn analyzer package, or a custom
-  Roslyn analyzer — and enables it in the Unity project at `warning` or higher severity.
+  Finds an analysis rule that flags a given coding pattern — an IDE inspection, a Roslyn analyzer package, or a custom
+  Roslyn analyzer — and sets it up in the Unity project at `warning` or higher severity.
   Use this skill when the user wants a coding pattern flagged as the code is written, e.g., to keep a fixed bug from
   recurring, to ban an API, or to enforce a coding rule.
-  Typically invoked as `/find-diagnostic [PATTERN]`.
+  Typically invoked as `/find-and-setup-analysis-rule [PATTERN]`.
 argument-hint: "[coding pattern, with code that should be flagged and code that should not]"
 license: Unlicense
 metadata:
   author: Koji Hasegawa
 ---
 
-Finds a diagnostic that flags a coding pattern as the code is written, and enables it in the Unity project.
+Finds an analysis rule that flags a coding pattern as the code is written, and sets it up in the Unity project.
+An analysis rule is an IDE inspection or a Roslyn analyzer rule, and a diagnostic is what it reports on the code it flags.
 
 ## Input
 
-Take the coding pattern from the `PATTERN` argument: a description, the code the diagnostic should flag, and optionally the code it should not, e.g., the code before and after a bug fix.
+Take the coding pattern from the `PATTERN` argument: a description, the code the analysis rule should flag, and optionally the code it should not, e.g., the code before and after a bug fix.
 When the argument is omitted, take it from the conversation.
 If the code to flag is missing, or the input fits several patterns, use `AskUserQuestion` to ask the user before proceeding.
 
 ## Workflow
 
-### Step 1: Find a Diagnostic
+### Step 1: Find an Analysis Rule
 
-Try the options in order and stop at the first whose diagnostic flags the code to flag: each later option costs the user more to adopt and maintain.
+Try the options in order and stop at the first whose analysis rule flags the code to flag: each later option costs the user more to adopt and maintain.
 
-#### 1. Known Diagnostics
+#### 1. Known Analysis Rules
 
 These are hard to find by searching, so check them first:
 
@@ -64,8 +65,8 @@ When no option above detects the pattern, propose writing an analyzer in the Uni
 
 Present to the user, via `AskUserQuestion`:
 
-- The diagnostic found, and why each earlier option does not detect the pattern
-- The changes that enable it, per [Configuration](#configuration)
+- The analysis rule found, and why each earlier option does not detect the pattern
+- The changes that set it up, per [Configuration](#configuration)
 
 ### Step 3: Apply
 
@@ -74,7 +75,7 @@ Then ask the user to confirm that the code to flag gets the diagnostic at the co
 
 ## Configuration
 
-Set every diagnostic to `warning` or `error`: `/resolve-diagnostics` handles only `warning` or higher severity.
+Set every analysis rule to `warning` or `error`: `/resolve-diagnostics` handles only `warning` or higher severity.
 
 ### Severity
 
