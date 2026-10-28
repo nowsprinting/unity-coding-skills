@@ -2,16 +2,17 @@
 
 #### Assertion-based tests
 
-| Test Method                                | Verification                                                             |
-|--------------------------------------------|--------------------------------------------------------------------------|
-| `<Condition>_<Expected>`                   | `<property>` is `<expected value or state>`                              |
-| `<Condition>_<Expected>` (acceptance test) | `<property>` is `<expected value or state>`                              |
-| `<Condition>_<Expected>` (existing)        | `<property>` is `<expected value or state>`                              |
-| `<Condition>_<Expected>` (test fix)        | `<property>` is `<expected value or state>`                              |
-| `<Condition>_<Expected>` (spec change)     | `<property>` is `<expected value or state>`                              |
-| `<Condition>_<Expected>`                   | When `<input>` is `<value>`, `<property>` is `<expected value or state>` |
-| `<Condition>_UNDEFINED`                    | **undefined**                                                            |
-| `<Condition>_AMBIGUOUS`                    | **ambiguous** `<reason>`                                                 |
+| Test Method              | Verification                                                             | Tags                    |
+|--------------------------|--------------------------------------------------------------------------|-------------------------|
+| `<Condition>_<Expected>` | `<property>` is `<expected value or state>`                              |                         |
+| `<Condition>_<Expected>` | `<property>` is `<expected value or state>`                              | acceptance              |
+| `<Condition>_<Expected>` | `<property>` is `<expected value or state>`                              | existing                |
+| `<Condition>_<Expected>` | `<property>` is `<expected value or state>`                              | test fix                |
+| `<Condition>_<Expected>` | `<property>` is `<expected value or state>`                              | spec change             |
+| `<Condition>_<Expected>` | `<property>` is `<expected value or state>`                              | acceptance, spec change |
+| `<Condition>_<Expected>` | When `<input>` is `<value>`, `<property>` is `<expected value or state>` |                         |
+| `<Condition>_UNDEFINED`  | **undefined**                                                            |                         |
+| `<Condition>_AMBIGUOUS`  | **ambiguous** `<reason>`                                                 |                         |
 
 **Notes:**
 
@@ -20,9 +21,9 @@
 
 #### Visual verification tests
 
-| Test Method              | Image analysis by saved screenshot                                                                                      |
-|--------------------------|-------------------------------------------------------------------------------------------------------------------------|
-| `<Condition>_<Expected>` | <visual aspects per `test-designing-guide` (Visual aspects to verify) — e.g. text/background contrast, font size/style> |
+| Test Method              | Image analysis by saved screenshot                                                                                      | Tags |
+|--------------------------|-------------------------------------------------------------------------------------------------------------------------|------|
+| `<Condition>_<Expected>` | <visual aspects per `test-designing-guide` (Visual aspects to verify) — e.g. text/background contrast, font size/style> |      |
 
 #### Manual tests
 

@@ -26,7 +26,7 @@ Out of scope:
 Derive test cases from the specification, never from the implementation: a test case derived from the implementation passes whatever the implementation does.
 Read only the following code, and no method bodies of production code:
 
-- **Existing tests** — when the specification of a test target with tests changes, or a bug report asks for a [reproduction test](resources/reproduction-tests.md), the signatures of the test target's test classes and test methods, with the attributes that give a parameterized test its arguments, to mark the test cases they already implement (see the [output markers](#output-format))
+- **Existing tests** — when the specification of a test target with tests changes, or a bug report asks for a [reproduction test](resources/reproduction-tests.md), the signatures of the test target's test classes and test methods, with the attributes that give a parameterized test its arguments, to tag the test cases they already implement (see the [tags](#output-format))
 - **Production code** — for unit tests and validators, the signatures and XML documentation comments of the test target's members, to judge whether a test case can observe the actual result (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); for a class the input's software design introduces, read the signatures it fixes instead.
   Take the inputs to model from the specification, not from the parameters of a signature.
 
@@ -172,25 +172,25 @@ Further notation rules:
 
 ### Example: Verification — Bad vs. Good
 
-| Style                    | Test Method                                               | Verification                                                                                                                                                                        |
-|--------------------------|-----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Bad (mechanism)          | `OnBeginDrag_WhenDragStarts_BlocksRaycastsIsDisabled`     | Call `OnBeginDrag` synchronously with `[Test]` and Assert that `CanvasGroup.blocksRaycasts == false`                                                                                |
-| Good                     | `OnBeginDrag_WhenDragStarts_BlocksRaycastsIsDisabled`     | `CanvasGroup.blocksRaycasts` is disabled                                                                                                                                            |
-| Bad (rationale)          | `StartRun_SameSeed_ProducesSameMap`                       | The map structure is reproduced when a run is started twice with the same seed. Fails in the current implementation where RNG is not stored in the holder (BUG 1 reproduction test) |
-| Good                     | `StartRun_SameSeed_ProducesSameMap` (reproduction test)   | The map structures of the two runs are identical                                                                                                                                    |
-| Bad (not parameterized)  | `Sync_GivenPhase_PanelVisible`                            | The panel is visible only during the Defeat or Victory phase (verifies multiple argument patterns)                                                                                  |
-| Good                     | `Sync_GivenPhase_PanelVisible` (phase: {Defeat, Victory}) | The panel is visible                                                                                                                                                                |
-| Bad (condition restated) | `MapScene_OnLoad_WhenBossNext_FloorTextIsBoss`            | When the holder RunState has IsBossNext true, the floor text shows "Boss"                                                                                                           |
-| Good                     | `MapScene_OnLoad_WhenBossNext_FloorTextIsBoss`            | the floor text shows "Boss"                                                                                                                                                         |
-| Bad (inputs hidden)      | `GetDamage_AttackGreaterThanGuard_ReturnsDamageValue`     | Returns 1                                                                                                                                                                           |
-| Good                     | `GetDamage_AttackGreaterThanGuard_ReturnsDamageValue`     | When Attack is 2 and Guard is 1, returns 1                                                                                                                                          |
+| Style                    | Test Method                                               | Verification                                                                                                                                                                        | Tags         |
+|--------------------------|-----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| Bad (mechanism)          | `OnBeginDrag_WhenDragStarts_BlocksRaycastsIsDisabled`     | Call `OnBeginDrag` synchronously with `[Test]` and Assert that `CanvasGroup.blocksRaycasts == false`                                                                                |              |
+| Good                     | `OnBeginDrag_WhenDragStarts_BlocksRaycastsIsDisabled`     | `CanvasGroup.blocksRaycasts` is disabled                                                                                                                                            |              |
+| Bad (rationale)          | `StartRun_SameSeed_ProducesSameMap`                       | The map structure is reproduced when a run is started twice with the same seed. Fails in the current implementation where RNG is not stored in the holder (BUG 1 reproduction test) |              |
+| Good                     | `StartRun_SameSeed_ProducesSameMap`                       | The map structures of the two runs are identical                                                                                                                                    | reproduction |
+| Bad (not parameterized)  | `Sync_GivenPhase_PanelVisible`                            | The panel is visible only during the Defeat or Victory phase (verifies multiple argument patterns)                                                                                  |              |
+| Good                     | `Sync_GivenPhase_PanelVisible` (phase: {Defeat, Victory}) | The panel is visible                                                                                                                                                                |              |
+| Bad (condition restated) | `MapScene_OnLoad_WhenBossNext_FloorTextIsBoss`            | When the holder RunState has IsBossNext true, the floor text shows "Boss"                                                                                                           |              |
+| Good                     | `MapScene_OnLoad_WhenBossNext_FloorTextIsBoss`            | the floor text shows "Boss"                                                                                                                                                         |              |
+| Bad (inputs hidden)      | `GetDamage_AttackGreaterThanGuard_ReturnsDamageValue`     | Returns 1                                                                                                                                                                           |              |
+| Good                     | `GetDamage_AttackGreaterThanGuard_ReturnsDamageValue`     | When Attack is 2 and Guard is 1, returns 1                                                                                                                                          |              |
 
 The Bad (mechanism) row leaks the test-writing mechanism (attribute choice, sync invocation, exact assertion form).
-The Bad (rationale) row leaks why the test exists and what the current behavior is — none of that belongs in Verification; `(reproduction test)` goes in the Test Method column instead.
+The Bad (rationale) row leaks why the test exists and what the current behavior is — none of that belongs in Verification; `reproduction` goes in the Tags column instead.
 The Bad (not parameterized) row hides the concrete argument values in a vague phrase in Verification; they belong in the Test Method column as named parameters, e.g. `(phase: {Defeat, Victory})`.
 The Bad (condition restated) row repeats the method name's `<Condition>` segment ("WhenBossNext") as a precondition clause; Verification states only the expected result, since the condition already lives in the method name.
 The Bad (inputs hidden) row gives an expected value no reader can check, since the method name shows only the equivalence partition; the Good row writes the inputs that determine it.
-The Good rows state the observable behavior and the input values it depends on only; all other concerns go in the Test Method column or the test-writing phase.
+The Good rows state the observable behavior and the input values it depends on only; all other concerns go in the Test Method column, the Tags column, or the test-writing phase.
 
 ## Unverifiable, Undefined, and Ambiguous Test Cases
 
@@ -227,17 +227,18 @@ Output the test cases of a test target as one section per test class, in this or
 
 > **Note:** Do NOT write "Edit Mode" or "Play Mode" in test case output — that is a test-writing concern, not a test design concern.
 
-**Output markers** — annotations that flag test case categories; append to the specified field only, not the Verification column:
+**Tags** — annotations that flag test case categories, written in the **Tags** column, not the Verification column.
+Separate multiple tags with `, ` in the order of the list below, e.g., `acceptance, spec change`, and leave the cell empty when no tag applies:
 
-- `(acceptance test)` — append to the **Test Method column** when the test verifies a normal outcome, not an error, of an external specification or of a specification that realizes a requirement the input explicitly states: e.g., a valid equivalence partition; for a state transition, see [State transition testing](resources/state-transition-testing.md#test-methods).
+- `acceptance` — when the test verifies a normal outcome, not an error, of an external specification or of a specification that realizes a requirement the input explicitly states: e.g., a valid equivalence partition; for a state transition, see [State transition testing](resources/state-transition-testing.md#test-methods).
   An undefined test case states no outcome, so it is never an acceptance test.
-- `(reproduction test)` — append to the **Test Method column** when the test reproduces a reported bug (see [Reproduction tests](resources/reproduction-tests.md))
-- `(existing)` — append to the **Test Method column** when an existing test implements the test case and needs no change.
-- `(test fix)` — append to the **Test Method column** when an existing test implements the test case but disagrees with a specification that has not changed, e.g., its name, arguments, or expected result is wrong.
-- `(spec change)` — append to the **Test Method column** when an existing test implements the test case and the change of the specification affects it: its expected result, its arguments, or its construction (e.g., wrapping `Foo`→`FooRef` in the SUT's signature).
+- `reproduction` — when the test reproduces a reported bug (see [Reproduction tests](resources/reproduction-tests.md))
+- `existing` — when an existing test implements the test case and needs no change.
+- `test fix` — when an existing test implements the test case but disagrees with a specification that has not changed, e.g., its name, arguments, or expected result is wrong.
+- `spec change` — when an existing test implements the test case and the change of the specification affects it: its expected result, its arguments, or its construction (e.g., wrapping `Foo`→`FooRef` in the SUT's signature).
 
-A test case without `(existing)`, `(test fix)`, or `(spec change)` is a new test.
-Write the markers in English whatever the project language.
+A test case without `existing`, `test fix`, or `spec change` is a new test.
+Write the tags in English whatever the project language.
 
 **Notes** — a bullet list under a test case table, written in the project language in this order; omit a bullet that does not apply, and the Notes when no bullet remains:
 

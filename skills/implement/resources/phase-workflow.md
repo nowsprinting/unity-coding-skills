@@ -49,10 +49,10 @@ Step 1 is complete when every test target of the phase and every class you desig
    **New methods: empty body only** (no logic, no exceptions; value-returning methods must return a literal default: `0`, `false`, or `null`); **modify: signature only, body unchanged**; **delete: remove the entire method**.
    For a `ScriptableObject` class with a validator, also declare the fields the validator reads.
    Place each file at the path and in the assembly of the software design
-3. Write the test code of the test cases, including the updates to existing tests marked `(test fix)` or `(spec change)`, and list the test bases of its test target in each test file (`test-writing-guide`, Test Basis).
+3. Write the test code of the test cases, including the updates to existing tests tagged `test fix` or `spec change`, and list the test bases of its test target in each test file (`test-writing-guide`, Test Basis).
    Use the real classes of the earlier phases as the dependencies of the test targets
 4. Run the added and modified tests with `/run-tests` and confirm they **fail**.
-   A test marked `(test fix)` or `(spec change)` whose expected result stays the same may pass — only its name, arguments, or construction changed.
+   A test tagged `test fix` or `spec change` whose expected result stays the same may pass — only its name, arguments, or construction changed.
    A validator may pass too: it verifies the data of the assets, not the production code, so assets that already satisfy the specification pass it.
    When any other test passes — a new test, or a test whose expected result changed — return `STATUS: BLOCKED` with the unexpected passes.
    When the tests fail to compile repeatedly, return `STATUS: BLOCKED` with the blocker rather than looping

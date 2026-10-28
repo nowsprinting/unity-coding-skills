@@ -1,18 +1,19 @@
 ### <ClassName>Validator
 
-| Test Method                                     | Verification                                                 |
-|-------------------------------------------------|--------------------------------------------------------------|
-| `<Condition>_<Expected>`                        | `<property>` is `<expected value or state>`                  |
-| `<Expected>`                                    | `<property>` is `<expected value or state>`                  |
-| `<Condition>_<Expected>` (acceptance test)      | `<property>` is `<expected value or state>`                  |
-| `<Condition>_<Expected>` (reproduction test)    | `<property>` is `<expected value or state>`                  |
-| `<Condition>_<Expected>` (existing)             | `<property>` is `<expected value or state>`                  |
-| `<Condition>_<Expected>` (test fix)             | `<property>` is `<expected value or state>`                  |
-| `<Condition>_<Expected>` (spec change)          | `<property>` is `<expected value or state>`                  |
-| `<Condition>_<Expected>` (stats: {Base, Bonus}) | `<property>` is `<expected value or state>`                  |
-| `<Condition>_<Expected>`                        | **unverifiable** `<property>` is `<expected value or state>` |
-| `<Condition>_UNDEFINED`                         | **undefined**                                                |
-| `<Condition>_AMBIGUOUS`                         | **ambiguous** `<reason>`                                     |
+| Test Method                                     | Verification                                                 | Tags                    |
+|-------------------------------------------------|--------------------------------------------------------------|-------------------------|
+| `<Condition>_<Expected>`                        | `<property>` is `<expected value or state>`                  |                         |
+| `<Expected>`                                    | `<property>` is `<expected value or state>`                  |                         |
+| `<Condition>_<Expected>`                        | `<property>` is `<expected value or state>`                  | acceptance              |
+| `<Condition>_<Expected>`                        | `<property>` is `<expected value or state>`                  | reproduction            |
+| `<Condition>_<Expected>`                        | `<property>` is `<expected value or state>`                  | existing                |
+| `<Condition>_<Expected>`                        | `<property>` is `<expected value or state>`                  | test fix                |
+| `<Condition>_<Expected>`                        | `<property>` is `<expected value or state>`                  | spec change             |
+| `<Condition>_<Expected>`                        | `<property>` is `<expected value or state>`                  | acceptance, spec change |
+| `<Condition>_<Expected>` (stats: {Base, Bonus}) | `<property>` is `<expected value or state>`                  |                         |
+| `<Condition>_<Expected>`                        | **unverifiable** `<property>` is `<expected value or state>` |                         |
+| `<Condition>_UNDEFINED`                         | **undefined**                                                |                         |
+| `<Condition>_AMBIGUOUS`                         | **ambiguous** `<reason>`                                     |                         |
 
 **Notes:**
 

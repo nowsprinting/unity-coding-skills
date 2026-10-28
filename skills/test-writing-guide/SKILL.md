@@ -27,10 +27,10 @@ Guide for writing test code for Unity projects.
     #endif
     ```
 
-### Test Design Markers
+### Test Design Tags
 
-- Do not touch the test of a test case marked `(existing)`.
-- For a test case marked `(test fix)` or `(spec change)`, change the existing test to match the test case instead of adding a new one.
+- Do not touch the test of a test case tagged `existing`.
+- For a test case tagged `test fix` or `spec change`, change the existing test to match the test case instead of adding a new one.
 - Do not implement a test case whose Verification column starts with `**unverifiable**`, `**undefined**`, or `**ambiguous**`: it has no API to observe the actual result through, or no single expected result to assert.
 
 ### Test Basis
@@ -56,7 +56,7 @@ The file is the unit: `/measure-spec-coverage` finds a file by these lines and r
 
 ### Categories
 
-- For a test case marked `(acceptance test)` in the test design, apply `[Category("Acceptance")]` to the test method.
+- For a test case tagged `acceptance` in the test design, apply `[Category("Acceptance")]` to the test method.
 - When implementing tests designed as integration tests, apply `[Category("Integration")]` to the test method.
 - When implementing tests designed as visual verification tests, apply `[Category("VisualVerification")]` to the test method.
 - For test methods that test the `internal` visibility method, apply `[Category("Internal")]`.
