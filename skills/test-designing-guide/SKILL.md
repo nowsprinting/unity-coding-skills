@@ -73,10 +73,6 @@ When an output of one operation is the input of its inverse, e.g., serialize and
 
 When modeling the specifications with a test technique reveals a gap or a contradiction in them, do not guess the outcome: design the test case of a gap as undefined (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)), design no test case for a contradiction, and include the modeling result (e.g., the equivalence partition table, the decision table, the state transition diagram) in the [Assessment](#assessment) when it is `❌FAIL`, so the user can see where the specification breaks.
 
-**Prefer specification-based tests over structural (implementation-coupled) tests.**
-Structural tests break under refactoring and lose value fast.
-It's fine to write a structural test temporarily when you're unsure about an implementation, but plan to delete it once specification tests cover the same behavior.
-
 Select the techniques that fit the test target, and read the resource of each one you apply.
 An instruction from the user or from the skill that loads this one may suppress a default technique or enable an optional one; an enabled technique still applies only where it fits.
 
@@ -170,16 +166,9 @@ Further notation rules:
 - **Hidden input values** — when the expected result depends on input values that neither the `<Condition>` segment nor the parameters show, e.g., the representative of an equivalence partition, write each such input and its value before the expected result, so the reader can check the expected result against them.
   Write only the inputs the expected result depends on; the test-writing phase gives the others neutral values.
 - When a single test asserts multiple properties (the multi-property exception in [Test Case Naming](#test-case-naming)), list each property being verified in the Verification column.
-- If a test case uses a **spy** to verify an interaction the API specification defines, note it in the Verification column: e.g., `(uses spy: <TargetDependency>)`.
-  Do NOT note stubs or fakes — those are arrange/action concerns. xUTP definitions for reference:
-  - **Stub** — returns canned responses to isolate the SUT from a dependency.
-    Arrange/action concern; do NOT mention in Verification.
-  - **Spy** — records interactions (calls, arguments) for later verification.
-    Note it in Verification.
-  - **Fake** — a simplified but working implementation of a dependency.
-    Arrange/action concern; do NOT mention in Verification.
+- If a test case uses a **spy** — a test double that records interactions (calls, arguments) for later verification — to verify an interaction the API specification defines, note it in the Verification column: e.g., `(uses spy: <TargetDependency>)`.
+  Leave out **stubs**, which return canned responses to isolate the SUT from a dependency, and **fakes**, simplified but working implementations of a dependency: they are arrange/action concerns.
 - **Screenshot verification** — for a Visual verification tests row, list the visual aspects (see [Visual aspects to verify](resources/integration-testing.md#visual-aspects-to-verify)) in the **Image analysis by saved screenshot** column.
-  When the screenshot is attached to a layout assertion test, append them to that row's Verification column as `(saves screenshot for image analysis: text/background contrast, typography)`.
 
 ### Example: Verification — Bad vs. Good
 

@@ -45,7 +45,7 @@ Visual verification tests are integration tests verified by image analysis of a 
 They verify that actual on-screen rendering conforms to the intended visual design: positional relationships between elements, typography, text/background contrast and legibility, visual state representation, and rendering quality.
 A deterministic mid-point of an animation (e.g., an attack lunge at its peak, a fade-out at half time) can also be captured and verified here; only subjective motion feel belongs to manual tests.
 
-- **Placement priority**: (1) when a layout assertion test already exists — or is being designed — for the same test condition, attach the screenshot verification to that test case instead of creating a new one; (2) otherwise, add the visual verification test method to the same test class as the functional tests.
+- **Placement**: add the visual verification test method to the same test class as the functional tests.
   Never create a dedicated visual verification test class.
 - **Screenshot resolution**: By default, do not fix a specific resolution for screenshot tests — let them run at whatever resolution the test environment provides.
   Only fix a resolution when the test condition explicitly depends on it (e.g., verifying element positions at a stated viewport size).

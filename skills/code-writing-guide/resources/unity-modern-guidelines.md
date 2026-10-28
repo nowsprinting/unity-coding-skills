@@ -4,23 +4,18 @@ Covers the Unity and C# features available in each Unity version.
 
 ## How to Use This Guidelines
 
-Based on the detected Unity version, apply all features up to that version when writing Unity C# code.
-
-**When writing Unity code**, use ALL features from this document up to the target version:
-- Prefer modern Unity APIs over deprecated or legacy alternatives
-- Never use features from newer Unity versions than the target
-- Never use outdated patterns when a modern alternative is available
+When writing Unity C# code, use the features below, up to the project's Unity version, in place of the older patterns they replace.
+Use none from a newer version: they do not compile on the target.
 
 ## Detected Unity Version
 
-Project Unity version:
-!`grep "m_EditorVersion:" ProjectSettings/ProjectVersion.txt 2>/dev/null | sed 's/m_EditorVersion: //' | grep . || echo unknown`
+Read the Unity version from the `m_EditorVersion:` line of `ProjectSettings/ProjectVersion.txt`.
 
-**If version detected (not "unknown"):**
+**If the version is found:**
 - Say: "This project is using Unity X.Y, so I'll use modern Unity APIs and C# features up to this version."
 - Do NOT list features, do NOT ask for confirmation
 
-**If version is "unknown":**
+**If the file or the line is missing:**
 - Say: "Could not detect Unity version in this repository"
 - Use AskUserQuestion: "Which Unity version should I target?" with common version options
 

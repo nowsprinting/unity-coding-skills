@@ -19,7 +19,7 @@ Out of scope:
 
 ### Creating a Test Assembly
 
-When `Tests/Runtime/` or `Tests/Editor/` does not exist yet, run `scripts/create-test-asmdef.sh <ProductionAsmdefPath>` to generate `<ProductionAssembly>.Tests.asmdef`.
+When `Tests/Runtime/` or `Tests/Editor/` does not exist yet, run `${CLAUDE_SKILL_DIR}/scripts/create-test-asmdef.sh <ProductionAsmdefPath>` to generate `<ProductionAssembly>.Tests.asmdef`.
 
 Examples:
 - `${CLAUDE_SKILL_DIR}/scripts/create-test-asmdef.sh Assets/MyGame/Scripts/Runtime/MyGame.asmdef` → `Assets/MyGame/Tests/Runtime/MyGame.Tests.asmdef`
@@ -417,7 +417,7 @@ catch (ArgumentException expectedException)
 }
 ```
 
-`try`/`catch` is the one sanctioned exception to [No Control Flow in Tests](#no-control-flow-in-tests) — it is not in that section's prohibited list, and this is the only place this guide requires it.
+`try`/`catch` is not in the prohibited list of [No Control Flow in Tests](#no-control-flow-in-tests), and this is the only place this guide requires it.
 
 ### Anti-pattern: Fixed-time Waits
 

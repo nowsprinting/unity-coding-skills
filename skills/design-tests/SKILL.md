@@ -44,7 +44,7 @@ Read existing code and tests only as `test-designing-guide` allows (Reading Code
 
 ## Rules
 
-- Modify no files other than the output file (Step 5).
+- Modify no files in the repository other than the output file (Step 5).
   Record a gap or a contradiction in the specification in the target's Assessment instead of editing the input documents.
 
 ## Workflow

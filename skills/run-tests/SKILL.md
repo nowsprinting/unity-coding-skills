@@ -71,7 +71,7 @@ TBD
 
 ## Visual Verification
 
-A test method carrying `[Category("VisualVerification")]` has no `Assert` statements (see `test-writing-guide` skill), so `Passed` only means the test ran without throwing — it says nothing about whether the screen actually looks right.
+A test method carrying `[Category("VisualVerification")]` may have no `Assert` statements (see `test-writing-guide` skill), so `Passed` says nothing about whether the screen actually looks right.
 That judgment has to come from analyzing the screenshot the test captured.
 
 **Only analyze when the run was to confirm a change made in this session** — production code, test code, a scene, a prefab, or another asset.
@@ -79,7 +79,7 @@ Skip the analysis when nothing is under verification: a regression run over unch
 When in doubt, skip.
 
 This applies to Editor runs (`run_unity_tests`) only.
-A standalone-player run writes `Temp/PlayerTestResult.txt`, not an XML result file, and on macOS the Player's `persistentDataPath` differs from the Editor's — see `resources/run-on-standalone-player.md`.
+A standalone-player run writes `Temp/PlayerTestResult.txt`, not an XML result file (see `resources/run-on-standalone-player.md`), and on macOS the Player's `persistentDataPath` differs from the Editor's (see the comment in `scripts/get-persistent-data-path.sh`).
 `[TakeScreenshot]` itself is Play Mode only.
 
 ### Procedure

@@ -8,19 +8,16 @@ Always verify facts against primary sources before implementing.
 
 ### Detected Unity Version
 
-Project Unity version:
-!`grep "m_EditorVersion:" ProjectSettings/ProjectVersion.txt 2>/dev/null | sed 's/m_EditorVersion: //' | grep . || echo unknown`
-
-This returns a string like `6000.3.7f1`.
+Read the Unity version from the `m_EditorVersion:` line of `ProjectSettings/ProjectVersion.txt`, e.g., `6000.3.7f1`.
 Call it `<FULL_VERSION>`.
 For web URLs, truncate to `MAJOR.MINOR` (e.g., `6000.3`).
 Call it `<SHORT_VERSION>`.
 
-**If version detected (not "unknown"):**
+**If the version is found:**
 - Say: "This project is using Unity X.Y, so I'll use modern Unity APIs and C# features up to this version."
 - Do NOT list features, do NOT ask for confirmation
 
-**If version is "unknown":**
+**If the file or the line is missing:**
 - Say: "Could not detect Unity version in this repository"
 - Use AskUserQuestion: "Which Unity version should I target?" with common version options
 

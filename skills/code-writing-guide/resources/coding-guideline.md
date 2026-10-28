@@ -53,8 +53,8 @@ Guard on whether a package is installed with an asmdef `versionDefines` symbol i
 - Editor extension code goes under the `Editor/` directory.
 - Runtime code goes under the `Runtime/` directory.
 - A file contains only one public class or interface.
-- Namespaces must align with the directory structure relative to the `Scripts` folder.
-  For example, a file at `Assets/MyGame/Scripts/Runtime/Foo/Bar.cs` should use the namespace `MyGame.Foo.Bar`.
+- Namespaces follow the directory structure under the assembly definition (`.asmdef`) file, prefixed with its `rootNamespace`.
+  For example, when `Assets/MyGame/Scripts/Runtime/MyGame.asmdef` has the `rootNamespace` `MyGame`, a file at `Assets/MyGame/Scripts/Runtime/Foo/Bar.cs` uses the namespace `MyGame.Foo`.
 
 ## MonoBehaviour
 
@@ -121,6 +121,6 @@ The goal is to prevent future readers (human or AI) from rediscovering the same 
 
 **Triggers that require a "why not" comment:**
 
-- A standard API or language feature is avoided because it misbehaves in a specific environment (e.g., `withTimeout` deadlocks on the IntelliJ platform test JVM EDT → use `java.util.Timer`)
+- A standard API or language feature is avoided because it misbehaves in a specific environment (e.g., `?.` on a `UnityEngine.Object` skips Unity's destroyed-object check → compare with `!= null`)
 - A less-efficient or more verbose pattern is chosen over a simpler one for correctness reasons
 - A seemingly redundant guard, indirection, or workaround exists due to a framework constraint
