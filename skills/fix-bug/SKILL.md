@@ -116,8 +116,7 @@ If multiple tests fail and it is unclear which one corresponds to the reported b
 
 #### If the test does not fail (Step 2 path only)
 
-- Delete the reproduction test
-- Return to Step 2 and search more broadly
+Diagnose why the test stays green, and choose the next move from the cause: e.g., the test does not reach the condition, the bug occurs only on the player (see the `run-tests` skill, Run Tests on the Player), it depends on timing or on data the test does not reproduce, or the bug is already fixed on this branch.
 
 If reproduction has been attempted **3 times** without success, return to **Step 1** and use `AskUserQuestion` to re-clarify the bug report with the user.
 
