@@ -24,7 +24,7 @@ The test design knowledge lives in the `test-designing-guide` skill; this skill 
 Take the specification to test against from the `SPECIFICATION` argument: the specification written directly, file paths, or the URLs of issues in an issue tracker, in any combination.
 For an issue URL, fetch its body and comments (e.g., `gh issue view <URL> --comments` for GitHub Issues) and treat them as text written directly: the comments often revise the body, and a subagent may lack the credentials to fetch them.
 When the argument is omitted, take it from the conversation.
-The argument or the conversation may also include instructions on the test techniques to apply, e.g., combinatorial testing.
+The argument or the conversation may also include instructions on the test techniques to apply or to suppress, e.g., combinatorial testing.
 If no specification can be found, use `AskUserQuestion` to ask the user before proceeding.
 
 In this skill and `test-designing-guide`, the terms mean:

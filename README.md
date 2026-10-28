@@ -84,6 +84,7 @@ It designs tests that match the passed specification layer: integration tests (i
 
 Test cases are designed to verify that the implementation conforms to the specifications(easy to review!), not that they uncover implementation flaws.
 They come from modeling the specifications with equivalence partitioning, boundary value analysis, decision table testing, and state transition testing, selected per test target.
+To leave out one of them except equivalence partitioning, say so in your instruction, e.g., `/design-tests @docs/hud.md, without boundary value analysis`.
 To focus on finding defects, ask for the following techniques in your instruction:
 
 - **Combinatorial testing** — tests the combinations of inputs that do not affect the expected result(using only neutral values by default), e.g.,
@@ -220,7 +221,8 @@ It searches for a code analysis rule (an IDE inspection or a Roslyn analyzer) th
 
 It measures how much of the specification document at `PATH` the test code covers, and lists the elements left unchecked:
 
-1. Models the specification with test techniques (equivalence partitioning, boundary value analysis, decision table testing, and state transition testing) into elements.
+1. Models the specification with test techniques (equivalence partitioning, decision table testing, and state transition testing) into elements.
+   It leaves out boundary value analysis, which adds conditions the specification does not state.
 2. Checks off each element the test code covers, in two passes:
    1. Reads the test code files whose `// Test-basis:` comments name the specification document, and checks off each element their tests cover.
       `/implement` and `/fix-bug` write these comments at the top of each test code file, listing the specification docs, design docs, and test design docs the tests were written from.

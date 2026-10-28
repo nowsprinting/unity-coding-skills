@@ -77,14 +77,23 @@ When modeling the specifications with a test technique reveals a gap or a contra
 Structural tests break under refactoring and lose value fast.
 It's fine to write a structural test temporarily when you're unsure about an implementation, but plan to delete it once specification tests cover the same behavior.
 
-Select the techniques that fit the test target, and read the resource of each one you apply:
+Select the techniques that fit the test target, and read the resource of each one you apply.
+An instruction from the user or from the skill that loads this one may suppress a default technique or enable an optional one; an enabled technique still applies only where it fits.
+
+**Required technique** — always apply; no instruction suppresses it, since boundary value analysis and decision table testing work on the equivalence partitions it produces:
 
 - **Equivalence partitioning** — for every input except those a contained target governs (see [Contained Test Targets](#contained-test-targets)) and those the specification states do not affect the outputs; group the values the specification says produce the same outcome → `resources/equivalence-partitioning.md`
+
+**Default techniques** — apply each one that fits, unless an instruction suppresses it:
+
 - **Boundary value analysis** — when the specification differentiates behavior at the edges of equivalence partitions → `resources/boundary-value-analysis.md`
 - **Decision table testing** — when a combination of multiple conditions produces different outcomes according to rules → `resources/decision-table-testing.md`
-- **Combinatorial testing** — only when the user explicitly asks to test the combinations of inputs whose expected result stays the same, e.g., the selected character and equipment → `resources/combinatorial-testing.md`
 - **State transition testing** — when the target has a finite-state-machine (FSM), including screen transitions → `resources/state-transition-testing.md`
-- **Error guessing** — only when the user explicitly asks to surface failure patterns common in game development that specification-based techniques don't reach, or to find the trigger of a reported bug (see [Reproduction tests](resources/reproduction-tests.md)) → `resources/error-guessing.md`
+
+**Optional techniques** — apply only when an instruction enables them:
+
+- **Combinatorial testing** — to test the combinations of inputs whose expected result stays the same, e.g., the selected character and equipment → `resources/combinatorial-testing.md`
+- **Error guessing** — to surface failure patterns common in game development that specification-based techniques don't reach; a request to reproduce a reported bug also enables it, to find the trigger (see [Reproduction tests](resources/reproduction-tests.md)) → `resources/error-guessing.md`
 
 Also read the following when they apply to the test target:
 

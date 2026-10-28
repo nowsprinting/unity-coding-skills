@@ -23,8 +23,9 @@ In this skill, the terms mean:
 
 - **Specification** — the observable behavior at the boundary of a unit (a scene, prefab, class, or asset).
   "Specification" names the behavior, never a document.
-- **Element** — one item of the specification model that a test case exercises: an equivalence partition, a boundary value, a decision table rule, or a state transition.
+- **Element** — one item of the specification model that a test case exercises: an equivalence partition, a decision table rule, or a state transition.
   The elements are the denominator of the coverage.
+  Boundary values are not elements: equivalence partitioning, decision table testing, and state transition testing model only the conditions the specification states, and a combination or a transition they find missing is a gap in the specification, whereas boundary value analysis adds conditions the specification does not state, so counting them would charge the tests for conditions no specification asks for.
 - **Test basis** — a file or an issue that the tests of a test file were written from, listed at the top of the file as a `// Test-basis: <path or URL>` line.
   The test bases may be outdated or incomplete: use them only to find tests, never to judge what a test covers.
 
@@ -48,13 +49,13 @@ Before launching them, list the test files that name the specification document 
 On exit code 3, proceed with an empty list: a project whose tests predate the `// Test-basis:` lines still has tests, and item 4 below finds them by name.
 Give each subagent the test target with its assigned specifications, the list of test files, and the definitions of element and test basis above, and instruct it to:
 
-1. Load the `test-designing-guide` skill — do not rely on automatic skill triggering — and model the target's specifications with its Test Techniques, reading the resource of each technique applied, into a list of elements.
+1. Load the `test-designing-guide` skill — do not rely on automatic skill triggering — and model the target's specifications with its Test Techniques, with boundary value analysis suppressed, reading the resource of each technique applied, into a list of elements.
    Leave out the items marked "TBD" and the conditions the specification states as undefined.
    For the data of a `ScriptableObject` class, model only the properties per the Validators resource; never model a table of each asset's concrete values as elements.
    List apart, as untestable, each element whose test case would be unverifiable, undefined, or ambiguous.
    Finish the list before reading any test code
 2. Read the test classes in the listed test files whose subject is the test target
-3. Check off each element that a test method verifies: its Arrange puts the test target in the element — an input in the partition, the boundary value, the conditions of the rule, or the source state of the transition — and its assertions verify the element's expected result.
+3. Check off each element that a test method verifies: its Arrange puts the test target in the element — an input in the partition, the conditions of the rule, or the source state of the transition — and its assertions verify the element's expected result.
    A test method name alone checks off nothing, and neither does a method with `[Ignore]`
 4. For each element still unchecked, search the test classes named after the test target or its classes, e.g., `<ClassName>Test`, and check it off the same way: a test without the `// Test-basis:` line still verifies the element.
    Mark each test class found only this way

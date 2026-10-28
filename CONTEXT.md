@@ -80,7 +80,7 @@ A file or an issue that states the specification, software design, or test desig
 _Avoid_: Source, reference, origin, trace link
 
 **Specification coverage**:
-The share of the elements of one specification document's model — equivalence partitions, boundary values, decision table rules, and state transitions — that the tests verify.
+The ratio of the elements of the specifications that the tests verify. The elements come from modeling the specifications with equivalence partitioning, decision table testing, and state transition testing.
 _Avoid_: Requirement coverage, test coverage (code coverage)
 
 ### Code
