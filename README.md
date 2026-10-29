@@ -229,19 +229,19 @@ It searches for a code analysis rule (an IDE inspection or a Roslyn analyzer) th
 /measure-spec-coverage <PATH>
 ```
 
-It measures how much of the specification document at `PATH` the test code covers, and lists the elements left unchecked:
+It measures how much of the specification document at `PATH` the test code covers, and lists the coverage items left unchecked:
 
-1. Models the specification with test techniques (equivalence partitioning, decision table testing, and state transition testing) into elements.
+1. Models the specification with test techniques (equivalence partitioning, decision table testing, and state transition testing) into coverage items.
    It leaves out boundary value analysis, which adds conditions the specification does not state.
-2. Checks off each element the test code covers, in two passes:
-   1. Reads the test code files whose `// Test-basis:` comments name the specification document, and checks off each element their tests cover.
+2. Checks off each coverage item the test code covers, in two passes:
+   1. Reads the test code files whose `// Test-basis:` comments name the specification document, and checks off each coverage item their tests cover.
       `/implement` and `/fix-bug` write these comments at the top of each test code file, listing the specification docs, design docs, and test design docs the tests were written from.
-   2. Searches the test classes named after each test target, e.g., `InventoryTest`, and checks off each element still unchecked that their tests cover.
+   2. Searches the test classes named after each test target, e.g., `InventoryTest`, and checks off each coverage item still unchecked that their tests cover.
       This finds the tests written without the comments, e.g., before you installed this plugin.
 
 > [!IMPORTANT]\
-> It models the specification on every run to count the elements, so the results vary between runs.
-> Compare the unchecked elements between runs, not the percentages.
+> It models the specification on every run to count the coverage items, so the results vary between runs.
+> Compare the unchecked coverage items between runs, not the percentages.
 
 Dependencies:
 
