@@ -8,6 +8,7 @@ Out of scope:
 
 Package: `com.nowsprinting.test-helper.ui` (<https://github.com/nowsprinting/test-helper.ui>)
 Assumes **v1.5.2** or later.
+If an API described here fails to compile, check the resolved version of the package in `Packages/packages-lock.json`; if it is older, ask the user to upgrade it.
 
 Add `TestHelper.UI` to Assembly Definition References.
 

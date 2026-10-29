@@ -10,6 +10,9 @@ Out of scope:
 
 Package: `com.unity.test-framework.performance` (<https://docs.unity3d.com/Packages/com.unity.test-framework.performance@3.5/manual/index.html>)
 Assumes **v3.5.0** or later.
+`com.unity.test-framework.performance` ships as a UPM package up to **v3.6.0**, so any project can upgrade to it via `Packages/manifest.json`.
+If an API described here fails to compile, check its resolved version in `Packages/packages-lock.json`; if it is older, ask the user to upgrade it.
+v6.6.0 and later are a core package bundled with the Unity Editor (6000.6 and later), and a user rarely upgrades the Editor just for test code, so do not expect it.
 
 **Observed on**: Unity **6000.4.12f1**, macOS (OSXEditor, Play Mode).
 Re-check before assuming these still hold.

@@ -5,6 +5,7 @@ Use it to verify statistical properties of a SUT that consumes a pseudo-random n
 
 Package: `com.nowsprinting.test-helper` (<https://github.com/nowsprinting/test-helper>)
 Assumes **v1.6.4** or later.
+If an API described here fails to compile, check the resolved version of the package in `Packages/packages-lock.json`; if it is older, ask the user to upgrade it.
 
 > The APIs are experimental, and may change without following SemVer.
 > They summarize samples; they are not a statistical hypothesis testing tool.

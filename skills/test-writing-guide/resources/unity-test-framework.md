@@ -7,6 +7,10 @@ Out of scope:
 - Performance tests — see `unity-test-framework-performance.md`
 - Test double patterns and dependency injection — see `test-doubles.md`
 
+`com.unity.test-framework` ships as a UPM package up to **v1.4.6**, so any project can upgrade to it via `Packages/manifest.json`.
+v1.5 and later are a core package bundled with the Unity Editor (6000.0.44f1 and later), and a user rarely upgrades the Editor just for test code, so do not expect it.
+If a feature marked "UTF v1.5+" fails to compile, do not use it; write the test without it.
+
 ## Structure
 
 - Tests targeting `Editor/` code, and tests validating assets → `Tests/Editor/` (Edit Mode tests)
@@ -358,7 +362,7 @@ Use the `edit-scene` skill to create the scene file.
 | `[SetUp]` / `[TearDown]`                         | Before / after each test method      | `async Task` supported (UTF v1.3+)                      |
 | `[UnitySetUp]` / `[UnityTearDown]`               | Before / after each test (coroutine) | Runs before `[SetUp]` / after `[TearDown]` respectively |
 | `[OneTimeSetUp]` / `[OneTimeTearDown]`           | Once per class                       |                                                         |
-| `[UnityOneTimeSetUp]` / `[UnityOneTimeTearDown]` | Once per class (coroutine)           | UTF v1.5+                                               |
+| `[UnityOneTimeSetUp]` / `[UnityOneTimeTearDown]` | Once per class (coroutine)           | UTF v1.5+ (core package)                                |
 
 Guidelines:
 - `[SetUp]` owns initialization; cleanup of leftover state belongs in `[SetUp]`, not `[TearDown]`.
@@ -563,13 +567,13 @@ Do NOT write XML documentation comments in test code.
 
 ### `[Test]` on an `async` method fails to compile or run
 
-If a test written as `[Test]` + `async` method (per the Async Tests section above) errors out — compile error, `async void` rejection, or the runner refusing to execute the test — the `com.unity.test-framework` package is too old.
-Upgrade to **v1.4.6** in `Packages/manifest.json`.
+If a test written as `[Test]` + `async` method (per the Async Tests section above) errors out — compile error, `async void` rejection, or the runner refusing to execute the test — the `com.unity.test-framework` package may be too old.
+Check its resolved version in `Packages/packages-lock.json`; if it is older than **v1.4.6**, ask the user to upgrade it.
 
 ### `[ParametrizedIgnore]` is not recognized
 
-If `[ParametrizedIgnore]` on a parameterized test errors as an unknown attribute, the `com.unity.test-framework` package is too old.
-Upgrade to **v1.4.6** in `Packages/manifest.json`.
+If `[ParametrizedIgnore]` on a parameterized test errors as an unknown attribute, the `com.unity.test-framework` package may be too old.
+Check its resolved version in `Packages/packages-lock.json`; if it is older than **v1.4.6**, ask the user to upgrade it.
 
 ### `[Repeat]` or `[Retry]` test times out unexpectedly
 
@@ -584,5 +588,5 @@ Set it explicitly inside the test method where it is needed — it cannot be app
 ### A test run freezes or behaves inexplicably
 
 If a test run freezes the Editor or behaves inexplicably, the `com.unity.test-framework` or [UTF Analyzers](https://github.com/nowsprinting/test-framework.analyzers) package may be too old; this skill provides no information for avoiding the bugs in older versions.
-Upgrade `com.unity.test-framework` to **v1.4.6** or later in `Packages/manifest.json`.
-Upgrade UTF Analyzers to **v1.4.0** or later: `com.nowsprinting.test-framework.analyzers` in `Packages/manifest.json` (UPM) or `UTFAnalyzers` in `Assets/packages.config` (NuGetForUnity).
+Check the resolved version of `com.unity.test-framework` in `Packages/packages-lock.json`; if it is older than **v1.4.6**, ask the user to upgrade it.
+Check the installed version of UTF Analyzers — `com.nowsprinting.test-framework.analyzers` in `Packages/packages-lock.json` (UPM) or `UTFAnalyzers` in `Assets/packages.config` (NuGetForUnity); if it is older than **v1.4.0**, ask the user to upgrade it.

@@ -10,6 +10,7 @@ Out of scope:
 
 Package: `com.nowsprinting.test-helper` (<https://github.com/nowsprinting/test-helper>)
 Assumes **v1.6.4** or later.
+If an API described here fails to compile, check the resolved version of the package in `Packages/packages-lock.json`; if it is older, ask the user to upgrade it.
 
 Add `TestHelper` to Assembly Definition References to use attributes and constraints.
 Add `TestHelper.RuntimeInternals` to also use `SceneManagerHelper`, `ScreenshotHelper`, and `PathHelper`.
