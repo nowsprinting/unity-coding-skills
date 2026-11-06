@@ -2,10 +2,11 @@
 
 #### Assertion-based tests
 
+Equivalence Partitioning (Boundary value coverage)
+
 | Test Method              | Verification                                                             | Tags                    |
 |--------------------------|--------------------------------------------------------------------------|-------------------------|
 | `<Condition>_<Expected>` | `<property>` is `<expected value or state>`                              |                         |
-| `<Condition>_<Expected>` | `<property>` is `<expected value or state>`                              | acceptance              |
 | `<Condition>_<Expected>` | `<property>` is `<expected value or state>`                              | existing                |
 | `<Condition>_<Expected>` | `<property>` is `<expected value or state>`                              | test fix                |
 | `<Condition>_<Expected>` | `<property>` is `<expected value or state>`                              | spec change             |
@@ -13,6 +14,12 @@
 | `<Condition>_<Expected>` | When `<input>` is `<value>`, `<property>` is `<expected value or state>` |                         |
 | `<Condition>_UNDEFINED`  | **undefined**                                                            |                         |
 | `<Condition>_AMBIGUOUS`  | **ambiguous** `<reason>`                                                 |                         |
+
+State Transition Testing (0-switch coverage)
+
+| Test Method              | Verification                                                             | Tags                    |
+|--------------------------|--------------------------------------------------------------------------|-------------------------|
+| `<Condition>_<Expected>` | `<property>` is `<expected value or state>`                              | acceptance              |
 
 **Notes:**
 

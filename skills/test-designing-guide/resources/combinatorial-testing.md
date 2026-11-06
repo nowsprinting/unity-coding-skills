@@ -24,7 +24,7 @@ To choose the combinations, draw each parameter as a classification and its leve
 Choose one of the following; the default is pairwise in integration tests and all combinations in unit tests:
 
 - **All combinations** — every combination of the levels of all parameters
-- **Pairwise (2-wise)** — every combination of the levels of any two parameters
+- **Pairwise** — every combination of the levels of any two parameters (2-wise)
 
 Unity Test Framework generates no other combination set, so decline an instruction for any other criterion, e.g., 3-wise: take the default instead, and state in the Notes that Unity Test Framework supports only all combinations and pairwise.
 

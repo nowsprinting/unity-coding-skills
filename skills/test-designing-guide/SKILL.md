@@ -230,6 +230,13 @@ Output the test cases of a test target as one section per test class, in this or
   - Test perspectives — *what* behavioral aspects, conditions, or interactions are verified for this target.
     NOT a test technique name
 
+For unit tests and assertion-based tests, output one table per test technique, in the order equivalence partitioning, decision table testing, combinatorial testing, state transition testing, round-trip testing, error guessing.
+Write a plain-text line above each table naming the technique, followed by its chosen test selection criteria in parentheses, separated by `, ` when it has several, e.g., `Equivalence Partitioning (Boundary value coverage)`, `Decision Table Testing (Every rule, Boundary value coverage)`, `State Transition Testing (1-switch coverage)`.
+Name each criterion as the technique's resource does; a technique without one, e.g., error guessing, has no parentheses.
+Write the line in English whatever the project language.
+List a test case that several techniques derive once, in the table of the first of them.
+Validators, visual verification tests, and manual tests derive their test cases from properties, visual aspects, and human judgment instead of a technique, so each keeps a single table without the line.
+
 > **Note:** Do NOT write "Edit Mode" or "Play Mode" in test case output — that is a test-writing concern, not a test design concern.
 
 **Tags** — annotations that flag test case categories, written in the **Tags** column, not the Verification column.
@@ -245,7 +252,7 @@ Separate multiple tags with `, ` in the order of the list below, e.g., `acceptan
 A test case without `existing`, `test fix`, or `spec change` is a new test.
 Write the tags in English whatever the project language.
 
-**Notes** — a bullet list under a test case table, written in the project language in this order; omit a bullet that does not apply, and the Notes when no bullet remains:
+**Notes** — a bullet list after the last test case table of a test class section (in integration tests, of its assertion-based tests), not after each technique's table, written in the project language in this order; omit a bullet that does not apply, and the Notes when no bullet remains:
 
 1. For validators, the selection scope (see [Validators](resources/validators.md#selection-scope))
 2. The conditions the specification explicitly states as undefined, which have no test case; write several conditions in one bullet where possible — in unit tests, one bullet per `<MethodName>`
