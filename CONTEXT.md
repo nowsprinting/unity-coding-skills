@@ -37,7 +37,7 @@ The text a specification puts on an item not decided yet. The skills treat the i
 _Avoid_: TBA, TODO, pending (the skills recognize only "TBD")
 
 **Undefined**:
-The text a specification states for the behavior under a condition it deliberately leaves open, e.g., "the result is undefined when HP is negative". It leaves no gap: the test design has no test case for the condition and lists it in the Notes. An undefined test case, marked `_UNDEFINED`, is the opposite: a gap where the specification states no expected result.
+The text a specification states for the behavior under a condition it deliberately leaves open, e.g., "the result is undefined when HP is negative". A statement that the condition need not be considered, e.g., "a negative width need not be considered", counts as undefined too. It leaves no gap: the test design has no test case for the condition and lists it in the Notes. An undefined test case, marked `_UNDEFINED`, is the opposite: a gap where the specification states no expected result.
 _Avoid_: Unspecified, out of scope
 
 ### Tests
