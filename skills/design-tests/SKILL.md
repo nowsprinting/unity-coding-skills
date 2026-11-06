@@ -25,7 +25,7 @@ Take the specification to test against from the `SPECIFICATION` argument: the sp
 When the input alone leaves a specification, or its split into test targets, unsettled, consult the documents it links to, e.g., another file or an issue: read only the parts that settle it, up to two hops from the input — a document the input links to, and a document that one links to.
 For an issue URL, fetch its body and comments (e.g., `gh issue view <URL> --comments` for GitHub Issues) and treat them as text written directly: the comments often revise the body, and a subagent may lack the credentials to fetch them.
 When the argument is omitted, take it from the conversation.
-The argument or the conversation may also include instructions on the test techniques to apply or to suppress, e.g., combinatorial testing, or on their test selection criteria, e.g., 1-switch coverage.
+The argument or the conversation may also include instructions on the test techniques to apply or to suppress, e.g., error guessing, or on their test selection criteria, e.g., 1-switch coverage.
 If no specification can be found, use `AskUserQuestion` to ask the user before proceeding.
 
 In this skill and `test-designing-guide`, the terms mean:

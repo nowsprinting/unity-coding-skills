@@ -23,6 +23,12 @@ Decision Table Testing (Every rule, Boundary value coverage)
 |----------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|-------------------------|
 | `<MethodName>_<Condition>_<Expected>`                                                        | `<property>` is `<expected value or state>` (uses spy: IDependency)      |                         |
 
+Combinatorial Testing (All combinations)
+
+| Test Method                                                                                  | Verification                                                             | Tags                    |
+|----------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|-------------------------|
+| `<MethodName>_<Condition>_<Expected>` (factor: {0, 7})                                       | When `<input>` is `<value>`, `<property>` is `<expected value or state>` |                         |
+
 Error Guessing
 
 | Test Method                                                                                  | Verification                                                             | Tags                    |

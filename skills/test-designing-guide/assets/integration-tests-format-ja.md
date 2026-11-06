@@ -15,6 +15,12 @@ Equivalence Partitioning (Boundary value coverage)
 | `<条件>_UNDEFINED`  | **undefined**                                                            |                         |
 | `<条件>_AMBIGUOUS`  | **ambiguous** `<理由>`                                                   |                         |
 
+Combinatorial Testing (Pairwise)
+
+| Test Method                                                         | Verification                                                             | Tags |
+|---------------------------------------------------------------------|--------------------------------------------------------------------------|------|
+| `<条件>_<期待結果>` (factor1: {0, 7}, factor2: (bool), by pairwise) | `<入力>` が `<値>` のとき、`<プロパティ>` が `<期待値または状態>` である |      |
+
 State Transition Testing (0-switch coverage)
 
 | Test Method         | Verification                                                             | Tags                    |

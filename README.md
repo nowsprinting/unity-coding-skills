@@ -83,7 +83,7 @@ For a file path, the output goes to a Markdown file with a `-tests` suffix next 
 It designs tests that match the passed specification layer: integration tests (including the UI) from the external specifications, and unit tests from the design docs.
 
 Test cases are designed to verify that the implementation conforms to the specifications(easy to review!), not that they uncover implementation flaws.
-They come from modeling the specifications with equivalence partitioning, boundary value analysis, decision table testing, and state transition testing(0-switch coverage), selected per test target.
+They come from modeling the specifications with equivalence partitioning, boundary value analysis, decision table testing, combinatorial testing, and state transition testing(0-switch coverage), selected per test target.
 
 **Options**
 
@@ -96,10 +96,6 @@ Ask for the following in your instruction:
 - **Test selection criterion** — changes which items of a technique's model become test cases: equivalence partition coverage (no boundary values) for equivalence partitioning and the conditions of decision tables; every condition or every action, instead of every rule, for decision tables; state coverage or N-switch coverage, instead of 0-switch coverage, for state transitions; all combinations or pairwise for combinatorial testing. e.g.,
   ```
   /design-tests @docs/screen-transitions.md, with 1-switch coverage
-  ```
-- **Combinatorial testing** — tests the combinations of inputs that do not affect the expected result(using only neutral values by default), e.g.,
-  ```
-  /design-tests @docs/equipment.md, and test the combinations of the character and the weapon with combinatorial testing
   ```
 - **Error guessing** — adds test cases from failure patterns common in game development, not from the specification, e.g.,
   ```

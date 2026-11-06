@@ -3,7 +3,8 @@ name: test-designing-guide
 description: >-
   Test design knowledge for Unity projects: test layers, test techniques for
   modeling specifications (equivalence partitioning, boundary value analysis,
-  state transitions, decision tables, error guessing) and their test
+  state transitions, decision tables, combinatorial testing, error guessing)
+  and their test
   selection criteria, test case naming,
   test case notation and output formats, and assessment of specifications.
   Use this skill whenever designing test cases for a test target, such as a
@@ -55,6 +56,7 @@ The external specification of a game usually describes a scene or a screen, so i
 A test target may contain other test targets, each designed from its own specification: e.g., a screen contains the classes placed on it, and the screen transitions contain the screens.
 The container's test cases cover the behavior that emerges from combining its contained targets — e.g., the wiring between a screen and its classes, or the transitions between screens.
 A contained target's specifications belong to that target's own test cases; when a container's test case passes through a contained target, give each input the contained target's specification governs one representative value instead of its equivalence partitions and boundary values.
+The inputs a contained target receives and ignores, e.g., the dexterity a damage calculation does not use, count among those it governs: its own [combinatorial testing](resources/combinatorial-testing.md) takes them as factors, so the container's does not.
 A part of the subject without a specification of its own, e.g., a class no specification describes, is not a contained target; test its behavior as part of the container.
 
 ## Test Techniques
@@ -62,7 +64,7 @@ A part of the subject without a specification of its own, e.g., a class no speci
 Before selecting the techniques, list from the specifications the inputs, states, and outputs of the test target, since a value that does not pass through an argument or a return value is easy to miss:
 
 - **Inputs** — direct inputs (arguments, UI operations) and indirect inputs (return values of dependencies, random numbers, time, assets the target references, the order of Unity's lifecycle events).
-  Leave out an input the specification states does not affect the outputs: the test-writing phase gives it a neutral value.
+  List also an input the specification states does not affect the outputs: the other techniques leave it out, and [combinatorial testing](resources/combinatorial-testing.md) takes it as a factor.
 - **States** — the states the target holds across operations, e.g., flags and remaining counts, even when the specification does not describe them as an FSM
 - **Outputs** — direct outputs (return values, on-screen display) and indirect outputs (raised events, calls to dependencies, saved data, logs)
 
@@ -88,11 +90,11 @@ An instruction from the user or from the skill that loads this one may suppress 
 **Default techniques** — apply each one that fits, unless an instruction suppresses it:
 
 - **Decision table testing** — when a combination of multiple conditions produces different outcomes according to rules → `resources/decision-table-testing.md`
+- **Combinatorial testing** — when a test case of equivalence partitioning or decision table testing leaves out an input its expected result does not depend on, e.g., the other ability scores for damage computed from strength → `resources/combinatorial-testing.md`
 - **State transition testing** — when the target has a finite-state-machine (FSM), including screen transitions → `resources/state-transition-testing.md`
 
 **Optional techniques** — apply only when an instruction enables them:
 
-- **Combinatorial testing** — to test the combinations of inputs whose expected result stays the same, e.g., the selected character and equipment → `resources/combinatorial-testing.md`
 - **Error guessing** — to surface failure patterns common in game development that specification-based techniques don't reach; a request to reproduce a reported bug also enables it, to find the trigger (see [Reproduction tests](resources/reproduction-tests.md)) → `resources/error-guessing.md`
 
 Also read the following when they apply to the test target:
@@ -114,12 +116,12 @@ If no language is specified, default to English.
     Do NOT include a method name.
     Do NOT add a feature-area or category prefix before `<Condition>` — the name starts directly with the condition (e.g., `OnVictoryForced_AllCardViewsAreFullyWithinHandArea`, not `Reward_OnVictoryForced_AllCardViewsAreFullyWithinHandArea`).
   - The `<Condition>` segment names only the equivalence partitions the expected result depends on; leave out an input that does not affect it, e.g., a condition marked "don't care" in a decision table.
-    The test-writing phase gives such an input a neutral value, unless it is a factor of [combinatorial testing](resources/combinatorial-testing.md), which goes in the parameters instead.
+    The test-writing phase gives such an input a neutral value; the test case [combinatorial testing](resources/combinatorial-testing.md) derives from it takes the input as a factor in the parameters instead.
   - For **parameterized tests**, the `<Condition>` segment is the **equivalence partition name**, not an enumeration of individual argument values.
   - For **Validators**, the `<Condition>` segment is the precondition of the property (see [Validators](resources/validators.md#test-methods)).
   - The `<Expected>` segment names the **concrete resulting state or value** of that one partition (e.g. `IsNotInteractable`, `ReturnsFizz`), never a condition or comparison.
     When the specification computes the value by a formula, name the quantity it defines, e.g., `ReturnsDamageValue`.
-    **Exceptions**: an undefined or ambiguous test case uses `UNDEFINED` or `AMBIGUOUS` (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); a consolidated layout assertion test may use the generic `LayoutIsCorrect` (see [Integration testing](resources/integration-testing.md#perspectives), UI layout).
+    **Exceptions**: a test case of combinatorial testing names the absence of effect, e.g., `InputsOtherThanStrengthDoNotAffectDamage` (see [Combinatorial testing](resources/combinatorial-testing.md#naming)); an undefined or ambiguous test case uses `UNDEFINED` or `AMBIGUOUS` (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); a consolidated layout assertion test may use the generic `LayoutIsCorrect` (see [Integration testing](resources/integration-testing.md#perspectives), UI layout).
     Words like `Matches…`, `OnlyWhen…`, `DependingOn…`, `BasedOn…` in the name — or "only when / only if / depending on" in the verification description — signal that the outcome varies with input, meaning two partitions were merged into one method — split into one method per outcome (see [Deriving test methods from equivalence partitions](resources/equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)).
   - Write `<Expected>` in active voice: `ReturnsTrue`, `ThrowsArgumentException`, `ReducesHpBy3`, etc. For an exception, include its type: `ThrowsArgumentException`, not just `ThrowsException`.
 - Do NOT create sequential IDs in test case names
@@ -135,7 +137,7 @@ Do NOT over-consolidate: keep separate rows for tests that belong to **different
 
 Write each parameterized test as a single table row, with its parameter names and values after the method name in the Test Method column.
 Leave out of the parameters an input the expected result does not depend on, e.g., a condition marked "don't care" in a decision table: the test-writing phase gives it a neutral value.
-The factors of [combinatorial testing](resources/combinatorial-testing.md) are the exception: they go in the parameters.
+The factors of [combinatorial testing](resources/combinatorial-testing.md) are the exception: they go in the parameters of the test case it derives.
 Do NOT specify the framework mechanism (`TestCase`, `Values`, etc.) — that's a test-writing decision.
 
 - **Bool parameter, all values**: `(flag: (bool))`
