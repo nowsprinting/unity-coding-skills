@@ -72,6 +72,8 @@ The inputs and states drive the techniques: e.g., equivalence partitioning for e
 An output without a means to observe it marks its test cases unverifiable, and a combination of inputs and states with no specified output marks its test case undefined; a combination the specification explicitly states as "undefined" gets no test case (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)).
 Include the list in the modeling result.
 
+When the specification names a method after a well-known naming pattern but leaves out its return type or parameters, e.g., `TryGetFoo` of the Try pattern, which returns `bool` and outputs `Foo` through an `out` parameter, take them from the pattern and design the test cases as if the specification stated them, not as undefined; write the pattern in the Notes (see [Output Format](#output-format)), e.g., "`TryGetFoo`: designed by the Try pattern".
+
 Between modeling the specifications with a technique and deriving its test cases, choose the technique's **test selection criterion**: the rule that selects which items of the model become test cases, e.g., every rule of a decision table.
 A technique may have several independent ones, as decision table testing does.
 For each criterion, take the default that the technique's resource names, unless an instruction (see below) names another, and include the chosen criteria in the modeling result.
