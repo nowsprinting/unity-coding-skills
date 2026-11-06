@@ -93,7 +93,7 @@ Ask for the following in your instruction:
   ```
   /design-tests @docs/hud.md, without boundary value analysis
   ```
-- **Test selection criterion** — changes which items of a technique's model become test cases: equivalence partition coverage (no boundary values) for equivalence partitioning and the conditions of decision tables; every condition or every action, instead of every rule, for decision tables; state coverage or N-switch coverage, instead of 0-switch coverage, for state transitions; all combinations or pairwise for combinatorial testing. e.g.,
+- **Test selection criterion** — changes which items of a technique's model become test cases: equivalence partition coverage (no boundary values) for equivalence partitioning and the conditions of decision tables; every condition or every action, instead of every rule, for decision tables; and state coverage or N-switch coverage, instead of 0-switch coverage, for state transitions. e.g.,
   ```
   /design-tests @docs/screen-transitions.md, with 1-switch coverage
   ```
@@ -114,6 +114,9 @@ design-tests
 > [!TIP]\
 > To leave an item out of the test design, write "TBD" on it in the specification; no test case is designed for it.
 > To leave the behavior under a condition open, state it as undefined, e.g., "the result is undefined when HP is negative"; no test case is designed for the condition, and it is listed in the Notes.
+
+> [!NOTE]\
+> Combinatorial testing here varies, in combination, the inputs an equivalence partitioning or decision table test case gives neutral values to, and checks that its result stays the same, e.g., the other ability scores and equipment slots when damage depends on strength and the weapon.
 
 ### Implement features test-first
 

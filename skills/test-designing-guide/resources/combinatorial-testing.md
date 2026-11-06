@@ -48,7 +48,7 @@ Choose one of the following; the default is pairwise in integration tests and al
 - **All combinations** — every combination of the levels of all factors
 - **Pairwise** — every combination of the levels of any two factors (2-wise)
 
-Unity Test Framework generates no other combination set, so decline an instruction for any other criterion, e.g., 3-wise: take the default instead, and state in the Notes that Unity Test Framework supports only all combinations and pairwise.
+Unity Test Framework generates no other combination set, so for an instruction naming another criterion, e.g., base choice or 3-wise, write its combinations with the limited-combinations notation.
 
 The unit test framework generates the combinations from the levels, so the test case lists each factor with its levels in the [parameterized test](../SKILL.md#parameterized-tests) notation, not the combinations, e.g., `(dexterity: {0, 7}, shield: {null, Shield}, armor: {null, Armor})`; for pairwise, append `by pairwise` to it, e.g., `(dexterity: {0, 7}, shield: {null, Shield}, armor: {null, Armor}, by pairwise)`.
 
