@@ -3,7 +3,8 @@ name: test-designing-guide
 description: >-
   Test design knowledge for Unity projects: test layers, test techniques for
   modeling specifications (equivalence partitioning, boundary value analysis,
-  state transitions, decision tables, error guessing), test case naming,
+  state transitions, decision tables, error guessing) and their test
+  selection criteria, test case naming,
   test case notation and output formats, and assessment of specifications.
   Use this skill whenever designing test cases for a test target, such as a
   screen or a class, from its specifications. Even for small features, load
@@ -69,12 +70,16 @@ The inputs and states drive the techniques: e.g., equivalence partitioning for e
 An output without a means to observe it marks its test cases unverifiable, and a combination of inputs and states with no specified output marks its test case undefined; a combination the specification explicitly states as "undefined" gets no test case (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)).
 Include the list in the modeling result.
 
+Between modeling the specifications with a technique and deriving its test cases, choose the technique's **test selection criterion**: the rule that selects which items of the model become test cases, e.g., every rule of a decision table.
+A technique may have several independent ones, as decision table testing does.
+For each criterion, take the default that the technique's resource names, unless an instruction (see below) names another, and include the chosen criteria in the modeling result.
+
 When an output of one operation is the input of its inverse, e.g., serialize and deserialize, and the specification does not define that intermediate form, neither operation has an expected result of its own; verify the pair by a round trip → `resources/round-trip-testing.md`
 
 When modeling the specifications with a test technique reveals a gap or a contradiction in them, do not guess the outcome: design the test case of a gap as undefined (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)), design no test case for a contradiction, and include the modeling result (e.g., the equivalence partition table, the decision table, the state transition diagram) in the [Assessment](#assessment) when it is `❌FAIL`, so the user can see where the specification breaks.
 
 Select the techniques that fit the test target, and read the resource of each one you apply.
-An instruction from the user or from the skill that loads this one may suppress a default technique or enable an optional one; an enabled technique still applies only where it fits.
+An instruction from the user or from the skill that loads this one may suppress a default technique, enable an optional one, or choose a technique's test selection criterion; an enabled technique still applies only where it fits.
 
 **Required technique** — always apply; no instruction suppresses it, since boundary value analysis and decision table testing work on the equivalence partitions it produces:
 
@@ -82,7 +87,6 @@ An instruction from the user or from the skill that loads this one may suppress 
 
 **Default techniques** — apply each one that fits, unless an instruction suppresses it:
 
-- **Boundary value analysis** — when the specification differentiates behavior at the edges of equivalence partitions → `resources/boundary-value-analysis.md`
 - **Decision table testing** — when a combination of multiple conditions produces different outcomes according to rules → `resources/decision-table-testing.md`
 - **State transition testing** — when the target has a finite-state-machine (FSM), including screen transitions → `resources/state-transition-testing.md`
 
@@ -137,6 +141,7 @@ Do NOT specify the framework mechanism (`TestCase`, `Values`, etc.) — that's a
 - **Bool parameter, all values**: `(flag: (bool))`
 - **Enum parameter, all values**: `(direction: (Direction))`
 - **Multiple parameters, all combinations (exhaustive)**: `(param1: {0, 1, 2}, param2: {3, 4, 5})` — when a parameter is `bool` or enum covering all its values, use the shorthand in place of the braces: `(flag: (bool), count: {0, 1, 5})`
+- **Multiple parameters, pairwise**: `(param1: {0, 1, 2}, param2: {3, 4, 5}, param3: (bool), by pairwise)`
 - **Multiple parameters, limited to specific combinations**: `({param1: 0, param2: 3}, {param1: 1, param2: 4})`
 - **Expected value per row**: `({attack: 2, guard: 1, expected: 1}, {attack: 7, guard: 3, expected: 4})` — only when the specification derives the expected result from the inputs by one formula for a numeric value, e.g., `GetDamage_AttackGreaterThanGuard_ReturnsDamageValue`, or by one template or format for a string, e.g., `"Deal {Damage} damage"`: the rows share the formula or the template, not the value, so they stay in one output equivalence partition; the Verification column refers to the parameter, e.g., "returns `expected`"
 

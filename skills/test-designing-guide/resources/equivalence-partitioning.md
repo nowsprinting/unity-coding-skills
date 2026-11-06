@@ -18,6 +18,15 @@ Such a value often arises from a calculation rather than a direct input: damage 
 Whether it is a valid or an invalid equivalence partition depends on the specification — `EXP > Next` is a valid equivalence partition, since it produces a level up.
 An enum has no values beyond its members, so it gets no such equivalence partition.
 
+## Test Selection Criterion
+
+Choose one of the following; the default is boundary value coverage:
+
+- **Equivalence partition coverage** — one test case per equivalence partition, with its representative
+- **Boundary value coverage** — equivalence partition coverage, plus the boundary values of each equivalence partition that [boundary value analysis](boundary-value-analysis.md) finds, in the equivalence partition's parameterized test
+
+An instruction to leave out boundary value analysis selects equivalence partition coverage.
+
 ## Deriving test methods from equivalence partitions
 
 The most common derivation error is merging equivalence partitions with **different** expected results into one (parameterized) method, encoding the difference as a condition in the name/Verification (e.g. `..._InteractableMatchesNonEmpty`, "interactable is true *only when* non-empty").

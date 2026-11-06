@@ -10,21 +10,28 @@ A cell the specification explicitly states as undefined is not a gap: design no 
 
 As the modeling result, draw a state transition diagram in Mermaid (`stateDiagram-v2`) instead of the table, and point out each gap and contradiction on it with a note.
 
-## Coverage
+## Test Selection Criterion
 
-Design for 0-switch coverage: one test case per direct transition from state A to state B, with no intermediate states in between.
-Testing longer paths exceeds 0-switch coverage.
+Choose one of the following; the default is 0-switch coverage:
 
-When an instruction (see [Test Techniques](../SKILL.md#test-techniques)) asks for N-switch coverage (N ≥ 1), add one test case per sequence of N+1 consecutive transitions to the 0-switch test cases.
-Build the sequences only from the cells that hold a destination state: an event not accepted, a gap, and a contradiction already get their test cases, or none, at 0-switch coverage.
+- **State coverage** — every state is visited by at least one test case; select the fewest transitions that visit them all
+- **0-switch coverage** — one test case per direct transition from state A to state B, with no intermediate states in between
+- **N-switch coverage** (N ≥ 1) — the 0-switch test cases, plus one test case per sequence of N+1 consecutive transitions.
+  Build the sequences only from the cells that hold a destination state: an event not accepted, a gap, and a contradiction already get their test cases, or none, at 0-switch coverage.
+
+Whatever the criterion, design the test case of each gap as undefined.
+
+When the specification explicitly states that one state is reachable from another, e.g., "the player can reach the shop screen from the title screen", also apply **state-to-state reachability**: add one test case per such statement, following the shortest path of transitions in the model from the source state to the destination state.
+A sequence or a use case states its transitions, not a reachability; its transitions get their test cases by the criterion above (see [Screen Transitions](#screen-transitions)).
 
 ## Test Methods
 
 Design one test method per transition, with the source state and the event in the `<Condition>` segment and the destination state in the `<Expected>` segment.
 When the specification defines that an event is not accepted in a state, design a test case that the state does not change.
-For an N-switch test case, write the source state and the events in order in the `<Condition>` segment, and the state after the last event in the `<Expected>` segment; for a method target, the `<MethodName>` segment names the method of the last event.
+For an N-switch or a state-to-state reachability test case, write the source state and the events in order in the `<Condition>` segment, and the state after the last event in the `<Expected>` segment; for a method target, the `<MethodName>` segment names the method of the last event.
 
 For an external specification or a specification that realizes a stated requirement, mark as an acceptance test (see [Output Format](../SKILL.md#output-format)) only the test case of a transition the specification itself describes — an edge of its diagram, a step of its scenario or use case, or a sentence such as "pressing Start opens the stage select screen".
+A state-to-state reachability test case gets the mark too, since the specification states the reachability itself.
 A transition derived only by completing the state transition table, and an event not accepted, get no mark.
 Neither does an N-switch test case: the 0-switch test cases of its transitions carry the marks.
 

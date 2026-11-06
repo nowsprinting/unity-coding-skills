@@ -49,7 +49,7 @@ Before launching them, list the test files that name the specification document 
 On exit code 3, proceed with an empty list: a project whose tests predate the `// Test-basis:` lines still has tests, and item 4 below finds them by name.
 Give each subagent the test target with its assigned specifications, the list of test files, and the definitions of coverage item and test basis above, and instruct it to:
 
-1. Load the `test-designing-guide` skill — do not rely on automatic skill triggering — and model the target's specifications with its Test Techniques, with boundary value analysis suppressed, reading the resource of each technique applied, into a list of coverage items.
+1. Load the `test-designing-guide` skill — do not rely on automatic skill triggering — and model the target's specifications with its Test Techniques, with equivalence partition coverage as the test selection criterion of equivalence partitioning, reading the resource of each technique applied, into a list of coverage items.
    Leave out the items marked "TBD" and the conditions the specification states as undefined.
    For the data of a `ScriptableObject` class, model only the properties per the Validators resource; never model a table of each asset's concrete values as coverage items.
    List apart, as untestable, each coverage item whose test case would be unverifiable, undefined, or ambiguous.

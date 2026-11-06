@@ -25,7 +25,7 @@ Take the specification to test against from the `SPECIFICATION` argument: the sp
 When the input alone leaves a specification, or its split into test targets, unsettled, consult the documents it links to, e.g., another file or an issue: read only the parts that settle it, up to two hops from the input — a document the input links to, and a document that one links to.
 For an issue URL, fetch its body and comments (e.g., `gh issue view <URL> --comments` for GitHub Issues) and treat them as text written directly: the comments often revise the body, and a subagent may lack the credentials to fetch them.
 When the argument is omitted, take it from the conversation.
-The argument or the conversation may also include instructions on the test techniques to apply or to suppress, e.g., combinatorial testing.
+The argument or the conversation may also include instructions on the test techniques to apply or to suppress, e.g., combinatorial testing, or on their test selection criteria, e.g., 1-switch coverage.
 If no specification can be found, use `AskUserQuestion` to ask the user before proceeding.
 
 In this skill and `test-designing-guide`, the terms mean:
@@ -88,7 +88,7 @@ Instruct each subagent to load the `test-designing-guide` skill — do not rely 
 5. Assess the target (Assessment)
 6. Write the test cases and the Assessment in the output format (Output Format)
 
-Give each subagent the test target with its assigned specifications, which of them are external specifications, and the requirements they realize if any, the test targets it contains with their assigned specifications if any, and the user's instructions on the test techniques if any, and have it return its output verbatim.
+Give each subagent the test target with its assigned specifications, which of them are external specifications, and the requirements they realize if any, the test targets it contains with their assigned specifications if any, and the user's instructions on the test techniques and their test selection criteria if any, and have it return its output verbatim.
 Quote each specification and requirement verbatim with its source, e.g., the file path and heading or the issue URL, together with the passages it depends on, e.g., the definitions of the terms it uses, whether they lie in the input or in a linked document you read (see Input).
 Pass the links within two hops of the input that the quoted passages cite and you did not read, each with the sentence that cites it.
 Instruct the subagent not to read the source documents: a subagent reading a whole document would see the specifications Step 1 assigned to other targets, and could design duplicate test cases for them.

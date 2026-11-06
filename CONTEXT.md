@@ -83,6 +83,9 @@ _Avoid_: Source, reference, origin, trace link
 In the ISTQB CT-MBT sense, one item that modeling the specifications with a test technique yields and a test case exercises: an equivalence partition, a decision table rule, or a state transition.
 _Avoid_: Element
 
+**Test selection criterion**:
+The rule that selects which items of a test technique's model become test cases, e.g., boundary value coverage, every rule, or 0-switch coverage. Each technique has a default one, which an instruction may replace.
+
 **Specification coverage**:
 The ratio of the coverage items of the specifications that the tests verify. The coverage items come from modeling the specifications with equivalence partitioning, decision table testing, and state transition testing.
 _Avoid_: Requirement coverage, test coverage (code coverage)

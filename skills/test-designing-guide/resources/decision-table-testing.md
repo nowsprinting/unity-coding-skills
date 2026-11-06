@@ -12,12 +12,24 @@ Partition each condition per [equivalence partitioning](equivalence-partitioning
 Each rule (column) is a combination of the conditions' equivalence partitions and its outcome.
 When a condition does not affect a rule's outcome, mark it as "don't care" and merge the rules that differ only in it.
 
+## Test Selection Criteria
+
+Choose one criterion from each of the following, independently of each other:
+
+- **Rules** — the default is every rule:
+  - **Every condition** — each equivalence partition of every condition appears as a stated value, not "don't care", in at least one selected rule
+  - **Every action** — each action, i.e., the outcome of a rule, appears in at least one selected rule
+  - **Every rule** — every rule is selected
+
+  For every condition and every action, select the fewest rules that meet the criterion.
+- **Values of each condition** — the [test selection criterion of equivalence partitioning](equivalence-partitioning.md#test-selection-criterion), applied to the equivalence partitions of every condition; the default is boundary value coverage, which adds the boundary values of an equivalence partition to the parameterized test of each selected rule that states it
+
 ## Test Methods
 
-Cover every rule.
+Design a test case for each rule the test selection criterion of the rules selects.
 Rules with different outcomes become separate test methods (one method = one outcome, per [Deriving test methods from equivalence partitions](equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)); rules sharing an outcome may be consolidated into one [parameterized test](../SKILL.md#parameterized-tests).
 
 ## Gaps and Contradictions
 
-A combination no rule covers is a gap, and two rules giving different outcomes for the same combination are a contradiction; design the test case of a gap as undefined and no test case for a contradiction, and include the table as the modeling result (see [Test Techniques](../SKILL.md#test-techniques)).
+A combination no rule covers is a gap, and two rules giving different outcomes for the same combination are a contradiction; design the test case of a gap as undefined whatever the test selection criterion, no test case for a contradiction, and include the table as the modeling result (see [Test Techniques](../SKILL.md#test-techniques)).
 A combination the specification explicitly states as undefined is not a gap: design no test case for it (see [Unverifiable, Undefined, and Ambiguous Test Cases](../SKILL.md#unverifiable-undefined-and-ambiguous-test-cases)).

@@ -93,7 +93,7 @@ Ask for the following in your instruction:
   ```
   /design-tests @docs/hud.md, without boundary value analysis
   ```
-- **N-switch coverage** — tests the sequences of N+1 consecutive state transitions, in addition to each transition alone; the test cases grow exponentially with N, e.g.,
+- **Test selection criterion** — changes which items of a technique's model become test cases: equivalence partition coverage (no boundary values) for equivalence partitioning and the conditions of decision tables; every condition or every action, instead of every rule, for decision tables; state coverage or N-switch coverage, instead of 0-switch coverage, for state transitions; all combinations or pairwise for combinatorial testing. e.g.,
   ```
   /design-tests @docs/screen-transitions.md, with 1-switch coverage
   ```

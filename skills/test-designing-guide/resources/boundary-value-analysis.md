@@ -1,6 +1,6 @@
 # Boundary Value Analysis
 
-Apply when the specification differentiates behavior at the edges of [equivalence partitions](equivalence-partitioning.md): test the values on both sides of each place where two equivalence partitions meet.
+Apply when the test selection criterion of [equivalence partitioning](equivalence-partitioning.md#test-selection-criterion) is boundary value coverage: test the values on both sides of each place where two equivalence partitions meet.
 For a field valid in `1–99`: equivalence partitions `<1` / `1–99` / `>99`; boundaries `0, 1` and `99, 100`.
 
 ## Equivalence Partitions Beyond the Limits
