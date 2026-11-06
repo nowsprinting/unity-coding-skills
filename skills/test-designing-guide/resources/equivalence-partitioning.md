@@ -58,6 +58,11 @@ Two equivalence partitions, two outcomes → **two** methods (NOT one parameteri
 
 The non-empty method keeps both `1` and `5` because they share the outcome `true`; `1` is the equivalence partition's boundary value, `5` its representative — a prime number, since the equivalence partition has no upper bound.
 
+## Acceptance Tests
+
+Mark as an acceptance test (see [Output Format](../SKILL.md#output-format)) the test case of each valid equivalence partition that an external specification, or a specification that realizes a stated requirement, explicitly states.
+An equivalence partition added only by completing the input domain, e.g., one beyond an upper limit the specification does not mention, gets no mark.
+
 ## Invalid equivalence partition
 
 The expected result of an invalid equivalence partition is the error the specification defines — e.g., an exception thrown, an error message shown, or the input rejected.

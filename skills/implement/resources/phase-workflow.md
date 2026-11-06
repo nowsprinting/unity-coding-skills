@@ -30,7 +30,7 @@ Design the test cases before reading any method body of production code: a test 
 1. Load the `test-designing-guide` skill — do not rely on automatic skill triggering
 2. Take the test cases of each test target the test design document has; when its Assessment is `❌FAIL`, return `STATUS: QUESTION` with its Issues
 3. Design the test cases of each test target it lacks, per the guide: Test Layers, Contained Test Targets, Test Techniques, Test Case Naming, Parameterized Tests, and Verification Column.
-   Mark acceptance tests on the normal outcomes of the external specifications and of the specifications that realize the requirements.
+   Mark acceptance tests per the Acceptance Tests section of each test technique's resource.
    Apply the user's instructions on the test techniques, if any
 4. Design the classes the test targets need beyond those the specification fixes — their signatures, dependencies, and file and assembly — and design the test cases of each class the same way
 

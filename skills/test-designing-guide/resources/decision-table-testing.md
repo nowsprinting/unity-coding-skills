@@ -29,6 +29,10 @@ Choose one criterion from each of the following, independently of each other:
 Design a test case for each rule the test selection criterion of the rules selects.
 Rules with different outcomes become separate test methods (one method = one outcome, per [Deriving test methods from equivalence partitions](equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)); rules sharing an outcome may be consolidated into one [parameterized test](../SKILL.md#parameterized-tests).
 
+## Acceptance Tests
+
+Mark as an acceptance test (see [Output Format](../SKILL.md#output-format)) the test case of each rule whose action is a normal outcome, not an error, and is one that an external specification, or a specification that realizes a stated requirement, explicitly states.
+
 ## Gaps and Contradictions
 
 A combination no rule covers is a gap, and two rules giving different outcomes for the same combination are a contradiction; design the test case of a gap as undefined whatever the test selection criterion, no test case for a contradiction, and include the table as the modeling result (see [Test Techniques](../SKILL.md#test-techniques)).

@@ -38,7 +38,7 @@ In this skill and `test-designing-guide`, the terms mean:
   A requirement alone has no pass/fail criterion; the specification that realizes it does.
 
 The input may state the specification in any document: a requirements document, a software design document, or an ADR.
-Note which specifications are external specifications and, when the input also states requirements, which specifications realize them; `test-designing-guide` marks the test cases of their normal outcomes as acceptance tests.
+Note which specifications are external specifications and, when the input also states requirements, which specifications realize them, to mark acceptance tests.
 
 Read existing code and tests only as `test-designing-guide` allows (Reading Code).
 

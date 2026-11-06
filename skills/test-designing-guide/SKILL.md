@@ -244,7 +244,7 @@ Validators, visual verification tests, and manual tests derive their test cases 
 **Tags** — annotations that flag test case categories, written in the **Tags** column, not the Verification column.
 Separate multiple tags with `, ` in the order of the list below, e.g., `acceptance, spec change`, and leave the cell empty when no tag applies:
 
-- `acceptance` — when the test verifies a normal outcome, not an error, of an external specification or of a specification that realizes a requirement the input explicitly states: e.g., a valid equivalence partition; for a state transition, see [State transition testing](resources/state-transition-testing.md#test-methods).
+- `acceptance` — when the Acceptance Tests section of the resource that derives the test case marks it, a test case from a resource without that section gets none.
   An undefined test case states no outcome, so it is never an acceptance test.
 - `reproduction` — when the test reproduces a reported bug (see [Reproduction tests](resources/reproduction-tests.md))
 - `existing` — when an existing test implements the test case and needs no change.

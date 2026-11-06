@@ -43,3 +43,7 @@ When one property applies to several fields of the same asset, e.g., the stats b
 
 The folder the specification places the data in is the validator's selection scope: state it in the Notes per the [output format](../SKILL.md#output-format), not as a test case, since a test checking an asset's location against the scope that selected it always passes.
 When the specification states no location, record it as an issue in the [Assessment](../SKILL.md#assessment).
+
+## Acceptance Tests
+
+Mark as an acceptance test (see [Output Format](../SKILL.md#output-format)) the test case of each property that an external specification, or a specification that realizes a stated requirement, explicitly states.

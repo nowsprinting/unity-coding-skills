@@ -55,7 +55,7 @@ The observable behavior a test case predicts from the specification, compared wi
 _Avoid_: Expected outcome, expected behavior; expected value (the value an assertion compares, in test code)
 
 **Acceptance test**:
-A test that verifies a normal outcome, not an error, of an external specification or of a specification that realizes an explicitly stated requirement.
+A test that verifies a normal outcome, not an error, that an external specification or a specification realizing an explicitly stated requirement explicitly states, selected per test technique: e.g., a valid equivalence partition, or a state-to-state reachability.
 _Avoid_: Same-layer witness
 
 **Integration test**:

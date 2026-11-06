@@ -30,10 +30,10 @@ Design one test method per transition, with the source state and the event in th
 When the specification defines that an event is not accepted in a state, design a test case that the state does not change.
 For an N-switch or a state-to-state reachability test case, write the source state and the events in order in the `<Condition>` segment, and the state after the last event in the `<Expected>` segment; for a method target, the `<MethodName>` segment names the method of the last event.
 
-For an external specification or a specification that realizes a stated requirement, mark as an acceptance test (see [Output Format](../SKILL.md#output-format)) only the test case of a transition the specification itself describes — an edge of its diagram, a step of its scenario or use case, or a sentence such as "pressing Start opens the stage select screen".
-A state-to-state reachability test case gets the mark too, since the specification states the reachability itself.
-A transition derived only by completing the state transition table, and an event not accepted, get no mark.
-Neither does an N-switch test case: the 0-switch test cases of its transitions carry the marks.
+## Acceptance Tests
+
+Mark as an acceptance test (see [Output Format](../SKILL.md#output-format)) only the state-to-state reachability test case of each reachability that an external specification, or a specification that realizes a stated requirement, explicitly states.
+The test cases the test selection criterion selects get no mark, even for a transition the specification describes.
 
 ## Screen Transitions
 

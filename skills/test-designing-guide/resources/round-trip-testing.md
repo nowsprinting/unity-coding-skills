@@ -26,3 +26,7 @@ Consolidate the representatives into one [parameterized test](../SKILL.md#parame
 ## Test Methods
 
 Name the test method after the inverse operation, since the test asserts its result, e.g., `Deserialize_SerializedInventory_EqualsOriginal`.
+
+## Acceptance Tests
+
+Mark the test case as an acceptance test (see [Output Format](../SKILL.md#output-format)) when an external specification, or a specification that realizes a stated requirement, explicitly states the round trip, e.g., "loading restores the saved game".
