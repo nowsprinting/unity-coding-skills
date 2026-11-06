@@ -106,7 +106,7 @@ Ask for the following in your instruction:
   /design-tests @docs/title-screen.md, and add test cases with error guessing
   ```
 
-Modeling the specifications also assesses them: the gaps and contradictions it finds go into the Assessment of each test target, and it asks you when the Assessment fails.
+Modeling the specifications also assesses them: the gaps and contradictions it finds go into the Assessment of each test target, and it asks you when the Assessment fails, then writes the resolutions back into the specification.
 
 Dependencies:
 

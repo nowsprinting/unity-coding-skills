@@ -44,8 +44,8 @@ Read existing code and tests only as `test-designing-guide` allows (Reading Code
 
 ## Rules
 
-- Modify no files in the repository other than the output file (Step 5).
-  Record a gap or a contradiction in the specification in the target's Assessment instead of editing the input documents.
+- Modify no files in the repository other than the output file (Step 5) and the documents Step 6 writes the resolutions into.
+  Record a gap or a contradiction in the specification that stays unresolved in the target's Assessment instead of editing the input documents.
 
 ## Workflow
 
@@ -134,5 +134,15 @@ test-basis:
 
 # Test design of docs/inventory.md
 ```
+
+### Step 6: Feed Back the Answers to the Specification
+
+When Step 2 resolved the Issues of a `❌FAIL` target — by the user's answer, or by a source the user instructed you to consult — write each resolution into the document that states the specification it settles, so that the specification agrees with the test design document:
+
+- A file → edit the passage the Issue concerns, in the document's own style; place a specification the resolution adds beside the specifications it relates to.
+- An issue → post the resolution as a comment, quoting the passage it settles (e.g., `gh issue comment <URL> --body-file -` for GitHub Issues): the comments revise the body (see Input), and a comment leaves the author's body intact.
+- Text written directly, the conversation, or a document you cannot edit, e.g., a web page → list the resolutions in your reply, each with the passage it settles.
+
+Tell the user which documents you changed and which comments you posted.
 
 End your reply by telling the user that you can show the modeling result of each target on request: the test design document leaves it out, so the user has no other way to learn it exists.
