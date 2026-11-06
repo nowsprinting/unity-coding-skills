@@ -4,28 +4,16 @@
 
 Equivalence Partitioning (Boundary value coverage)
 
-| Test Method              | Verification                                                             | Tags                    |
-|--------------------------|--------------------------------------------------------------------------|-------------------------|
-| `<Condition>_<Expected>` | `<property>` is `<expected value or state>`                              |                         |
-| `<Condition>_<Expected>` | `<property>` is `<expected value or state>`                              | existing                |
-| `<Condition>_<Expected>` | `<property>` is `<expected value or state>`                              | test fix                |
-| `<Condition>_<Expected>` | `<property>` is `<expected value or state>`                              | spec change             |
-| `<Condition>_<Expected>` | `<property>` is `<expected value or state>`                              | acceptance, spec change |
-| `<Condition>_<Expected>` | When `<input>` is `<value>`, `<property>` is `<expected value or state>` |                         |
-| `<Condition>_UNDEFINED`  | **undefined**                                                            |                         |
-| `<Condition>_AMBIGUOUS`  | **ambiguous** `<reason>`                                                 |                         |
-
-Combinatorial Testing (Pairwise)
-
-| Test Method                                                              | Verification                                                             | Tags |
-|--------------------------------------------------------------------------|--------------------------------------------------------------------------|------|
-| `<Condition>_<Expected>` (factor1: {0, 7}, factor2: (bool), by pairwise) | When `<input>` is `<value>`, `<property>` is `<expected value or state>` |      |
+| Test Method              | Verification                                | Tags       |
+|--------------------------|---------------------------------------------|------------|
+| `<Condition>_<Expected>` | `<property>` is `<expected value or state>` | acceptance |
+| `<Condition>_<Expected>` | `<property>` is `<expected value or state>` |            |
 
 State Transition Testing (0-switch coverage)
 
-| Test Method              | Verification                                                             | Tags                    |
-|--------------------------|--------------------------------------------------------------------------|-------------------------|
-| `<Condition>_<Expected>` | `<property>` is `<expected value or state>`                              |                         |
+| Test Method              | Verification                                | Tags       |
+|--------------------------|---------------------------------------------|------------|
+| `<Condition>_<Expected>` | `<property>` is `<expected value or state>` |            |
 
 **Notes:**
 
