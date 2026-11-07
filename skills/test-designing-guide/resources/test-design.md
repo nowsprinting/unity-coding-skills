@@ -1,0 +1,316 @@
+# Test Design
+
+Derives the test cases of a test target (e.g., a screen, a class) from the specifications [test analysis](test-analysis.md) assigned to it.
+
+Out of scope:
+
+- Writing test code — see the `test-writing-guide` skill
+
+## Reading Code
+
+Derive test cases from the specification, never from the implementation: a test case derived from the implementation passes whatever the implementation does.
+Read only the following code, and no method bodies of production code:
+
+- **Existing tests** — when the specification of a test target with tests changes, or a bug report asks for a [reproduction test](reproduction-tests.md), the signatures of the test target's test classes and test methods, with the attributes that give a parameterized test its arguments, to tag the test cases they already implement (see the [tags](#output-format))
+- **Production code** — for unit tests and validators, the signatures and XML documentation comments of the test target's members, to judge whether a test case can arrange its inputs and observe the actual result (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); for a class the input's software design introduces, read the signatures it fixes instead.
+  Take the inputs to model from the specification, not from the parameters of a signature.
+
+## Test Layers
+
+A specification's layer follows its subject: a class, or an asset file's own consistency, is a unit test; the data of a `ScriptableObject` class a validator; a scene or a prefab an integration test.
+The test target of a `ScriptableObject` class spans two layers: unit tests for its methods and a validator for its data.
+The external specification of a game usually describes a scene or a screen, so it lands in integration tests; when the external specification is an API itself (e.g., a package), it lands in unit tests only, with no integration tests.
+
+- **Unit tests** — for specifications whose subject is a **class or an asset**, written as an **API contract**: a class or method's inputs, return values, state changes, raised events, or calls to its dependencies.
+  This includes behavior driven by Unity's lifecycle (Awake, Start, Update, etc.) or UI events when the specification defines it per component.
+  When the specification defines a class's collaboration with its dependencies, keep test density low and focus on those interactions.
+  Specifications on the content of assets other than `ScriptableObject` data (asset file validation, cross-asset consistency) also belong here.
+- **Validators** — for specifications that constrain the data of a `ScriptableObject` class, e.g., "an attack card's attack is greater than 0", verified on the class's assets authored in the project.
+  Specifications of the class's methods stay unit tests of the same test target.
+- **Integration tests** — for specifications whose subject is a **scene or prefab** (or a screen the player sees): UI operations, on-screen display, scene transitions, and behavior emerging from components and the assets they reference.
+  - Add the integration test method to the test class of the **primary class** when the specification names one; OR
+  - Create a new dedicated test class named after the scene, prefab, or screen otherwise.
+  - For the screen transitions, name the test target `ScreenTransition` (test class `ScreenTransitionTest`).
+    When the project has several screen transition systems, prefix the name with the system, e.g., `EquipmentScreenTransitionTest`.
+  - When the **asset itself** is the SUT (file validation, cross-asset consistency), classify it as a **unit test** (a **validator** for `ScriptableObject` data), not an integration test; integration tests assert the runtime behavior that emerges from a scene/prefab's linkage to its assets.
+
+## Contained Test Targets
+
+A test target may contain other test targets (see [Contained Test Targets](test-analysis.md#contained-test-targets)); its test cases cover the behavior that emerges from combining them — e.g., the wiring between a screen and its classes, or the transitions between screens.
+When a container's test case passes through a contained target, give each input the contained target's specification governs one representative value instead of its equivalence partitions and boundary values.
+The inputs a contained target receives and ignores, e.g., the dexterity a damage calculation does not use, count among those it governs: its own [combinatorial testing](combinatorial-testing.md) takes them as factors, so the container's does not.
+
+## Test Techniques
+
+Before selecting the techniques, list from the specifications the inputs, states, and outputs of the test target, since a value that does not pass through an argument or a return value is easy to miss:
+
+- **Inputs** — direct inputs (arguments, UI operations) and indirect inputs (return values of dependencies, random numbers, time, project settings, assets the target references, the order of Unity's lifecycle events).
+  List also an input the specification states does not affect the outputs: the other techniques leave it out, and [combinatorial testing](combinatorial-testing.md) takes it as a factor.
+- **States** — the states the target holds across operations, e.g., flags and remaining counts, even when the specification does not describe them as an FSM
+- **Outputs** — direct outputs (return values, on-screen display) and indirect outputs (raised events, calls to dependencies, saved data, logs)
+
+The inputs and states drive the techniques: e.g., equivalence partitioning for each input, state transition testing for the states.
+An input the test cannot arrange, or an output without a means to observe it, marks its test cases unverifiable, and a combination of inputs and states with no specified output marks its test case undefined; a combination the specification explicitly states as "undefined" gets no test case (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)).
+Include the list in the modeling result.
+
+When the specification names a method after a well-known naming pattern but leaves out its return type or parameters, e.g., `TryGetFoo` of the Try pattern, which returns `bool` and outputs `Foo` through an `out` parameter, take them from the pattern and design the test cases as if the specification stated them, not as undefined; write the pattern in the Notes (see [Output Format](#output-format)), e.g., "`TryGetFoo`: designed by the Try pattern".
+
+Between modeling the specifications with a technique and deriving its test cases, choose the technique's **test selection criterion**: the rule that selects which items of the model become test cases, e.g., every rule of a decision table.
+A technique may have several independent ones, as decision table testing does.
+For each criterion, take the default that the technique's resource names, unless an instruction (see below) names another, and include the chosen criteria in the modeling result.
+
+When an output of one operation is the input of its inverse, e.g., serialize and deserialize, and the specification does not define that intermediate form, neither operation has an expected result of its own; verify the pair by a round trip → [round-trip-testing.md](round-trip-testing.md)
+
+When modeling the specifications with a test technique reveals a gap or a contradiction in them, do not guess the outcome: design the test case of a gap as undefined (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)), design no test case for a contradiction, and include the modeling result (e.g., the equivalence partition table, the decision table, the state transition diagram) in the [Assessment](#assessment) when it is `❌FAIL`, so the user can see where the specification breaks.
+
+Select the techniques that fit the test target, and read the resource of each one you apply.
+An instruction from the user or from the skill that loads this one may suppress a default technique, enable an optional one, or choose a technique's test selection criterion; an enabled technique still applies only where it fits.
+
+**Required technique** — always apply; no instruction suppresses it, since boundary value analysis and decision table testing work on the equivalence partitions it produces:
+
+- **Equivalence partitioning** — for every input except those a contained target governs (see [Contained Test Targets](#contained-test-targets)) and those the specification states do not affect the outputs; group the values the specification says produce the same outcome → [equivalence-partitioning.md](equivalence-partitioning.md)
+
+**Default techniques** — apply each one that fits, unless an instruction suppresses it:
+
+- **Decision table testing** — when a combination of multiple conditions produces different outcomes according to rules → [decision-table-testing.md](decision-table-testing.md)
+- **Combinatorial testing** — when a test case of equivalence partitioning or decision table testing leaves out an input its expected result does not depend on, e.g., the other ability scores for damage computed from strength → [combinatorial-testing.md](combinatorial-testing.md)
+- **State transition testing** — when the target has a finite-state-machine (FSM), including screen transitions → [state-transition-testing.md](state-transition-testing.md)
+
+**Optional techniques** — apply only when an instruction enables them:
+
+- **Error guessing** — to surface failure patterns common in game development that specification-based techniques don't reach; a request to reproduce a reported bug also enables it, to find the trigger (see [Reproduction tests](reproduction-tests.md)) → [error-guessing.md](error-guessing.md)
+
+Also read the following when they apply to the test target:
+
+- **Integration testing** — when the test target is an integration test → [integration-testing.md](integration-testing.md)
+- **Validators** — when the test target has constraints on the data of a `ScriptableObject` class → [validators.md](validators.md)
+- **Testing randomness** — when the SUT consumes a pseudo-random number generator → [testing-randomness.md](testing-randomness.md)
+- **Reproduction tests** — when the request is to reproduce a reported bug → [reproduction-tests.md](reproduction-tests.md)
+
+## Test Case Naming
+
+**Language:** `<MethodName>` must always match the production method name exactly — never translate it.
+`<Condition>` and `<Expected>` follow the project language (the language specified in `CLAUDE.md` for test method names / code comments).
+If no language is specified, default to English.
+
+- Use the naming convention based on whether the test target is a method:
+  - **Method target** — `<MethodName>_<Condition>_<Expected>`: **Unit tests whose target is a method**.
+  - **Non-method target** — `<Condition>_<Expected>`: all **Integration tests** and **Visual verification tests** (multi-component interaction or on-screen rendering), **Unit tests whose target is an asset** (asset file validation, cross-asset consistency checks — the SUT is an asset or set of assets), **Unit tests of behavior no method call triggers** (e.g., a state transition on time elapsing or on an event a dependency raises), and **Validators**.
+    Do NOT include a method name.
+    Do NOT add a feature-area or category prefix before `<Condition>` — the name starts directly with the condition (e.g., `OnVictoryForced_AllCardViewsAreFullyWithinHandArea`, not `Reward_OnVictoryForced_AllCardViewsAreFullyWithinHandArea`).
+  - The `<Condition>` segment names only the equivalence partitions the expected result depends on; leave out an input that does not affect it, e.g., a condition marked "don't care" in a decision table.
+    The test-writing phase gives such an input a neutral value; the test case [combinatorial testing](combinatorial-testing.md) derives from it takes the input as a factor in the parameters instead.
+  - For **parameterized tests**, the `<Condition>` segment is the **equivalence partition name**, not an enumeration of individual argument values.
+  - For **Validators**, the `<Condition>` segment is the precondition of the property (see [Validators](validators.md#test-methods)).
+  - The `<Expected>` segment names the **concrete resulting state or value** of that one partition (e.g. `IsNotInteractable`, `ReturnsFizz`), never a condition or comparison.
+    When the specification computes the value by a formula, name the quantity it defines, e.g., `ReturnsDamageValue`.
+    **Exceptions**: a test case of combinatorial testing names the absence of effect, e.g., `InputsOtherThanStrengthDoNotAffectDamage` (see [Combinatorial testing](combinatorial-testing.md#naming)); an undefined or ambiguous test case uses `UNDEFINED` or `AMBIGUOUS` (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); a consolidated layout assertion test may use the generic `LayoutIsCorrect` (see [Integration testing](integration-testing.md#perspectives), UI layout).
+    Words like `Matches…`, `OnlyWhen…`, `DependingOn…`, `BasedOn…` in the name — or "only when / only if / depending on" in the verification description — signal that the outcome varies with input, meaning two partitions were merged into one method — split into one method per outcome (see [Deriving test methods from equivalence partitions](equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)).
+  - Write `<Expected>` in active voice: `ReturnsTrue`, `ThrowsArgumentException`, `ReducesHpBy3`, etc. For an exception, include its type: `ThrowsArgumentException`, not just `ThrowsException`.
+- Do NOT create sequential IDs in test case names
+- Verify one condition per test.
+  **Exception (multi-property)**: when multiple properties of the state resulting from a transition must all be correct simultaneously, a single test may assert all of them together.
+  The same applies to a consolidated layout assertion test asserting multiple layout properties under one condition (see [Integration testing](integration-testing.md#perspectives), UI layout).
+- Test concerns separately
+
+## Parameterized Tests
+
+When multiple test cases share the same expected result — such as the representative and the boundary values of the same equivalence partition, decision table rules sharing an outcome, or [combinations of parameters](combinatorial-testing.md) — consolidate them into a single parameterized test.
+Do NOT over-consolidate: keep separate rows for tests that belong to **different** equivalence partitions or produce **different** expected results (see [Deriving test methods from equivalence partitions](equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)).
+
+Write each parameterized test as a single table row, with its parameter names and values after the method name in the Test Method column.
+Leave out of the parameters an input the expected result does not depend on, e.g., a condition marked "don't care" in a decision table: the test-writing phase gives it a neutral value.
+The factors of [combinatorial testing](combinatorial-testing.md) are the exception: they go in the parameters of the test case it derives.
+Do NOT specify the framework mechanism (`TestCase`, `Values`, etc.) — that's a test-writing decision.
+
+- **Bool parameter, all values**: `(flag: (bool))`
+- **Enum parameter, all values**: `(direction: (Direction))`
+- **Multiple parameters, all combinations (exhaustive)**: `(param1: {0, 1, 2}, param2: {3, 4, 5})` — when a parameter is `bool` or enum covering all its values, use the shorthand in place of the braces: `(flag: (bool), count: {0, 1, 5})`
+- **Multiple parameters, pairwise**: `(param1: {0, 1, 2}, param2: {3, 4, 5}, param3: (bool), by pairwise)`
+- **Multiple parameters, limited to specific combinations**: `({param1: 0, param2: 3}, {param1: 1, param2: 4})`
+- **Expected value per row**: `({attack: 2, guard: 1, expected: 1}, {attack: 7, guard: 3, expected: 4})` — only when the specification derives the expected result from the inputs by one formula for a numeric value, e.g., `GetDamage_AttackGreaterThanGuard_ReturnsDamageValue`, or by one template or format for a string, e.g., `"Deal {Damage} damage"`: the rows share the formula or the template, not the value, so they stay in one output equivalence partition; the Verification column refers to the parameter, e.g., "returns `expected`"
+
+Example: `IsValidLevel_WithinRange_ReturnsTrue` (level: {1, 50, 99}) | `Returns true`
+
+## Verification Column
+
+In the **Verification** column, state **which observable property or behavior** is checked and **what its expected value or state** is — this corresponds to the `<Expected>` segment of the test method name, not the `<Condition>` segment, which the method name already captures.
+Write the prose in the project language.
+Describe observable behavior only; do NOT include any of the following **anywhere in the test case output** — this prohibition applies to the Verification column, class header descriptions (text after `### ClassName`), and any other field:
+
+- Test framework attributes (`[Test]`, `[UnityTest]`, `[LoadScene]`, `[Category(...)]`, `[TakeScreenshot]`, etc.)
+- Sync vs async / coroutine choice
+- Construction details of test inputs (e.g., how to build `PointerEventData`, how to instantiate fixtures)
+- The test's **precondition or arranged state** — anything that restates the `<Condition>` segment already encoded in the method name (e.g., for `..._WhenBossNext_...`, do NOT write "When the holder RunState has IsBossNext true, …" in Verification).
+  State only the expected observable outcome, with the input values it depends on (see Hidden input values in Further notation rules).
+- Assertion helper class names (e.g., `LayoutAssert`, `GameObjectFinder`)
+- Exact private or serialized field names, or field-qualified member access (e.g., `drawPileButton.interactable`) whose owner is not present in the specification — name the element descriptively instead (e.g., "the draw pile button is not interactable").
+  Exact identifiers are not required at design time; resolving the precise field name is a test-writing concern.
+  You MAY name exactly: public framework API members (e.g., `CanvasGroup.blocksRaycasts`) and identifiers that appear in the specification.
+- Rationale or intent text — why the test exists, which requirement it serves, or what the current (buggy) behavior is.
+  Observable behavior only.
+- Any other detail of how the test is built, except the test doubles and logs below — those decisions belong to the test-writing phase
+
+Further notation rules:
+
+- **Hidden input values** — when the expected result depends on input values that neither the `<Condition>` segment nor the parameters show, e.g., the representative of an equivalence partition, write each such input and its value before the expected result, so the reader can check the expected result against them.
+  Write only the inputs the expected result depends on; the test-writing phase gives the others neutral values.
+- When a single test asserts multiple properties (the multi-property exception in [Test Case Naming](#test-case-naming)), list each property being verified in the Verification column.
+- **Test doubles and logs** — when a test case uses one of the following, write it in parentheses after the expected result, in the project language, naming the dependency as the specification or the software design names it; separate several with `, ` in one pair of parentheses.
+  These are the only details of how the test is built that the Verification column states; write no other test double or means of observation, e.g., a fake or a file the test reads.
+  - A **test stub** — a test double that replaces an indirect input with fixed values — supplies an indirect input: e.g., `(use a stub of IFoo)`, in Japanese `（IFooのスタブを使用）`
+  - A **test spy** — a test double that records the calls and arguments it receives — verifies an interaction the specification defines: e.g., `(use a spy of IBar)`, in Japanese `（IBarのスパイを使用）`
+  - A log message that no test spy can capture, i.e., one `UnityEngine` or a third-party library outputs, verifies the result: `(verified by log message)`, in Japanese `（ログメッセージで検証）`.
+    A log message the test target outputs is verified by a test spy of its logger instead: e.g., `(use a spy of ILogger)`
+- **Screenshot verification** — for a Visual verification tests row, list the visual aspects (see [Visual aspects to verify](integration-testing.md#visual-aspects-to-verify)) in the **Image analysis by saved screenshot** column.
+
+### Example: Verification — Bad vs. Good
+
+| Style                    | Test Method                                               | Verification                                                                                                                                                                        | Tags         |
+|--------------------------|-----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| Bad (mechanism)          | `OnBeginDrag_WhenDragStarts_BlocksRaycastsIsDisabled`     | Call `OnBeginDrag` synchronously with `[Test]` and Assert that `CanvasGroup.blocksRaycasts == false`                                                                                |              |
+| Good                     | `OnBeginDrag_WhenDragStarts_BlocksRaycastsIsDisabled`     | `CanvasGroup.blocksRaycasts` is disabled                                                                                                                                            |              |
+| Bad (rationale)          | `StartRun_SameSeed_ProducesSameMap`                       | The map structure is reproduced when a run is started twice with the same seed. Fails in the current implementation where RNG is not stored in the holder (BUG 1 reproduction test) |              |
+| Good                     | `StartRun_SameSeed_ProducesSameMap`                       | The map structures of the two runs are identical                                                                                                                                    | reproduction |
+| Bad (not parameterized)  | `Sync_GivenPhase_PanelVisible`                            | The panel is visible only during the Defeat or Victory phase (verifies multiple argument patterns)                                                                                  |              |
+| Good                     | `Sync_GivenPhase_PanelVisible` (phase: {Defeat, Victory}) | The panel is visible                                                                                                                                                                |              |
+| Bad (condition restated) | `MapScene_OnLoad_WhenBossNext_FloorTextIsBoss`            | When the holder RunState has IsBossNext true, the floor text shows "Boss"                                                                                                           |              |
+| Good                     | `MapScene_OnLoad_WhenBossNext_FloorTextIsBoss`            | the floor text shows "Boss"                                                                                                                                                         |              |
+| Bad (inputs hidden)      | `GetDamage_AttackGreaterThanGuard_ReturnsDamageValue`     | Returns 1                                                                                                                                                                           |              |
+| Good                     | `GetDamage_AttackGreaterThanGuard_ReturnsDamageValue`     | When Attack is 2 and Guard is 1, returns 1                                                                                                                                          |              |
+
+The Bad (mechanism) row leaks the test-writing mechanism (attribute choice, sync invocation, exact assertion form).
+The Bad (rationale) row leaks why the test exists and what the current behavior is — none of that belongs in Verification; `reproduction` goes in the Tags column instead.
+The Bad (not parameterized) row hides the concrete argument values in a vague phrase in Verification; they belong in the Test Method column as named parameters, e.g. `(phase: {Defeat, Victory})`.
+The Bad (condition restated) row repeats the method name's `<Condition>` segment ("WhenBossNext") as a precondition clause; Verification states only the expected result, since the condition already lives in the method name.
+The Bad (inputs hidden) row gives an expected value no reader can check, since the method name shows only the equivalence partition; the Good row writes the inputs that determine it.
+The Good rows state the observable behavior and the input values it depends on only; all other concerns go in the Test Method column, the Tags column, or the test-writing phase.
+
+## Unverifiable, Undefined, and Ambiguous Test Cases
+
+Design a test case even when it cannot be verified as specified, and mark it instead of guessing, so the user sees every place the specification needs revising:
+
+- **Unverifiable** — the test cannot arrange an input the test case needs, or cannot observe its actual result.
+  Judge both from the specification and what [Reading Code](#reading-code) allows.
+  - **Arranging** — the test can arrange an input when it sets the input, and restores it, during the test run: e.g., `Time.timeScale` and `PlayerPrefs` can be arranged; a project setting, e.g., `activeInputHandler`, which takes effect only after the Editor restarts, cannot.
+    An input the test target reads through a dependency a test stub can replace can be arranged.
+  - **Observing** — the test can observe the actual result through the test target's API — a return value, a field or property of the instance, a raised event, or a call to a dependency a spy records — or through what the test target leaves outside itself: a `GameObject` in the scene, a file it writes, or a log it outputs.
+    A `private` member is not observable.
+    In integration tests, a result no assertion can observe is not unverifiable: it escalates to image analysis and finally to a [manual test](integration-testing.md#manual-tests).
+
+  Write `**unverifiable**` in front of the expected result in the Verification column, and the reason after the expected result, following ` — `.
+  In the [Assessment](#assessment), propose a software design that makes the test case verifiable, e.g., a dependency through which the test target reads the input, and when the test target reads it, so that a test stub can replace it before then.
+  - Example: `Attack_HpIsPositive_ReducesHpByDamage` | **unverifiable** the remaining HP is reduced by the damage — the remaining HP is a `private` field
+  - Example: `GetInputBackendName_InputSystemIsActive_ReturnsInputSystem` | **unverifiable** returns "Input System" — the test cannot arrange the `activeInputHandler` project setting
+- **Undefined** — the specification states no expected result for the test case: e.g., an equivalence partition, a decision table combination, or a state transition table cell it leaves empty.
+  End the method name with `_UNDEFINED` in place of `<Expected>`, and write `**undefined**` in the Verification column.
+  - Example: `Attack_HpIsNegative_UNDEFINED` | **undefined**
+  - When the specification explicitly states that the behavior under a condition is undefined, e.g., "the result is undefined when HP is negative", or that the condition need not be considered, e.g., "a negative width need not be considered", it leaves no gap, and this skill counts both as explicitly stating the condition undefined: design no test case for the condition, and list it in the Notes (see [Output Format](#output-format)).
+- **Ambiguous** — the specification states an expected result that admits more than one reading, so it gives no deterministic pass/fail criterion: e.g., "attack +2" while a buff multiplies attack, without stating whether the addition comes before or after the multiplication; random behavior without a specified distribution, range, or structural property (see [Testing randomness](testing-randomness.md)).
+  The author of a specification rarely notices its own ambiguity, so state the reason.
+  End the method name with `_AMBIGUOUS` in place of `<Expected>`, and write `**ambiguous**` followed by the reason in the Verification column.
+  - Example: `GetAttack_AttackUpWithMultiplyingBuff_AMBIGUOUS` | **ambiguous** whether "attack +2" applies before or after the multiplying buff
+  - In integration tests, a sensory outcome that neither an assertion nor image analysis can verify, e.g., "defeating an enemy feels satisfying", is not ambiguous: design it as a [manual test](integration-testing.md#manual-tests), where a human judges it and the Verification column may stay subjective.
+    Unit tests have no such escalation: an ambiguous specification at the unit test layer is always ambiguous.
+
+## Output Format
+
+Output the test cases of a test target as one section per test class, in this order of layers (omit the layers with no test cases), followed by its [Assessment](#assessment):
+
+- **Unit tests**: `### <ClassName>Test` → table
+- **Validators**: `### <ClassName>Validator` → table
+- **Integration tests** (including visual verification tests and manual tests): `### <ClassName>Test`, or the scene, prefab, or screen name followed by `Test` when the specification names no primary class (see [Test Layers](#test-layers)) — one layer, split within the section by the means of verification: assertions (`#### Assertion-based tests`), image analysis (`#### Visual verification tests`), and a human (`#### Manual tests`)
+  - The section heading names the subject the manual tests verify, so write it even when the target has only manual tests
+  - Manual tests have no test methods and use a table of test cases with a "Test perspectives / Verification method" column instead of "Verification"
+  - Test perspectives — *what* behavioral aspects, conditions, or interactions are verified for this target.
+    NOT a test technique name
+
+For unit tests and assertion-based tests, output one table per test technique, in the order equivalence partitioning, decision table testing, combinatorial testing, state transition testing, round-trip testing, error guessing.
+Write a plain-text line above each table naming the technique, followed by its chosen test selection criteria in parentheses, separated by `, ` when it has several, e.g., `Equivalence Partitioning (Boundary value coverage)`, `Decision Table Testing (Every rule, Boundary value coverage)`, `State Transition Testing (1-switch coverage)`.
+Name each criterion as the technique's resource does; a technique without one, e.g., error guessing, has no parentheses.
+Write the line in English whatever the project language.
+List a test case that several techniques derive once, in the table of the first of them.
+Validators, visual verification tests, and manual tests derive their test cases from properties, visual aspects, and human judgment instead of a technique, so each keeps a single table without the line.
+
+> **Note:** Do NOT write "Edit Mode" or "Play Mode" in test case output — that is a test-writing concern, not a test design concern.
+
+**Tags** — annotations that flag test case categories, written in the **Tags** column, not the Verification column.
+Separate multiple tags with `, ` in the order of the list below, e.g., `acceptance, spec change`, and leave the cell empty when no tag applies:
+
+- `acceptance` — when the Acceptance Tests section of the resource that derives the test case marks it, a test case from a resource without that section gets none.
+  An undefined test case states no outcome, so it is never an acceptance test.
+- `reproduction` — when the test reproduces a reported bug (see [Reproduction tests](reproduction-tests.md))
+- `existing` — when an existing test implements the test case and needs no change.
+- `test fix` — when an existing test implements the test case but disagrees with a specification that has not changed, e.g., its name, arguments, or expected result is wrong.
+- `spec change` — when an existing test implements the test case and the change of the specification affects it: its expected result, its arguments, or its construction (e.g., wrapping `Foo`→`FooRef` in the SUT's signature).
+
+A test case without `existing`, `test fix`, or `spec change` is a new test.
+Write the tags in English whatever the project language.
+
+**Notes** — a bullet list after the last test case table of a test class section (in integration tests, of its assertion-based tests), not after each technique's table, written in the project language in this order; omit a bullet that does not apply, and the Notes when no bullet remains:
+
+1. For validators, the selection scope (see [Validators](validators.md#selection-scope))
+2. The conditions the specification explicitly states as undefined, which have no test case; write several conditions in one bullet where possible — in unit tests, one bullet per `<MethodName>`
+3. That no test code is generated from the test cases marked unverifiable, undefined, or ambiguous, when the table has any
+4. Any other supplementary remark on the test cases
+
+Read the output format template for the layer and follow it exactly (templates are in [`../assets/`](../assets/)):
+
+| Layer                                                                    | Default                       | Japanese                         |
+|--------------------------------------------------------------------------|-------------------------------|----------------------------------|
+| Unit tests                                                               | `unit-tests-format.md`        | `unit-tests-format-ja.md`        |
+| Validators                                                               | `validators-format.md`        | `validators-format-ja.md`        |
+| Integration tests (including visual verification tests and manual tests) | `integration-tests-format.md` | `integration-tests-format-ja.md` |
+
+When no template exists for the project language, use the default one as the structural reference and write `<Condition>`, `<Expected>`, and the prose columns in the project language.
+
+## Assessment
+
+Assess whether the specifications of a test target can be tested as written, and assign one of the following labels.
+Record every issue found while designing instead of guessing.
+
+| Label    | Meaning                                                    |
+|----------|------------------------------------------------------------|
+| `✅PASS` | None of the FAIL or WARN criteria apply                    |
+| `⚠️WARN` | Only WARN criteria apply                                   |
+| `❌FAIL` | A FAIL criterion applies; the specification needs revising |
+
+**FAIL criteria**:
+
+- **Contradictory specification** — two specifications demand incompatible outcomes
+- **Unverifiable or ambiguous acceptance test** — an acceptance test is unverifiable or ambiguous
+
+**WARN criteria**:
+
+- **Unverifiable, undefined, or ambiguous test case** — see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)
+- **Combinatorial explosion** — in integration tests, test case count grows faster than O(n) relative to the number of conditions
+
+**Output format**:
+
+```markdown
+### Assessment
+
+✅PASS
+```
+
+For `⚠️WARN` or `❌FAIL`, add `#### Issues` with the affected specification and a proposed remedy of each issue.
+For `❌FAIL`, also add `#### Modeling result`:
+
+```markdown
+### Assessment
+
+❌FAIL
+
+#### Issues
+
+| Issue                                                                       | Specification               | Proposed Remedy                                  |
+|-----------------------------------------------------------------------------|-----------------------------|--------------------------------------------------|
+| Contradictory specification: the button is both hidden and disabled at zero | "Draw button" in §2.1, §3.4 | Specify which one applies                        |
+| Ambiguous test case: "rewards are random" with no distribution              | "Reward selection" in §4    | Specify the drop rates or the allowed reward set |
+
+#### Modeling result
+
+<the equivalence partition table, decision table, state transition diagram, etc. that revealed the issues>
+```
+
+Output the test cases whatever the label.

@@ -1,8 +1,8 @@
 # Phase Workflow
 
-Implements the test targets of one phase test-first: designs their missing test cases, writes failing tests, then the production code that passes them, and refactors it.
+Implements the implementation targets of one phase test-first: designs their missing test cases, writes failing tests, then the production code that passes them, and refactors it.
 
-The caller gives you the phase's test targets with their specifications and test bases, the test targets of the earlier phases (already implemented), the input (the specification and the test design document, if any), the user's instructions on the test techniques, if any, and the notes file.
+The caller gives you the phase's implementation targets with their specifications and test bases, the implementation targets of the earlier phases (already implemented), the input (the specification and the test design document, if any), the user's instructions on the test techniques, if any, and the notes file.
 You cannot ask the user: return `STATUS: QUESTION` instead (see [Report](#report)).
 
 ## Notes
@@ -27,20 +27,28 @@ EOF
 
 Design the test cases before reading any method body of production code: a test case derived from the implementation passes whatever the implementation does.
 
-1. Load the `test-designing-guide` skill — do not rely on automatic skill triggering
-2. Take the test cases of each test target the test design document has; when its Assessment is `❌FAIL`, return `STATUS: QUESTION` with its Issues
-3. Design the test cases of each test target it lacks, per the guide: Test Layers, Contained Test Targets, Test Techniques, Test Case Naming, Parameterized Tests, and Verification Column.
-   Mark acceptance tests per the Acceptance Tests section of each test technique's resource.
-   Apply the user's instructions on the test techniques, if any
-4. Design the classes the test targets need beyond those the specification fixes — their signatures, dependencies, and file and assembly — and design the test cases of each class the same way
+1. When the input includes a test design document, take from it the test cases of each implementation target of the phase it has
+2. Design the test cases of the implementation targets without test cases in a general-purpose subagent, so that the specifications test analysis leaves out stay out of the test design while you keep every specification for the implementation.
+   Give it those implementation targets, each with its specifications quoted verbatim, which of them are external specifications, and the requirements they realize, if any, and the user's instructions on the test techniques, if any.
+   Instruct it to load the `test-designing-guide` skill — do not rely on automatic skill triggering — and:
+   1. Analyze the specifications per the guide's test analysis resource, taking each implementation target as a test target
+   2. Design the test cases of each test target per the guide's test design resource: Test Layers, Contained Test Targets, Test Techniques, Test Case Naming, Parameterized Tests, and Verification Column.
+      Mark acceptance tests per the Acceptance Tests section of each test technique's resource, and apply the user's instructions on the test techniques, if any
+   3. Assess each test target (Assessment), without the modeling result
+   4. Return the test cases, the Assessment, and the specifications the analysis left out with their reasons, verbatim
 
-Skip the modeling result and the Assessment, and hold the test cases in your context only; instead, settle each problem they would surface:
+   When the `Agent` tool is unavailable, e.g., at the subagent depth limit, do what you would instruct the subagent yourself.
+3. Design the classes the implementation targets need beyond those the specification fixes — their signatures, dependencies, and file and assembly — and design the test cases of each class per the guide's test design resource, loading the `test-designing-guide` skill yourself
+
+When a test design gives a test target whose Assessment is `❌FAIL`, return `STATUS: QUESTION` with its Issues.
+
+For the test cases you design in item 3, skip the modeling result and the Assessment, and hold the test cases in your context only; instead, settle each problem they would surface:
 
 - A contradiction in the specification, or an acceptance test that is ambiguous or unverifiable → return `STATUS: QUESTION` before writing any code
 - A test case you would mark unverifiable under a class you designed → revise the class so that the test can arrange the input and observe the result
 - Any other undefined, ambiguous, or unverifiable test case → keep it marked, and write no test code for it
 
-Step 1 is complete when every test target of the phase and every class you designed has its test cases.
+Step 1 is complete when every implementation target of the phase and every class you designed has its test cases; when the test design document gives them all and you design no class, it needs nothing beyond item 1.
 
 ## Step 2: Test First
 
@@ -63,7 +71,7 @@ Step 1 is complete when every test target of the phase and every class you desig
 
 ## Step 3: Implementation
 
-1. Implement the production code
+1. Implement the production code of every specification of the implementation targets, including those without test cases: no test fails when one of them is missing
 2. Run tests with `/run-tests` and confirm **all pass**
 3. Commit the production code to git (including any unavoidable changes to the test code)
 

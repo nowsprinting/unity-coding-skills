@@ -10,8 +10,8 @@ Test each equivalence partition with one representative, chosen in this order:
 3. A prime number within it, when its range lacks a bound
 4. Any one value within it, e.g., for a non-numeric equivalence partition, or a range without a prime number
 
-When the specification defines no behavior for an equivalence partition, valid or invalid, it is a gap in the specification: do not guess or invent the behavior, but design its test case as undefined and include the equivalence partition table as the modeling result (see [Test Techniques](../SKILL.md#test-techniques)).
-An equivalence partition the specification explicitly states as undefined is not a gap: design no test case for it (see [Unverifiable, Undefined, and Ambiguous Test Cases](../SKILL.md#unverifiable-undefined-and-ambiguous-test-cases)).
+When the specification defines no behavior for an equivalence partition, valid or invalid, it is a gap in the specification: do not guess or invent the behavior, but design its test case as undefined and include the equivalence partition table as the modeling result (see [Test Techniques](test-design.md#test-techniques)).
+An equivalence partition the specification explicitly states as undefined is not a gap: design no test case for it (see [Unverifiable, Undefined, and Ambiguous Test Cases](test-design.md#unverifiable-undefined-and-ambiguous-test-cases)).
 
 Add an equivalence partition beyond every upper and lower limit, even when the specification states only the range within them — e.g., `HP < 0`, `HP > MaxHP`, `EXP > Next` (the experience needed for the next level).
 Such a value often arises from a calculation rather than a direct input: damage exceeding the remaining HP, experience gained beyond the next level.
@@ -33,14 +33,14 @@ The most common derivation error is merging equivalence partitions with **differ
 One rule prevents it:
 
 **One test method = one equivalence partition = one definite expected result.**
-Never parameterize the expected result, except a value the specification derives from the inputs by one formula or one string template, whose rows share the formula or the template (see [Parameterized Tests](../SKILL.md#parameterized-tests)).
+Never parameterize the expected result, except a value the specification derives from the inputs by one formula or one string template, whose rows share the formula or the template (see [Parameterized Tests](test-design.md#parameterized-tests)).
 If the expected result changes with the input, the inputs belong to **different** equivalence partitions → **separate** test methods, each named after its own outcome.
 
 For each input variable:
 1. Partition the input domain into equivalence partitions the specification says produce the **same** outcome.
 2. Emit **one method per equivalence partition**, named `..._<Partition>_<ThatPartitionsOutcome>`.
    The `<Expected>` segment is a concrete state/value (`IsInteractable`, `IsNotInteractable`), never a condition word (`Matches…`, `…WhenNonEmpty`, `DependingOn…`).
-3. Within one equivalence partition, consolidate its representative and its boundary values into **one parameterized** method — they share the outcome (see [Parameterized Tests](../SKILL.md#parameterized-tests)).
+3. Within one equivalence partition, consolidate its representative and its boundary values into **one parameterized** method — they share the outcome (see [Parameterized Tests](test-design.md#parameterized-tests)).
 
 **Worked example** — `drawPileButton.interactable` driven by the draw pile count:
 
@@ -60,7 +60,7 @@ The non-empty method keeps both `1` and `5` because they share the outcome `true
 
 ## Acceptance Tests
 
-Mark as an acceptance test (see [Output Format](../SKILL.md#output-format)) the test case of each valid equivalence partition that an external specification, or a specification that realizes a stated requirement, explicitly states.
+Mark as an acceptance test (see [Output Format](test-design.md#output-format)) the test case of each valid equivalence partition that an external specification, or a specification that realizes a stated requirement, explicitly states.
 An equivalence partition added only by completing the input domain, e.g., one beyond an upper limit the specification does not mention, gets no mark.
 
 ## Invalid equivalence partition
@@ -72,4 +72,4 @@ The expected result of an invalid equivalence partition is the error the specifi
 - **Dependency error returns** — when the specification defines a dependency's error/failure path, whether to test it depends on the dependency's origin:
   - **Library or framework** (external, not owned by this project) → test it; use a stub to inject the error condition.
   - **Game's own code** (another component in this project) → skip; trust internal code correctness.
-  - **Uncertain** → record it as an issue (an unclear specification) in the [Assessment](../SKILL.md#assessment) instead of designing test cases.
+  - **Uncertain** → record it as an issue (an unclear specification) in the [Assessment](test-design.md#assessment) instead of designing test cases.

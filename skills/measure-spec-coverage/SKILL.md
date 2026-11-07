@@ -29,15 +29,6 @@ In this skill, the terms mean:
 - **Test basis** — a file or an issue that the tests of a test file were written from, listed at the top of the file as a `// Test-basis: <path or URL>` line.
   The test bases may be outdated or incomplete: use them only to find tests, never to judge what a test covers.
 
-## Specifications Without Test Cases
-
-Leave the following specifications out in Step 1: counting them lowers the coverage for tests that should not exist.
-The implementation still fulfills them; only the tests leave them out.
-
-- **A specification a declaration alone fulfills**, e.g., "the character's hit points can be changed in the Inspector", fulfilled by a `public` field or a property with `[field: SerializeField]` — Unity's serialization guarantees the behavior once the declaration exists, so a test only transcribes the declaration a second time.
-- **A table listing each asset's concrete values** (e.g., a master data table) — the source the assets are authored from, not a property: a test comparing an asset or the list of assets with it only transcribes the table a second time.
-- **A specification on the set of assets of a `ScriptableObject` class**, e.g., the number of assets or the presence of a specific asset — not a property of one asset; design a test case for it only when the user explicitly asks.
-
 ## Rules
 
 - Modify no files; report what needs changing instead.
@@ -47,9 +38,8 @@ The implementation still fulfills them; only the tests leave them out.
 
 ### Step 1: Extract Test Targets
 
-Read the specification document and extract the test targets it describes, e.g., the screen transitions, a screen, a prefab, a class, or a `ScriptableObject` class.
-Assign each specification to exactly one test target, so that no coverage item is counted twice; when the subject of one test target contains others, e.g., a screen contains the classes placed on it, assign the behavior within a contained test target to it.
-Leave out each specification listed in [Specifications Without Test Cases](#specifications-without-test-cases).
+Load the `test-designing-guide` skill — do not rely on automatic skill triggering — and extract the test targets from the specification document per its test analysis resource.
+Counting a specification in two targets would count its coverage items twice, and counting one the resource leaves out would lower the coverage for tests that should not exist.
 
 ### Step 2: Measure Each Test Target
 
@@ -58,8 +48,8 @@ Before launching them, list the test files that name the specification document 
 On exit code 3, proceed with an empty list: a project whose tests predate the `// Test-basis:` lines still has tests, and item 4 below finds them by name.
 Give each subagent the test target with its assigned specifications, the list of test files, and the definitions of coverage item and test basis above, and instruct it to:
 
-1. Load the `test-designing-guide` skill — do not rely on automatic skill triggering — and model the target's specifications with its Test Techniques, with equivalence partition coverage as the test selection criterion of equivalence partitioning, reading the resource of each technique applied, into a list of coverage items.
-   Leave out the items marked "TBD" and the conditions the specification states as undefined.
+1. Load the `test-designing-guide` skill — do not rely on automatic skill triggering — and model the target's specifications with the Test Techniques of its test design resource, with equivalence partition coverage as the test selection criterion of equivalence partitioning, reading the resource of each technique applied, into a list of coverage items.
+   Leave out the conditions the specification states as undefined.
    For the data of a `ScriptableObject` class, model only the properties per the Validators resource.
    List apart, as untestable, each coverage item whose test case would be unverifiable, undefined, or ambiguous.
    Finish the list before reading any test code

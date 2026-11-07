@@ -95,7 +95,7 @@ These serve two purposes:
 
 Use Explore agents to locate relevant test files and test cases.
 
-Load the `test-designing-guide` skill — do not rely on automatic skill triggering — and design the reproduction test of the bug report from Step 1 (Condition / Expected / Actual) per its Reproduction tests resource.
+Load the `test-designing-guide` skill — do not rely on automatic skill triggering — and design the reproduction test of the bug report from Step 1 (Condition / Expected / Actual) per its test design resource and its Reproduction tests resource.
 Design no regression test cases: Step 6 designs them against the code the fix changes, which is unknown until Step 5.
 Skip the Assessment; when the reproduction test case would be unverifiable, undefined, or ambiguous, return to Step 1 and re-clarify the bug report with the user via `AskUserQuestion`.
 
@@ -148,7 +148,7 @@ With the reproduction confirmed, investigate the root cause:
 
 Before applying the fix, cover the adjacent behavior the fix could disturb:
 
-1. Run a general-purpose subagent that loads the `test-designing-guide` skill — do not rely on automatic skill triggering — and designs the test cases of each test target the fix formulated in Step 5 changes, e.g., the class that owns the changed lines.
+1. Run a general-purpose subagent that loads the `test-designing-guide` skill — do not rely on automatic skill triggering — and, per its test analysis and test design resources, designs the test cases of each test target the fix formulated in Step 5 changes, e.g., the class that owns the changed lines.
    Give it the test targets, their specifications from the documentation of Step 1, and the user's instructions on the test techniques, if any (e.g., error guessing); have it return the test cases verbatim.
    Quote each specification verbatim with its source, e.g., the file path and heading or the issue URL, together with the passages it depends on, e.g., the definitions of the terms it uses, and instruct the subagent not to read the source documents or follow the links in the quoted passages: a subagent reading a whole document would fill its context with the specifications of units the fix does not change.
    Designing in a subagent keeps the method bodies you read in Step 5 out of the test design: a test case derived from the implementation passes whatever the implementation does

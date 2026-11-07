@@ -42,6 +42,10 @@ _Avoid_: Unspecified, out of scope
 
 ### Tests
 
+**Test analysis**:
+The analysis of the test basis that identifies what to test: the test targets (testable features), each with the specifications assigned to it (test conditions), and the specifications that get no test case. Narrower than the ISTQB sense, which also covers what this plugin leaves to test design.
+_Avoid_: Preprocessing
+
 **Test design**:
 The test cases derived from a specification, each assigned to a test layer.
 _Avoid_: Design (unqualified)
@@ -95,3 +99,6 @@ _Avoid_: Requirement coverage, test coverage (code coverage)
 **Implementation**:
 The code that realizes a software design or a test design, and the act of writing it.
 _Avoid_: Product code (use production code for the code under test)
+
+**Implementation target**:
+The unit a phase of `implement` implements, e.g., the screen transitions, a screen, a prefab, or a class; test analysis takes it as a test target.

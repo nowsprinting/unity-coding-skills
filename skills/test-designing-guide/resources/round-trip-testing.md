@@ -4,7 +4,7 @@ Covers verifying a pair of inverse operations — e.g., serialize and deserializ
 
 Out of scope:
 
-- Inverse operations whose intermediate form the specification defines, e.g., a file format shared with another tool, or compatibility with data saved by an earlier version — test each direction against that form with the [test techniques](../SKILL.md#test-techniques), since a round trip passes even when both operations share a defect, e.g., the same wrong byte order on both sides
+- Inverse operations whose intermediate form the specification defines, e.g., a file format shared with another tool, or compatibility with data saved by an earlier version — test each direction against that form with the [test techniques](test-design.md#test-techniques), since a round trip passes even when both operations share a defect, e.g., the same wrong byte order on both sides
 
 ## Expected Result
 
@@ -16,12 +16,12 @@ Every test case shares this one expected result.
 
 Compare what the specification says the round trip preserves, e.g., every serialized field.
 When the specification excludes some fields, e.g., a cache rebuilt on load, or allows a tolerance, e.g., float precision, compare per that.
-When the specification does not say what the round trip preserves, the test case is ambiguous (see [Unverifiable, Undefined, and Ambiguous Test Cases](../SKILL.md#unverifiable-undefined-and-ambiguous-test-cases)).
+When the specification does not say what the round trip preserves, the test case is ambiguous (see [Unverifiable, Undefined, and Ambiguous Test Cases](test-design.md#unverifiable-undefined-and-ambiguous-test-cases)).
 
 ## Inputs
 
 Since the output has one equivalence partition, partition the original by its own kinds, as for the levels of [combinatorial testing](combinatorial-testing.md): e.g., empty and non-empty collections, `null` fields, the bounds of a value, multi-byte characters.
-Consolidate the representatives into one [parameterized test](../SKILL.md#parameterized-tests).
+Consolidate the representatives into one [parameterized test](test-design.md#parameterized-tests).
 
 ## Test Methods
 
@@ -29,4 +29,4 @@ Name the test method after the inverse operation, since the test asserts its res
 
 ## Acceptance Tests
 
-Mark the test case as an acceptance test (see [Output Format](../SKILL.md#output-format)) when an external specification, or a specification that realizes a stated requirement, explicitly states the round trip, e.g., "loading restores the saved game".
+Mark the test case as an acceptance test (see [Output Format](test-design.md#output-format)) when an external specification, or a specification that realizes a stated requirement, explicitly states the round trip, e.g., "loading restores the saved game".

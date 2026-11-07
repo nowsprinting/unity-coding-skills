@@ -57,13 +57,13 @@ Append your own judgment calls in Step 1 as `Design decisions` as soon as you ma
 
 ### Step 1: Plan the Phases
 
-List the test targets the specification describes: the screen transitions, each screen, prefab, and `ScriptableObject` class, and each class the software design fixes.
-Assign each specification to exactly one test target; when the subject of one test target contains others — e.g., a screen contains the classes placed on it — assign the behavior within a contained test target to it, and leave the container only the behavior that combines them.
-A class no specification describes is no test target here: the phase that needs it designs it.
+List the implementation targets the specification describes — the units a phase implements: the screen transitions, each screen, prefab, and `ScriptableObject` class, and each class the software design fixes.
+Assign each specification to exactly one implementation target; when the subject of one implementation target contains others — e.g., a screen contains the classes placed on it — assign the behavior within a contained implementation target to it, and leave the container only the behavior that combines them.
+A class no specification describes is no implementation target here: the phase that needs it designs it.
 
-Order the test targets so that each comes after every test target it depends on: a class after the classes it calls, and a container after its contained test targets, e.g., a screen after the classes placed on it, and the screen transitions after the screens.
+Order the implementation targets so that each comes after every implementation target it depends on: a class after the classes it calls, and a container after its contained implementation targets, e.g., a screen after the classes placed on it, and the screen transitions after the screens.
 
-Group the ordered test targets into **phases**: a phase holds only test targets whose dependencies lie in earlier phases.
+Group the ordered implementation targets into **phases**: a phase holds only implementation targets whose dependencies lie in earlier phases.
 The tests of a phase then run against the real classes of earlier phases, already implemented and passing, instead of test doubles.
 Beyond that rule, choose the size of the phases: split a phase further when the specification is large, e.g., one feature area per phase, so that each phase's diff stays reviewable.
 
@@ -75,9 +75,9 @@ Run the phases one at a time, in order, each in its own general-purpose subagent
 Instruct the subagent to read `${CLAUDE_SKILL_DIR}/resources/phase-workflow.md` (write its absolute path literally) and follow it, including its commits: the workflow commits at fixed points, so that the test code committed before the implementation stays verifiable — write no instruction that stops the subagent from committing.
 Give it:
 
-- The phase's test targets, each with its assigned specifications, which of them are external specifications, and the requirements they realize, if any
-- The test bases of each test target: the input files and issue URLs that state its assigned specifications or its test cases, not every input, so that the tests of a specification do not list the specifications of other phases
-- The test targets of the earlier phases, already implemented
+- The phase's implementation targets, each with its assigned specifications, which of them are external specifications, and the requirements they realize, if any
+- The test bases of each implementation target: the input files and issue URLs that state its assigned specifications or its test cases, not every input, so that the tests of a specification do not list the specifications of other phases
+- The implementation targets of the earlier phases, already implemented
 - The input — the path of each file, or the full text when written directly, fetched from an issue, or taken from the conversation
 - The user's instructions on the test techniques, if any
 - The absolute path of the notes file (see [Implementation Notes](#implementation-notes))

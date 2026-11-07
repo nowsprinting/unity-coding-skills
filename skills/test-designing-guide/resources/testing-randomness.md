@@ -1,6 +1,6 @@
 # Testing Randomness
 
-When the system under test (SUT) consumes a pseudo-random number generator (PRNG), e.g., `UnityEngine.Random` or `System.Random`, list the random numbers as an indirect input (see [Test Techniques](../SKILL.md#test-techniques)), and choose the expected result by what the specification pins down:
+When the system under test (SUT) consumes a pseudo-random number generator (PRNG), e.g., `UnityEngine.Random` or `System.Random`, list the random numbers as an indirect input (see [Test Techniques](test-design.md#test-techniques)), and choose the expected result by what the specification pins down:
 
 | The specification pins down                                          | Expected result                                                 | Example                                           |
 |----------------------------------------------------------------------|-----------------------------------------------------------------|---------------------------------------------------|
@@ -9,4 +9,4 @@ When the system under test (SUT) consumes a pseudo-random number generator (PRNG
 | The shape of the distribution                                        | Statistics of sampled outputs fall within a tolerance           | Drop rates, the variance of RPG damage            |
 | A structural property of generated content                           | The property holds, without asserting the exact output          | The exit of a roguelike maze is reachable         |
 
-When the specification pins down none of them, the test case is ambiguous (see [Unverifiable, Undefined, and Ambiguous Test Cases](../SKILL.md#unverifiable-undefined-and-ambiguous-test-cases)).
+When the specification pins down none of them, the test case is ambiguous (see [Unverifiable, Undefined, and Ambiguous Test Cases](test-design.md#unverifiable-undefined-and-ambiguous-test-cases)).

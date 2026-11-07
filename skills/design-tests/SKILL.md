@@ -40,16 +40,7 @@ In this skill and `test-designing-guide`, the terms mean:
 The input may state the specification in any document: a requirements document, a software design document, or an ADR.
 Note which specifications are external specifications and, when the input also states requirements, which specifications realize them, to mark acceptance tests.
 
-Read existing code and tests only as `test-designing-guide` allows (Reading Code).
-
-## Specifications Without Test Cases
-
-Assign the following specifications to no test target in Step 1, and count none of them as uncovered in Step 4.
-The implementation still fulfills them; only the tests leave them out.
-
-- **A specification a declaration alone fulfills**, e.g., "the character's hit points can be changed in the Inspector", fulfilled by a `public` field or a property with `[field: SerializeField]` — Unity's serialization guarantees the behavior once the declaration exists, so a test only transcribes the declaration a second time.
-- **A table listing each asset's concrete values** (e.g., a master data table) — the source the assets are authored from, not a property: a test comparing an asset or the list of assets with it only transcribes the table a second time.
-- **A specification on the set of assets of a `ScriptableObject` class**, e.g., the number of assets or the presence of a specific asset — not a property of one asset; design a test case for it only when the user explicitly asks.
+Read existing code and tests only as `test-designing-guide` allows (Reading Code in its test design resource).
 
 ## Rules
 
@@ -60,34 +51,13 @@ The implementation still fulfills them; only the tests leave them out.
 
 ### Step 1: Extract Test Targets
 
-Read the specification and extract the test targets it covers, e.g.:
-
-- The screen transitions
-- A screen
-- A character (actor)
-- A component (class)
-- A `ScriptableObject` class (its methods implemented as unit tests, the constraints on its data as a validator)
-
-Extract only targets the specification describes; do NOT derive targets at a level no specification describes — e.g., internal classes guessed from the external specification of a screen — because such tests couple to an implementation no specification fixes.
-When the input includes a software design, the classes and signatures it fixes are specifications, and are valid targets.
-
-Assign each specification to exactly one test target, so that targets designed in parallel do not produce duplicate test cases.
-When the subject of one test target contains the subjects of others — e.g., a screen contains the classes placed on it, and the screen transitions contain the screens — assign the behavior within a contained target to that target, and leave the container only the behavior that combines them.
-Record the test targets each target contains.
-
-#### Screen Transitions
-
-Extract all the screen transitions as a single test target, whatever form the specification gives them in — a screen transition diagram, a sequence, a use case, or button operations written per screen.
-
-#### ScriptableObject Classes
-
-Extract a `ScriptableObject` class as one test target holding both the specifications of its methods (unit tests) and the constraints the specification states on its data (a validator); each constraint is a property of one asset (see `resources/validators.md` in `test-designing-guide`).
-The unit tests and the validator then share the equivalence partitions of the fields both refer to, and a gap in a field reaches the user as one issue.
+Load the `test-designing-guide` skill — do not rely on automatic skill triggering — and extract the test targets from the specification per its test analysis resource.
+The targets are designed in parallel in Step 2, so a specification assigned to two targets would produce duplicate test cases.
 
 ### Step 2: Design Each Test Target
 
 Design each test target in its own general-purpose subagent, launched in parallel, so the working material of one target stays out of the others' context.
-Instruct each subagent to load the `test-designing-guide` skill — do not rely on automatic skill triggering — and apply it:
+Instruct each subagent to load the `test-designing-guide` skill — do not rely on automatic skill triggering — and apply its test design resource:
 
 1. Determine the layer of each of the target's specifications (Test Layers)
 2. Model its specifications with test techniques, and derive test cases from the results (Test Techniques)
@@ -116,7 +86,7 @@ Do not regroup the test cases by layer.
 
 ### Step 4: Review the Coverage
 
-Review the assembled test cases against the input: every specification it states, except those in [Specifications Without Test Cases](#specifications-without-test-cases), must be covered by the test cases of the target it was assigned to.
+Review the assembled test cases against the input: every specification it states, except those Step 1 left out, must be covered by the test cases of the target it was assigned to.
 When one is not covered, run Step 2 again for that target.
 
 ### Step 5: Write the Output

@@ -11,7 +11,7 @@ The derived test case keeps the source test case's `<MethodName>` and `<Conditio
 
 Its factors are the inputs the source test case leaves out: those the specification states do not affect the outputs, those the expected result of that condition does not depend on, and the conditions marked "don't care" in a decision table rule.
 A single factor is enough.
-An input the expected result depends on is never a factor, nor is an input a [contained test target](../SKILL.md#contained-test-targets) governs: both keep their values.
+An input the expected result depends on is never a factor, nor is an input a [contained test target](test-design.md#contained-test-targets) governs: both keep their values.
 
 E.g., when damage is computed from the character's strength and the attack of the equipped weapon, equivalence partitioning derives `GetDamage_WithWeapon_ReturnsDamageValue` and `GetDamage_WithoutWeapon_ReturnsDamageValue`, and combinatorial testing derives one test case from each, taking the other ability scores and the other equipment slots as the factors.
 
@@ -50,7 +50,7 @@ Choose one of the following; the default is pairwise in integration tests and al
 
 Unity Test Framework generates no other combination set, so for an instruction naming another criterion, e.g., base choice or 3-wise, write its combinations with the limited-combinations notation.
 
-The unit test framework generates the combinations from the levels, so the test case lists each factor with its levels in the [parameterized test](../SKILL.md#parameterized-tests) notation, not the combinations, e.g., `(dexterity: {0, 7}, shield: {null, Shield}, armor: {null, Armor})`; for pairwise, append `by pairwise` to it, e.g., `(dexterity: {0, 7}, shield: {null, Shield}, armor: {null, Armor}, by pairwise)`.
+The unit test framework generates the combinations from the levels, so the test case lists each factor with its levels in the [parameterized test](test-design.md#parameterized-tests) notation, not the combinations, e.g., `(dexterity: {0, 7}, shield: {null, Shield}, armor: {null, Armor})`; for pairwise, append `by pairwise` to it, e.g., `(dexterity: {0, 7}, shield: {null, Shield}, armor: {null, Armor}, by pairwise)`.
 
 Validators get no combinatorial testing: their input is the assets authored in the project, which the test cannot choose.
 

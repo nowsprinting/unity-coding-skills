@@ -48,7 +48,7 @@ Examples:
   If more than one assembly remains, pick the one whose `rootNamespace` existing Scene or Prefab tests already use; ask the user only when none do.
 - A validator's namespace is the namespace of the `ScriptableObject` class it validates.
 - Use the test method name the test design gives.
-  When writing a test without a test design, load the `test-designing-guide` skill and follow its Test Case Naming.
+  When writing a test without a test design, load the `test-designing-guide` skill and follow the Test Case Naming of its test design resource.
 
 ## Modernize Test Code
 
