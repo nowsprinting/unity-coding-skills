@@ -168,15 +168,19 @@ Describe observable behavior only; do NOT include any of the following **anywher
   You MAY name exactly: public framework API members (e.g., `CanvasGroup.blocksRaycasts`) and identifiers that appear in the specification.
 - Rationale or intent text — why the test exists, which requirement it serves, or what the current (buggy) behavior is.
   Observable behavior only.
-- Any other detail of how the test is built — those decisions belong to the test-writing phase
+- Any other detail of how the test is built, except the test doubles and logs below — those decisions belong to the test-writing phase
 
 Further notation rules:
 
 - **Hidden input values** — when the expected result depends on input values that neither the `<Condition>` segment nor the parameters show, e.g., the representative of an equivalence partition, write each such input and its value before the expected result, so the reader can check the expected result against them.
   Write only the inputs the expected result depends on; the test-writing phase gives the others neutral values.
 - When a single test asserts multiple properties (the multi-property exception in [Test Case Naming](#test-case-naming)), list each property being verified in the Verification column.
-- If a test case uses a **spy** — a test double that records interactions (calls, arguments) for later verification — to verify an interaction the API specification defines, note it in the Verification column: e.g., `(uses spy: <TargetDependency>)`.
-  Leave out **stubs**, which return canned responses to isolate the SUT from a dependency, and **fakes**, simplified but working implementations of a dependency: they are arrange/action concerns.
+- **Test doubles and logs** — when a test case uses one of the following, write it in parentheses after the expected result, in the project language, naming the dependency as the specification or the software design names it; separate several with `, ` in one pair of parentheses.
+  These are the only details of how the test is built that the Verification column states; write no other test double or means of observation, e.g., a fake or a file the test reads.
+  - A **test stub** — a test double that replaces an indirect input with fixed values — supplies an indirect input: e.g., `(use a stub of IFoo)`, in Japanese `（IFooのスタブを使用）`
+  - A **test spy** — a test double that records the calls and arguments it receives — verifies an interaction the specification defines: e.g., `(use a spy of IBar)`, in Japanese `（IBarのスパイを使用）`
+  - A log message that no test spy can capture, i.e., one `UnityEngine` or a third-party library outputs, verifies the result: `(verified by log message)`, in Japanese `（ログメッセージで検証）`.
+    A log message the test target outputs is verified by a test spy of its logger instead: e.g., `(use a spy of ILogger)`
 - **Screenshot verification** — for a Visual verification tests row, list the visual aspects (see [Visual aspects to verify](resources/integration-testing.md#visual-aspects-to-verify)) in the **Image analysis by saved screenshot** column.
 
 ### Example: Verification — Bad vs. Good
