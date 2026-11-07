@@ -57,5 +57,5 @@ Validators get no combinatorial testing: their input is the assets authored in t
 ## Combinatorial Explosion
 
 In integration tests, with many factors or levels, even pairwise combinations explode.
-Judge the testability low: assess it as `⚠️WARN` (combinatorial explosion), and propose in the Issues to break the test down into tests at a more detailed level.
+Judge the testability low, and record the combinatorial explosion as an issue.
 Unit tests are not judged for combinatorial explosion.

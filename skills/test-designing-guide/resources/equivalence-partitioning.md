@@ -72,4 +72,4 @@ The expected result of an invalid equivalence partition is the error the specifi
 - **Dependency error returns** — when the specification defines a dependency's error/failure path, whether to test it depends on the dependency's origin:
   - **Library or framework** (external, not owned by this project) → test it; use a stub to inject the error condition.
   - **Game's own code** (another component in this project) → skip; trust internal code correctness.
-  - **Uncertain** → record it as an issue (an unclear specification) in the [Assessment](test-design.md#assessment) instead of designing test cases.
+  - **Uncertain** → record it as an issue (an unclear specification) instead of designing test cases.

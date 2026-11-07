@@ -61,7 +61,7 @@ For each criterion, take the default that the technique's resource names, unless
 
 When an output of one operation is the input of its inverse, e.g., serialize and deserialize, and the specification does not define that intermediate form, neither operation has an expected result of its own; verify the pair by a round trip → [round-trip-testing.md](round-trip-testing.md)
 
-When modeling the specifications with a test technique reveals a gap or a contradiction in them, do not guess the outcome: design the test case of a gap as undefined (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)), design no test case for a contradiction, and include the modeling result (e.g., the equivalence partition table, the decision table, the state transition diagram) in the [Assessment](#assessment) when it is `❌FAIL`, so the user can see where the specification breaks.
+When modeling the specifications with a test technique reveals a gap or a contradiction in them, do not guess the outcome: design the test case of a gap as undefined (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)), and design no test case for a contradiction, recording it as an issue.
 
 Select the techniques that fit the test target, and read the resource of each one you apply.
 An instruction from the user or from the skill that loads this one may suppress a default technique, enable an optional one, or choose a technique's test selection criterion; an enabled technique still applies only where it fits.
@@ -205,7 +205,6 @@ Design a test case even when it cannot be verified as specified, and mark it ins
     In integration tests, a result no assertion can observe is not unverifiable: it escalates to image analysis and finally to a [manual test](integration-testing.md#manual-tests).
 
   Write `**unverifiable**` in front of the expected result in the Verification column, and the reason after the expected result, following ` — `.
-  In the [Assessment](#assessment), propose a software design that makes the test case verifiable, e.g., a dependency through which the test target reads the input, and when the test target reads it, so that a test stub can replace it before then.
   - Example: `Attack_HpIsPositive_ReducesHpByDamage` | **unverifiable** the remaining HP is reduced by the damage — the remaining HP is a `private` field
   - Example: `GetInputBackendName_InputSystemIsActive_ReturnsInputSystem` | **unverifiable** returns "Input System" — the test cannot arrange the `activeInputHandler` project setting
 - **Undefined** — the specification states no expected result for the test case: e.g., an equivalence partition, a decision table combination, or a state transition table cell it leaves empty.
@@ -290,6 +289,7 @@ Record every issue found while designing instead of guessing.
 
 - **Unverifiable, undefined, or ambiguous test case** — see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)
 - **Combinatorial explosion** — in integration tests, test case count grows faster than O(n) relative to the number of conditions
+- **Unclear specification** — the specification leaves out a fact the test design depends on, e.g., whether a dependency whose error path it defines is a library or the game's own code, or the folder of the assets a validator selects
 
 **Output format**:
 
@@ -300,7 +300,8 @@ Record every issue found while designing instead of guessing.
 ```
 
 For `⚠️WARN` or `❌FAIL`, add `#### Issues` with the affected specification and a proposed remedy of each issue.
-For `❌FAIL`, also add `#### Modeling result`:
+For an unverifiable test case, propose a software design that makes it verifiable, e.g., a dependency through which the test target reads the input, and when the test target reads it, so that a test stub can replace it before then; for a combinatorial explosion, propose breaking the test down into tests at a more detailed level.
+For `❌FAIL`, also add `#### Modeling result` — the model that revealed the issues, e.g., the equivalence partition table, the decision table, the state transition diagram — so the user can see where the specification breaks:
 
 ```markdown
 ### Assessment

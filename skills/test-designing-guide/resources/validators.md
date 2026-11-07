@@ -40,7 +40,7 @@ When one property applies to several fields of the same asset, e.g., the stats b
 ## Selection Scope
 
 The folder the specification places the data in is the validator's selection scope: state it in the Notes per the [output format](test-design.md#output-format), not as a test case, since a test checking an asset's location against the scope that selected it always passes.
-When the specification states no location, record it as an issue in the [Assessment](test-design.md#assessment).
+When the specification states no location, record it as an issue (an unclear specification).
 
 ## Acceptance Tests
 
