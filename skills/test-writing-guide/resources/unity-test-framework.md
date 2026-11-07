@@ -73,28 +73,6 @@ Mode is determined by the **test file's path**, not by test attributes:
 
 `[Test]`, `[UnityTest]`, `[CreateScene]`, and `[LoadScene]` do **not** affect which mode the test runs in.
 
-### Async tests: use `[Test]` + `async Task`
-
-```csharp
-// Do NOT write this
-[UnityTest]
-public IEnumerator MyTest()
-{
-    yield return null;
-    Assert.AreEqual(42, sut.Value);
-}
-
-// Write this instead
-[Test]
-public async Task MyTest()
-{
-    await Awaitable.NextFrameAsync();
-    Assert.That(sut.Value, Is.EqualTo(42));
-}
-```
-
-`[TestCase]` and `[TestCaseSource]` work with `async Task`.
-
 ### Assertions: use the constraint model
 
 ```csharp
@@ -369,7 +347,6 @@ Guidelines:
 - `[TearDown]` owns resource release (e.g., `Object.DontDestroyOnLoad` objects that can't be cleaned by scene reload).
 - In nested classes, only the `[SetUp]` / `[TearDown]` defined in the **same class** as the test method runs — the outer class's hooks do not run.
 - Avoid over-centralizing setup; values that affect assertion validity should stay visible inside the test method itself — a reader must understand the test without scrolling to `[SetUp]`; burying assertion-relevant values there makes correctness harder to judge.
-- `[SetUp]` and `[TearDown]` also work with `async Task`; `[OneTimeSetUp]` and `[OneTimeTearDown]` do not, so use `[UnityOneTimeSetUp]` and `[UnityOneTimeTearDown]` instead
 - `[LoadScene]` and `[CreateScene]` (Test Helper) run after `[OneTimeSetUp]` and before `[SetUp]`.
 
 ## Test Selection Attributes
@@ -403,11 +380,8 @@ using NUnit.Framework;
 
 ## Async Tests
 
-- Use `[Test]` attribute with `async` keyword instead of `[UnityTest]` attribute
-- `[TestCase]` and `[TestCaseSource]` work with async test methods
-- Do not use `Task.Delay` or arbitrary wait; use `await Awaitable.NextFrameAsync()` when only one frame is needed
-- To assert that an async method throws, use try-catch.
-  Blocking on the `Task` (`.Wait()` / `.GetAwaiter().GetResult()`) is not a substitute:
+To assert that an async method throws, use try-catch.
+Blocking on the `Task` (`.Wait()` / `.GetAwaiter().GetResult()`) is not a substitute:
 
 ```csharp
 try
@@ -423,12 +397,9 @@ catch (ArgumentException expectedException)
 
 `try`/`catch` is not in the prohibited list of [No Control Flow in Tests](#no-control-flow-in-tests), and this is the only place this guide requires it.
 
-### Anti-pattern: Fixed-time Waits
+### Waiting
 
 Async tests often need to wait a little — e.g., after `SceneManager.LoadScene` to let `Start` / `Update` run, or one frame after placing a `GameObject` before using a `Raycaster`.
-
-`Task.Delay` (or any other fixed-duration sleep) is the wrong tool.
-No fixed duration is "just right" — too short produces flaky tests, too long inflates total test run time, and OS timer resolution makes precise tuning impossible regardless.
 
 Pick the wait that matches the situation:
 
@@ -494,7 +465,6 @@ LogAssert.ignoreFailingMessages = true;
 
 When creating a Spy `MonoBehaviour` (placed under `Tests/Runtime/TestDoubles/`) to capture events such as `IPointerClickHandler.OnPointerClick`:
 
-- Apply `[AddComponentMenu("/")]` (Unity 2021+) or `[AddComponentMenu("")]` (older Unity) so it does not appear in the editor's **Add Component** picker.
 - Record invocations into public properties (call count, last arguments, etc.) and let the test read them directly.
   Do NOT log to `Debug.Log` and assert with `LogAssert` — that couples the test to Unity's global log handler and is harder to inspect than typed state.
 
@@ -567,7 +537,7 @@ Do NOT write XML documentation comments in test code.
 
 ### `[Test]` on an `async` method fails to compile or run
 
-If a test written as `[Test]` + `async` method (per the Async Tests section above) errors out — compile error, `async void` rejection, or the runner refusing to execute the test — the `com.unity.test-framework` package may be too old.
+If a test written as `[Test]` + `async` method errors out — compile error, `async void` rejection, or the runner refusing to execute the test — the `com.unity.test-framework` package may be too old.
 Check its resolved version in `Packages/packages-lock.json`; if it is older than **v1.4.6**, ask the user to upgrade it.
 
 ### `[ParametrizedIgnore]` is not recognized
