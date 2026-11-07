@@ -53,13 +53,14 @@ Give each subagent the test target with its assigned specifications, the list of
 
 1. Load the `test-designing-guide` skill — do not rely on automatic skill triggering — and model the target's specifications with the Test Techniques of its test design resource, with equivalence partition coverage as the test selection criterion of equivalence partitioning, reading the resource of each technique applied, into a list of coverage items.
    List apart, as untestable, each coverage item whose test case would be unverifiable, undefined, or ambiguous.
+   List apart also, as specification issues, the other issues the Assessment of the test design resource records, each with its proposed remedy and, for a contradiction, the modeling result that reveals it, but without the Assessment's label.
    Finish the list before reading any test code
 2. Read the test classes in the listed test files whose subject is the test target
 3. Check off each coverage item that a test method verifies: its Arrange puts the test target in the coverage item — an input in the partition, the conditions of the rule, or the source state of the transition — and its assertions verify the coverage item's expected result.
    A test method name alone checks off nothing, and neither does a method with `[Ignore]`
 4. For each coverage item still unchecked, search the test classes named after the test target or its classes, e.g., `<ClassName>Test`, and check it off the same way: a test without the `// Test-basis:` line still verifies the coverage item.
    Mark each test class found only this way
-5. Return a table of the coverage items — `| Coverage item | Technique | Verified by |`, with `<TestClass>.<TestMethod>` or `—` in the last column — followed by the untestable coverage items and the test classes marked in item 4
+5. Return a table of the coverage items — `| Coverage item | Technique | Verified by |`, with `<TestClass>.<TestMethod>` or `—` in the last column — followed by the untestable coverage items, the specification issues, and the test classes marked in item 4
 
 ### Step 3: Report
 
@@ -67,7 +68,7 @@ Report to the user in the conversation:
 
 1. The coverage: the checked coverage items over all coverage items, excluding the untestable ones, overall and per test target
 2. The table of each test target, as the subagent returned it
-3. The untestable coverage items: a gap in the specification, not in the tests
+3. The untestable coverage items and the specification issues: a gap in the specification, not in the tests
 4. The test classes found without the `// Test-basis:` line: suggest adding `// Test-basis: <path>` to their files, so that the next run finds them directly
 5. The specifications left out in Step 1, with the reason
 
