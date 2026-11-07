@@ -194,6 +194,12 @@ Design a test case even when it cannot be verified as specified, and mark it ins
   Judge both from the specification and what [Reading Code](#reading-code) allows.
   - **Arranging** — the test can arrange an input when it sets the input, and restores it, during the test run: e.g., `Time.timeScale` and `PlayerPrefs` can be arranged; a project setting, e.g., `activeInputHandler`, which takes effect only after the Editor restarts, cannot.
     An input the test target reads through a dependency a test stub can replace can be arranged.
+    A test of Editor code or of assets runs in the Edit Mode tests, so it can also:
+    - Run a menu item that test-targets
+    - Find and load the project's assets
+    - Enter and exit Play Mode
+    - Recompile scripts
+    - Trigger a domain reloading, and wait for it to finish
   - **Observing** — the test can observe the actual result through the test target's API — a return value, a field or property of the instance, a raised event, or a call to a dependency a spy records — or through what the test target leaves outside itself: a `GameObject` in the scene, a file it writes, or a log it outputs.
     A `private` member is not observable.
     In integration tests, a result no assertion can observe is not unverifiable: it escalates to image analysis and finally to a [manual test](integration-testing.md#manual-tests).
