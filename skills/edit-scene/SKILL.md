@@ -5,7 +5,6 @@ description: >-
   creating, editing, or modifying .unity scene files or .prefab prefab files.
   This includes adding GameObjects, building uGUI hierarchies, wiring up
   components, and any task that results in changes to .unity or .prefab files.
-context: fork
 license: Unlicense
 metadata:
   author: Koji Hasegawa
