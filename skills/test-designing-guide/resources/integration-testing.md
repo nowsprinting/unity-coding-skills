@@ -68,3 +68,4 @@ Facts that are mechanically assertable — a panel's active state, exact text co
 
 Manual tests are integration tests verified by a human, reserved for items that **neither automated tests nor image analysis can verify** — i.e., items requiring human sensory judgment with no objective pass/fail criterion (e.g., game feel, animation polish, audio balance).
 Do NOT add manual tests for scenarios already covered by integration tests or visual verification tests, even if they seem "worth confirming by eye."
+A test case whose input the test cannot arrange, e.g., the `activeInputHandler` project setting, is not a manual test but unverifiable (see [Unverifiable, Undefined, and Ambiguous Test Cases](../SKILL.md#unverifiable-undefined-and-ambiguous-test-cases)).

@@ -37,7 +37,7 @@ Design the test cases before reading any method body of production code: a test 
 Skip the modeling result and the Assessment, and hold the test cases in your context only; instead, settle each problem they would surface:
 
 - A contradiction in the specification, or an acceptance test that is ambiguous or unverifiable → return `STATUS: QUESTION` before writing any code
-- A test case you would mark unverifiable under a class you designed → revise the class so that the test can observe the result
+- A test case you would mark unverifiable under a class you designed → revise the class so that the test can arrange the input and observe the result
 - Any other undefined, ambiguous, or unverifiable test case → keep it marked, and write no test code for it
 
 Step 1 is complete when every test target of the phase and every class you designed has its test cases.

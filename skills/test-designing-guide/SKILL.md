@@ -29,7 +29,7 @@ Derive test cases from the specification, never from the implementation: a test 
 Read only the following code, and no method bodies of production code:
 
 - **Existing tests** — when the specification of a test target with tests changes, or a bug report asks for a [reproduction test](resources/reproduction-tests.md), the signatures of the test target's test classes and test methods, with the attributes that give a parameterized test its arguments, to tag the test cases they already implement (see the [tags](#output-format))
-- **Production code** — for unit tests and validators, the signatures and XML documentation comments of the test target's members, to judge whether a test case can observe the actual result (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); for a class the input's software design introduces, read the signatures it fixes instead.
+- **Production code** — for unit tests and validators, the signatures and XML documentation comments of the test target's members, to judge whether a test case can arrange its inputs and observe the actual result (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); for a class the input's software design introduces, read the signatures it fixes instead.
   Take the inputs to model from the specification, not from the parameters of a signature.
 
 ## Test Layers
@@ -63,13 +63,13 @@ A part of the subject without a specification of its own, e.g., a class no speci
 
 Before selecting the techniques, list from the specifications the inputs, states, and outputs of the test target, since a value that does not pass through an argument or a return value is easy to miss:
 
-- **Inputs** — direct inputs (arguments, UI operations) and indirect inputs (return values of dependencies, random numbers, time, assets the target references, the order of Unity's lifecycle events).
+- **Inputs** — direct inputs (arguments, UI operations) and indirect inputs (return values of dependencies, random numbers, time, project settings, assets the target references, the order of Unity's lifecycle events).
   List also an input the specification states does not affect the outputs: the other techniques leave it out, and [combinatorial testing](resources/combinatorial-testing.md) takes it as a factor.
 - **States** — the states the target holds across operations, e.g., flags and remaining counts, even when the specification does not describe them as an FSM
 - **Outputs** — direct outputs (return values, on-screen display) and indirect outputs (raised events, calls to dependencies, saved data, logs)
 
 The inputs and states drive the techniques: e.g., equivalence partitioning for each input, state transition testing for the states.
-An output without a means to observe it marks its test cases unverifiable, and a combination of inputs and states with no specified output marks its test case undefined; a combination the specification explicitly states as "undefined" gets no test case (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)).
+An input the test cannot arrange, or an output without a means to observe it, marks its test cases unverifiable, and a combination of inputs and states with no specified output marks its test case undefined; a combination the specification explicitly states as "undefined" gets no test case (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)).
 Include the list in the modeling result.
 
 When the specification names a method after a well-known naming pattern but leaves out its return type or parameters, e.g., `TryGetFoo` of the Try pattern, which returns `bool` and outputs `Foo` through an `out` parameter, take them from the pattern and design the test cases as if the specification stated them, not as undefined; write the pattern in the Notes (see [Output Format](#output-format)), e.g., "`TryGetFoo`: designed by the Try pattern".
@@ -209,11 +209,18 @@ The Good rows state the observable behavior and the input values it depends on o
 
 Design a test case even when it cannot be verified as specified, and mark it instead of guessing, so the user sees every place the specification needs revising:
 
-- **Unverifiable** — the test cannot observe the actual result through the test target's API: a return value, a field or property of the instance, a raised event, or a call to a dependency a spy records.
-  Judge it from what [Reading Code](#reading-code) allows; a `private` member is not observable.
-  Integration tests have no unverifiable test case, since a result no assertion can observe escalates to image analysis and finally to a [manual test](resources/integration-testing.md#manual-tests).
-  Write `**unverifiable**` in front of the expected result in the Verification column.
-  - Example: `Attack_HpIsPositive_ReducesHpByDamage` | **unverifiable** the remaining HP is reduced by the damage
+- **Unverifiable** — the test cannot arrange an input the test case needs, or cannot observe its actual result.
+  Judge both from the specification and what [Reading Code](#reading-code) allows.
+  - **Arranging** — the test can arrange an input when it sets the input, and restores it, during the test run: e.g., `Time.timeScale` and `PlayerPrefs` can be arranged; a project setting, e.g., `activeInputHandler`, which takes effect only after the Editor restarts, cannot.
+    An input the test target reads through a dependency a test stub can replace can be arranged.
+  - **Observing** — the test can observe the actual result through the test target's API — a return value, a field or property of the instance, a raised event, or a call to a dependency a spy records — or through what the test target leaves outside itself: a `GameObject` in the scene, a file it writes, or a log it outputs.
+    A `private` member is not observable.
+    In integration tests, a result no assertion can observe is not unverifiable: it escalates to image analysis and finally to a [manual test](resources/integration-testing.md#manual-tests).
+
+  Write `**unverifiable**` in front of the expected result in the Verification column, and the reason after the expected result, following ` — `.
+  In the [Assessment](#assessment), propose a software design that makes the test case verifiable, e.g., a dependency through which the test target reads the input, and when the test target reads it, so that a test stub can replace it before then.
+  - Example: `Attack_HpIsPositive_ReducesHpByDamage` | **unverifiable** the remaining HP is reduced by the damage — the remaining HP is a `private` field
+  - Example: `GetInputBackendName_InputSystemIsActive_ReturnsInputSystem` | **unverifiable** returns "Input System" — the test cannot arrange the `activeInputHandler` project setting
 - **Undefined** — the specification states no expected result for the test case: e.g., an equivalence partition, a decision table combination, or a state transition table cell it leaves empty.
   End the method name with `_UNDEFINED` in place of `<Expected>`, and write `**undefined**` in the Verification column.
   - Example: `Attack_HpIsNegative_UNDEFINED` | **undefined**

@@ -31,7 +31,7 @@ Guide for writing test code for Unity projects.
 
 - Do not touch the test of a test case tagged `existing`.
 - For a test case tagged `test fix` or `spec change`, change the existing test to match the test case instead of adding a new one.
-- Do not implement a test case whose Verification column starts with `**unverifiable**`, `**undefined**`, or `**ambiguous**`: it has no API to observe the actual result through, or no single expected result to assert.
+- Do not implement a test case whose Verification column starts with `**unverifiable**`, `**undefined**`, or `**ambiguous**`: the test cannot arrange its input, cannot observe its actual result, or has no single expected result to assert.
 
 ### Test Basis
 
