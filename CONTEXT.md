@@ -80,7 +80,7 @@ A test whose subject is the project's assets of a `ScriptableObject` class, veri
 _Avoid_: Unit test (for the data of a `ScriptableObject` class)
 
 **Test basis**:
-A file or an issue that states the specification, software design, or test design that test code or a test design document was written from, listed on it to find it by. It may be outdated or incomplete, so nothing trusts it beyond searching. Text written directly or taken from the conversation is no test basis.
+A file or an issue that states the specification or software design that test code or a test design document was written from, listed on it to find it by. It may be outdated or incomplete, so nothing trusts it beyond searching. Text written directly or taken from the conversation is no test basis. A test design document is no test basis, but test code lists it with them for searching.
 _Avoid_: Source, reference, origin, trace link
 
 **Coverage item**:
