@@ -18,8 +18,6 @@ A property has two parts:
 - **Constraint** — what the fields of each selected asset satisfy, e.g., "attack is greater than 0"
 
 Derive the properties from the constraints the specification states on one asset: value ranges, relations between fields, and required references.
-A specification on the set of assets, e.g., the number of assets or the presence of a specific asset, is not a property of one asset; design a test case for it only when the user explicitly asks.
-A table listing each asset's concrete values (e.g., a master data table) is the source the assets are authored from, not a property: a test comparing an asset or the list of assets with it only transcribes the table a second time.
 
 ## Modeling with Equivalence Partitioning
 

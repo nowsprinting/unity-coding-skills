@@ -59,6 +59,15 @@ A contained target's specifications belong to that target's own test cases; when
 The inputs a contained target receives and ignores, e.g., the dexterity a damage calculation does not use, count among those it governs: its own [combinatorial testing](resources/combinatorial-testing.md) takes them as factors, so the container's does not.
 A part of the subject without a specification of its own, e.g., a class no specification describes, is not a contained target; test its behavior as part of the container.
 
+## Specifications Without Test Cases
+
+Leave the following specifications out of the modeling, and design no test case for them.
+The implementation still fulfills them; only the tests leave them out.
+
+- **A specification a declaration alone fulfills**, e.g., "the character's hit points can be changed in the Inspector", fulfilled by a `public` field or a property with `[field: SerializeField]` — Unity's serialization guarantees the behavior once the declaration exists, so a test only transcribes the declaration a second time.
+- **A table listing each asset's concrete values** (e.g., a master data table) — the source the assets are authored from, not a property: a test comparing an asset or the list of assets with it only transcribes the table a second time.
+- **A specification on the set of assets of a `ScriptableObject` class**, e.g., the number of assets or the presence of a specific asset — not a property of one asset; design a test case for it only when the user explicitly asks.
+
 ## Test Techniques
 
 Before selecting the techniques, list from the specifications the inputs, states, and outputs of the test target, since a value that does not pass through an argument or a return value is easy to miss:

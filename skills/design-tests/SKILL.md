@@ -42,6 +42,15 @@ Note which specifications are external specifications and, when the input also s
 
 Read existing code and tests only as `test-designing-guide` allows (Reading Code).
 
+## Specifications Without Test Cases
+
+Assign the following specifications to no test target in Step 1, and count none of them as uncovered in Step 4.
+The implementation still fulfills them; only the tests leave them out.
+
+- **A specification a declaration alone fulfills**, e.g., "the character's hit points can be changed in the Inspector", fulfilled by a `public` field or a property with `[field: SerializeField]` — Unity's serialization guarantees the behavior once the declaration exists, so a test only transcribes the declaration a second time.
+- **A table listing each asset's concrete values** (e.g., a master data table) — the source the assets are authored from, not a property: a test comparing an asset or the list of assets with it only transcribes the table a second time.
+- **A specification on the set of assets of a `ScriptableObject` class**, e.g., the number of assets or the presence of a specific asset — not a property of one asset; design a test case for it only when the user explicitly asks.
+
 ## Rules
 
 - Modify no files in the repository other than the output file (Step 5) and the documents Step 6 writes the resolutions into.
@@ -74,7 +83,6 @@ Extract all the screen transitions as a single test target, whatever form the sp
 
 Extract a `ScriptableObject` class as one test target holding both the specifications of its methods (unit tests) and the constraints the specification states on its data (a validator); each constraint is a property of one asset (see `resources/validators.md` in `test-designing-guide`).
 The unit tests and the validator then share the equivalence partitions of the fields both refer to, and a gap in a field reaches the user as one issue.
-A table listing each asset's concrete values is the source the assets are authored from, not a specification: extract no constraint from it.
 
 ### Step 2: Design Each Test Target
 
@@ -108,7 +116,7 @@ Do not regroup the test cases by layer.
 
 ### Step 4: Review the Coverage
 
-Review the assembled test cases against the input: every specification it states must be covered by the test cases of the target it was assigned to.
+Review the assembled test cases against the input: every specification it states, except those in [Specifications Without Test Cases](#specifications-without-test-cases), must be covered by the test cases of the target it was assigned to.
 When one is not covered, run Step 2 again for that target.
 
 ### Step 5: Write the Output

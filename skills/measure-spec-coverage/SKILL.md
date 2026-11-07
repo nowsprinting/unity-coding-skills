@@ -29,6 +29,15 @@ In this skill, the terms mean:
 - **Test basis** — a file or an issue that the tests of a test file were written from, listed at the top of the file as a `// Test-basis: <path or URL>` line.
   The test bases may be outdated or incomplete: use them only to find tests, never to judge what a test covers.
 
+## Specifications Without Test Cases
+
+Leave the following specifications out in Step 1: counting them lowers the coverage for tests that should not exist.
+The implementation still fulfills them; only the tests leave them out.
+
+- **A specification a declaration alone fulfills**, e.g., "the character's hit points can be changed in the Inspector", fulfilled by a `public` field or a property with `[field: SerializeField]` — Unity's serialization guarantees the behavior once the declaration exists, so a test only transcribes the declaration a second time.
+- **A table listing each asset's concrete values** (e.g., a master data table) — the source the assets are authored from, not a property: a test comparing an asset or the list of assets with it only transcribes the table a second time.
+- **A specification on the set of assets of a `ScriptableObject` class**, e.g., the number of assets or the presence of a specific asset — not a property of one asset; design a test case for it only when the user explicitly asks.
+
 ## Rules
 
 - Modify no files; report what needs changing instead.
@@ -40,7 +49,7 @@ In this skill, the terms mean:
 
 Read the specification document and extract the test targets it describes, e.g., the screen transitions, a screen, a prefab, a class, or a `ScriptableObject` class.
 Assign each specification to exactly one test target, so that no coverage item is counted twice; when the subject of one test target contains others, e.g., a screen contains the classes placed on it, assign the behavior within a contained test target to it.
-Leave out each specification that `test-designing-guide` designs no test case for, e.g., a table of each asset's concrete values (see its Validators resource): it is the source the assets are authored from, not a property, so counting it lowers the coverage for tests that should not exist.
+Leave out each specification listed in [Specifications Without Test Cases](#specifications-without-test-cases).
 
 ### Step 2: Measure Each Test Target
 
@@ -51,7 +60,7 @@ Give each subagent the test target with its assigned specifications, the list of
 
 1. Load the `test-designing-guide` skill — do not rely on automatic skill triggering — and model the target's specifications with its Test Techniques, with equivalence partition coverage as the test selection criterion of equivalence partitioning, reading the resource of each technique applied, into a list of coverage items.
    Leave out the items marked "TBD" and the conditions the specification states as undefined.
-   For the data of a `ScriptableObject` class, model only the properties per the Validators resource; never model a table of each asset's concrete values as coverage items.
+   For the data of a `ScriptableObject` class, model only the properties per the Validators resource.
    List apart, as untestable, each coverage item whose test case would be unverifiable, undefined, or ambiguous.
    Finish the list before reading any test code
 2. Read the test classes in the listed test files whose subject is the test target
