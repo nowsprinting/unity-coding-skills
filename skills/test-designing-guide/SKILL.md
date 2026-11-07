@@ -114,7 +114,7 @@ If no language is specified, default to English.
 
 - Use the naming convention based on whether the test target is a method:
   - **Method target** — `<MethodName>_<Condition>_<Expected>`: **Unit tests whose target is a method**.
-  - **Non-method target** — `<Condition>_<Expected>`: all **Integration tests** and **Visual verification tests** (multi-component interaction or on-screen rendering), **Unit tests whose target is an asset** (asset file validation, cross-asset consistency checks — the SUT is an asset or set of assets), and **Validators**.
+  - **Non-method target** — `<Condition>_<Expected>`: all **Integration tests** and **Visual verification tests** (multi-component interaction or on-screen rendering), **Unit tests whose target is an asset** (asset file validation, cross-asset consistency checks — the SUT is an asset or set of assets), **Unit tests of behavior no method call triggers** (e.g., a state transition on time elapsing or on an event a dependency raises), and **Validators**.
     Do NOT include a method name.
     Do NOT add a feature-area or category prefix before `<Condition>` — the name starts directly with the condition (e.g., `OnVictoryForced_AllCardViewsAreFullyWithinHandArea`, not `Reward_OnVictoryForced_AllCardViewsAreFullyWithinHandArea`).
   - The `<Condition>` segment names only the equivalence partitions the expected result depends on; leave out an input that does not affect it, e.g., a condition marked "don't care" in a decision table.
