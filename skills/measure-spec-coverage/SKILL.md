@@ -13,11 +13,14 @@ metadata:
 ---
 
 Measures how much of one specification document the tests verify, and lists the coverage items no test verifies.
+The test analysis and test design knowledge lives in the `test-designing-guide` skill; this skill defines the procedure.
 
 ## Input
 
 Take the specification document from the `PATH` argument: any document that states specifications, e.g., a requirements document, a software design document, or an ADR.
 If it is omitted or names no file, use `AskUserQuestion` to ask the user for it.
+If it names a test design document — a file whose frontmatter lists `test-basis:` — do not measure it: its test cases are derived from the specifications, so measuring against it checks the tests only against the test design, and misses the specifications the test design left out.
+Tell the user so, name the test bases it lists as the documents to pass instead, and stop.
 
 In this skill, the terms mean:
 
@@ -49,8 +52,6 @@ On exit code 3, proceed with an empty list: a project whose tests predate the `/
 Give each subagent the test target with its assigned specifications, the list of test files, and the definitions of coverage item and test basis above, and instruct it to:
 
 1. Load the `test-designing-guide` skill — do not rely on automatic skill triggering — and model the target's specifications with the Test Techniques of its test design resource, with equivalence partition coverage as the test selection criterion of equivalence partitioning, reading the resource of each technique applied, into a list of coverage items.
-   Leave out the conditions the specification states as undefined.
-   For the data of a `ScriptableObject` class, model only the properties per the Validators resource.
    List apart, as untestable, each coverage item whose test case would be unverifiable, undefined, or ambiguous.
    Finish the list before reading any test code
 2. Read the test classes in the listed test files whose subject is the test target
