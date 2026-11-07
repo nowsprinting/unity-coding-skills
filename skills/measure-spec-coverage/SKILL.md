@@ -36,6 +36,7 @@ In this skill, the terms mean:
 
 - Modify no files; report what needs changing instead.
 - Model the specification before reading any test code: a coverage item taken from the tests is covered by whatever tests exist.
+- To measure again after the specification document changes, e.g., after its specification issues are fixed, launch new subagents for the test targets whose specifications changed, rather than continuing the subagents that measured them: those have read the test code.
 
 ## Workflow
 
