@@ -349,6 +349,13 @@ Guidelines:
 - Avoid over-centralizing setup; values that affect assertion validity should stay visible inside the test method itself — a reader must understand the test without scrolling to `[SetUp]`; burying assertion-relevant values there makes correctness harder to judge.
 - `[LoadScene]` and `[CreateScene]` (Test Helper) run after `[OneTimeSetUp]` and before `[SetUp]`.
 
+## Custom Yield Instructions for Edit Mode tests
+
+An Edit Mode `[UnityTest]` can yield `IEditModeTestYieldInstruction` implementations: `EnterPlayMode`, `ExitPlayMode`, `RecompileScripts`, and `WaitForDomainReload`.
+They live in the Editor-only `UnityEditor.TestRunner` assembly, so `Tests/Runtime/` assemblies cannot reference them.
+These trigger a domain reload (`EnterPlayMode` does not when Enter Play Mode Settings disables Reload Domain), which resets static fields and local variables.
+After the reload, `[OneTimeSetUp]` and `[SetUp]` run again, but `[UnityOneTimeSetUp]` and `[UnitySetUp]` do **not**.
+
 ## Test Selection Attributes
 
 | Attribute                                                          | Purpose                                                                       |
