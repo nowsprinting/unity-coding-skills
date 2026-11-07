@@ -9,7 +9,7 @@ description: >-
   document, a specification, a software design, a test design document, an
   issue URL, or the current conversation.
   Typically invoked as `/implement [SPECIFICATION]`.
-argument-hint: "[specification, design, and test design, file paths, or issue URLs]"
+argument-hint: "[specification, design, and/or test design, file paths, or issue URLs]"
 license: Unlicense
 metadata:
   author: Koji Hasegawa
@@ -39,6 +39,8 @@ The input states any of the following:
 - **Software design** — the structure of a unit under test, at any level: the smaller units it divides into (modules, scenes, prefabs, classes), how they depend on one another, method signatures, and the file and assembly (`.asmdef`) of each class; it covers the production code and assets, not the test design.
   The classes and signatures it fixes are the specifications of the units below.
 - **Test design document** — the test cases of each **test target** (the unit a test design is made for, e.g., the screen transitions, a screen, a prefab, or a class), as the `design-tests` skill outputs it.
+
+When the input includes a test design document, also take as input the files and issues its `test-basis` frontmatter lists: the production code implements every specification, including those no test case covers.
 
 If no specification can be found, use `AskUserQuestion` to ask the user before proceeding.
 

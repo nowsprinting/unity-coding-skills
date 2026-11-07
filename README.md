@@ -126,7 +126,7 @@ design-tests
 
 The `SPECIFICATION` can state requirements, specifications, a software design, and a test design document (e.g., the output of `/design-tests`), for a new feature or a specification change.
 It is given as file paths, issue URLs, or written directly; when omitted, it is read from the conversation.
-It writes no test code for the test cases marked "unverifiable", "undefined", or "ambiguous", and lists them in the Open questions of its report.
+Given a test design document, it also reads the files and issues listed in its `test-basis` frontmatter, so the test design document alone is enough.
 
 Steps:
 
