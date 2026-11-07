@@ -76,7 +76,7 @@ Also determine the **report type**:
 Also check the relevant documentation (external specification, software design) for consistency with the user's bug report.
 If the documentation and the report conflict, use `AskUserQuestion` to clarify with the user which is correct.
 If the user answers that the specification itself is to change, rather than that the documentation misstates it, the request is a specification change: stop and guide the user to invoke the `/implement` skill instead.
-If the docs contain errors or are missing relevant information, add them to the list of files to be modified in this bug fix.
+If the docs contain errors or are missing relevant information, note them; Step 9 writes the corrections into the docs.
 
 Note the **test bases** of this bug fix: the files and issue URLs of the bug report and of this documentation.
 List them in each test file you write or modify in this run (`test-writing-guide`, Test Basis).
@@ -140,8 +140,8 @@ With the reproduction confirmed, investigate the root cause:
 3. Write a unit-level reproduction test that calls the suspected code directly (per `test-writing-guide`; load it and `code-writing-guide` if Step 2 was skipped — do not rely on automatic skill triggering), and run it with `/run-tests` to verify it **fails** — this confirms the suspected cause before changing the production code, and pins the defect at the unit layer where the Step 2 test cannot locate it.
    Take its expected result from the specification of the called code — the documentation from Step 1, or its XML documentation comment — not from the code traced in items 1-2: an expected result derived from the implementation passes whatever the implementation does.
    If it passes, the suspect is wrong: delete the test, record it under **Ruled out**, and return to item 1.
-   Skip this item when the cause lies outside code a unit test can call (e.g., scene/prefab wiring or asset settings)
-4. Commit the unit-level reproduction test, for the same reason as Step 4
+   Skip this item when the reproduction test from Steps 2-3 is already a unit test that calls the code identified in item 2, or when the cause lies outside code a unit test can call (e.g., scene/prefab wiring or asset settings)
+4. Commit the unit-level reproduction test, if item 3 wrote one, for the same reason as Step 4
 5. Formulate a fix
 
 ### Step 6: Regression Test Coverage
@@ -174,7 +174,17 @@ Before applying the fix, cover the adjacent behavior the fix could disturb:
 3. Run `/resolve-diagnostics` with the files added or modified in this iteration — compute the list **after** `/simplify` finishes, so its edits are covered too
 4. Commit all remaining changes to git
 
-### Step 9: Implementation Notes
+### Step 9: Feed Back the Fix to the Specification
+
+When the fix changed a software design, e.g., a method's contract, or Step 1 found errors or missing information in the documents that state the specification, including an expected behavior confirmed with the user that no document states, write the change into those documents, so that they agree with the fixed code and its tests:
+
+- A file → edit the passage it concerns, in the document's own style; place a specification it adds beside the specifications it relates to.
+  Commit the edited files.
+- An issue, or a document you cannot edit, e.g., a web page → list the change in your reply, with the passage it settles: the pull request of this fix carries it, so leave the issue as it is.
+
+Tell the user which documents you changed.
+
+### Step 10: Implementation Notes
 
 1. `Read` `<scratchpad>/implementation-notes` if it exists
 2. Report the notes to the user in chat under an `## Implementation Notes` heading — one bold sub-heading per category, each followed by a bullet list.
@@ -183,6 +193,9 @@ Before applying the fix, cover the adjacent behavior the fix could disturb:
    If the file was never created, report every category as "None"
 3. Delete the temporary notes file if it exists
 
-### Step 10: Preventing Recurrence
+### Step 11: Preventing Recurrence
 
-When the root cause lies in how the code is written or how a library or framework is used, e.g., `?.` on a destroyed `UnityEngine.Object`, tell the user under a `## Preventing Recurrence` heading that an IDE inspection or a Roslyn analyzer may keep the bug from recurring, and that `/find-and-setup-analysis-rule` searches for one.
+Propose to the user, under a `## Preventing Recurrence` heading, measures that keep bugs similar to this one from recurring.
+For example, static analysis: when the root cause lies in how the code is written or how a library or framework is used, e.g., `?.` on a destroyed `UnityEngine.Object`, an IDE inspection or a Roslyn analyzer may catch it, and the user can search for one with `/find-and-setup-analysis-rule`.
+
+The proposal ends this run; leave acting on it to the user: the user reviews the report and creates the pull request of this fix first.
