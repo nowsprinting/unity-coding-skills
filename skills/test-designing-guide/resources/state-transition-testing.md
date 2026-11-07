@@ -38,6 +38,6 @@ The test cases the test selection criterion selects get no mark, even for a tran
 ## Screen Transitions
 
 Model the screen transitions as an FSM, with screens as states and player operations as events, whether the specification gives them as a screen transition diagram, a sequence, a use case, or button operations written per screen.
-A sequence or use case is a path through the FSM; do NOT test the path as a whole, but each transition on it.
-A dialog is part of the screen that opens it, not a state of its own, and its behavior belongs to that screen (see [Contained Test Targets](../SKILL.md#contained-test-targets)).
+A dialog that only completes or cancels an operation of the screen that opens it, or only returns to that screen, e.g., a confirmation or notice dialog, is part of that screen, not a state of its own, and its behavior belongs to that screen (see [Contained Test Targets](../SKILL.md#contained-test-targets)).
+A dialog with transitions of its own, e.g., one with tabs or sub-dialogs, is a state, like a screen.
 For the test class name, see [Test Layers](../SKILL.md#test-layers).
