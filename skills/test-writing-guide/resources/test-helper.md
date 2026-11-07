@@ -89,6 +89,8 @@ public async Task ClickStartButton_LoadsGameScene() { ... }
 |-----------------------------------------|---------------------------------------------|
 | Change `Time.timeScale` during the test | `[TimeScale(2.0f)]` on the test method only |
 
+- Put `[TimeScale]` on tests that wait for animations to finish, so the animations play faster and the test runs in less time.
+
 ### Screenshots and video (Play Mode only — do NOT use in Edit Mode)
 
 | Goal                                              | Solution                                          |
