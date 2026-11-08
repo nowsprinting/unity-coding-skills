@@ -148,13 +148,12 @@ With the reproduction confirmed, investigate the root cause:
 
 Before applying the fix, cover the adjacent behavior the fix could disturb:
 
-1. Run a general-purpose subagent that loads the `test-designing-guide` skill — do not rely on automatic skill triggering — and, per its test analysis and test design resources, designs the test cases of each test target the fix formulated in Step 5 changes, e.g., the class that owns the changed lines.
-   Give it the test targets, their specifications from the documentation of Step 1, and the user's instructions on the test techniques, if any (e.g., error guessing); have it return the test cases verbatim.
+1. Run a general-purpose subagent that loads the `test-designing-guide` skill — do not rely on automatic skill triggering — and, per its test design resource, designs the test cases of the specifications of the members the fix formulated in Step 5 changes, e.g., the methods that own the changed lines, and tags the test cases that existing tests implement (Existing Tests).
+   Give it the test target of each changed member, the member's specifications from the documentation of Step 1, and the user's instructions on the test techniques, if any (e.g., error guessing); have it return the test cases verbatim.
    Quote each specification verbatim with its source, e.g., the file path and heading or the issue URL, together with the passages it depends on, e.g., the definitions of the terms it uses, and instruct the subagent not to read the source documents or follow the links in the quoted passages: a subagent reading a whole document would fill its context with the specifications of units the fix does not change.
-   Designing in a subagent keeps the method bodies you read in Step 5 out of the test design: a test case derived from the implementation passes whatever the implementation does
-2. Read the test files for the affected production code
-3. From the returned test cases, choose those that verify behavior the fix could disturb and no existing test covers
-4. Add regression tests for them (per `test-writing-guide`) and run them — they must **pass** (they test existing correct behavior, not the bug itself).
+   Designing in a subagent keeps the method bodies you read in Step 5 out of the test design: a test case derived from the implementation passes whatever the implementation does.
+   A changed member without a specification gets no regression test: record it as an unclear specification instead of deriving one from the code
+2. Write the test code of the test cases not tagged `existing` (per `test-writing-guide`, which changes the existing test of a test case tagged `test fix` instead of adding one) and run them — they must **pass** (they test existing correct behavior, not the bug itself).
    Write no test code for a test case marked unverifiable, undefined, or ambiguous
 
 ### Step 7: Apply Fix & Verify

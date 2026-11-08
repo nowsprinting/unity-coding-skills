@@ -29,7 +29,7 @@ When the test target is a scene or prefab (or an equivalent GameObject hierarchy
   - Do NOT verify positional relationships between elements or on-screen positions (e.g., "A is displayed to the right of B") — approximate positions have no meaningful pass/fail criterion, and precise coordinate checks are brittle.
     Use [visual verification tests](#visual-verification) for these instead — including coarse screen-region checks (e.g., "the version label is in the bottom-right region").
     **Exception (only when the user explicitly instructs)**: a coarse screen-region predicate (e.g., "within the bottom-right region: below 10% of screen height and right of the horizontal center") becomes deterministic when the resolution is fixed as a test condition — design it as a layout assertion test.
-    A single fixed resolution gives no confidence that the layout holds across screens, so parameterize over the expected resolutions (at least the largest and smallest supported resolutions and the widest and narrowest supported aspect ratios), one test case per resolution (see Resolution as test condition in [Visual verification](#visual-verification)).
+    A single fixed resolution gives no confidence that the layout holds across screens, so parameterize over the expected resolutions (at least the largest and smallest supported resolutions and the widest and narrowest supported aspect ratios), one test case per resolution.
 
 ## Verification methods
 
@@ -49,8 +49,6 @@ A deterministic mid-point of an animation (e.g., an attack lunge at its peak, a 
   Never create a dedicated visual verification test class.
 - **Screenshot resolution**: By default, do not fix a specific resolution for screenshot tests — let them run at whatever resolution the test environment provides.
   Only fix a resolution when the test condition explicitly depends on it (e.g., verifying element positions at a stated viewport size).
-- **Resolution as test condition**: When a test targets a specific resolution as part of its verification (e.g., layout at 960×540) — whether a screenshot test or a resolution-fixed layout assertion test — include the resolution in the `<Condition>` segment of the test method name — e.g., `At960x540_RendersVersionLabelAtBottomRight` — or, when one test method covers several resolutions, make the resolution a parameter of a parameterized test — e.g., `InBottomRightRegion_RendersVersionLabel` (resolution: {1920x1080, 960x540}).
-  Either way, each resolution becomes a distinct, independently runnable test case.
 
 #### Visual aspects to verify
 

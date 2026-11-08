@@ -14,4 +14,4 @@ Boundary values follow the derivation rules of equivalence partitioning (one met
 ## When to Skip
 
 Over-testing boundaries inflates the number of test cases and increases maintenance cost on every spec change.
-When the specification does not differentiate behavior near an edge (e.g., display color mapping), one representative per equivalence partition suffices and boundary values can be skipped entirely.
+When the specification does not differentiate behavior near an edge, one representative per equivalence partition suffices and boundary values can be skipped entirely.

@@ -32,7 +32,7 @@ Design the test cases before reading any method body of production code: a test 
    Give it those implementation targets, each with its specifications quoted verbatim, which of them are external specifications, and the requirements they realize, if any, and the user's instructions on the test techniques, if any.
    Instruct it to load the `test-designing-guide` skill — do not rely on automatic skill triggering — and:
    1. Analyze the specifications per the guide's test analysis resource, taking each implementation target as a test target
-   2. Design the test cases of each test target per the guide's test design resource: Test Layers, Contained Test Targets, Test Techniques, Test Case Naming, Parameterized Tests, and Verification Column.
+   2. Design the test cases of each test target per the guide's test design resource: Test Layers, Contained Test Targets, Test Techniques, Test Case Naming, Parameterized Tests, Verification Column, and Existing Tests.
       Mark acceptance tests per the Acceptance Tests section of each test technique's resource, and apply the user's instructions on the test techniques, if any
    3. Assess each test target (Assessment), without the modeling result
    4. Return the test cases, the Assessment, and the specifications the analysis left out with their reasons, verbatim

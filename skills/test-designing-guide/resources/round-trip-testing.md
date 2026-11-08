@@ -1,6 +1,7 @@
 # Round-Trip Testing
 
 Covers verifying a pair of inverse operations — e.g., serialize and deserialize, save and load, encode and decode — whose intermediate form, e.g., the serialized format, the specification does not define.
+Round-trip testing is a verification method, not a test technique: [equivalence partitioning](equivalence-partitioning.md) models the inputs (see [Inputs](#inputs)), and the round trip supplies the expected result and the test method name; list the test cases in the equivalence partitioning table (see [Output Format](test-design.md#output-format)).
 
 Out of scope:
 
@@ -30,3 +31,4 @@ Name the test method after the inverse operation, since the test asserts its res
 ## Acceptance Tests
 
 Mark the test case as an acceptance test (see [Output Format](test-design.md#output-format)) when an external specification, or a specification that realizes a stated requirement, explicitly states the round trip, e.g., "loading restores the saved game".
+This rule applies to these test cases in place of the rule of equivalence partitioning.

@@ -18,7 +18,7 @@ State Transition Testing (0-switch coverage)
 **Notes:**
 
 - 条件 `<条件>`、`<条件>` は、振る舞いが「未定義」と仕様に明示されているため、テストケースに含まれません
-- undefined, ambiguous と書かれたテストケースからは、テストコードは生成されません
+- unverifiable, undefined, ambiguous と書かれたテストケースからは、テストコードは生成されません
 
 #### Visual verification tests
 

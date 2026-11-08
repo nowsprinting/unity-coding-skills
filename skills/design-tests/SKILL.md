@@ -63,10 +63,11 @@ Instruct each subagent to load the `test-designing-guide` skill — do not rely 
 2. Model its specifications with test techniques, and derive test cases from the results (Test Techniques)
 3. Name the test cases (Test Case Naming) and write their Verification column (Verification Column)
 4. Re-check every parameterized row against the one-partition-per-method rule (`resources/equivalence-partitioning.md`, Deriving test methods from equivalence partitions): if substituting any listed value would change the expected result, split the row
-5. Assess the target (Assessment)
-6. Write the test cases and the Assessment in the output format (Output Format)
+5. Tag the test cases that existing tests implement (Existing Tests)
+6. Assess the target (Assessment)
+7. Write the test cases and the Assessment in the output format (Output Format)
 
-Give each subagent the test target with its assigned specifications, which of them are external specifications, and the requirements they realize if any, the test targets it contains with their assigned specifications if any, and the user's instructions on the test techniques and their test selection criteria if any, and have it return its output verbatim.
+Give each subagent the test target with its assigned specifications, which of them are external specifications, and the requirements they realize if any, the test targets it contains with their assigned specifications if any, whether the user states the specification changed since the existing tests were written, and the user's instructions on the test techniques and their test selection criteria if any, and have it return its output verbatim.
 Quote each specification and requirement verbatim with its source, e.g., the file path and heading or the issue URL, together with the passages it depends on, e.g., the definitions of the terms it uses, whether they lie in the input or in a linked document you read (see Input).
 Pass the links within two hops of the input that the quoted passages cite and you did not read, each with the sentence that cites it.
 Instruct the subagent not to read the source documents: a subagent reading a whole document would see the specifications Step 1 assigned to other targets, and could design duplicate test cases for them.
