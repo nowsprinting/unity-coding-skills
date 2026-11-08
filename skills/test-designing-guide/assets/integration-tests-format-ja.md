@@ -2,13 +2,13 @@
 
 #### Assertion-based tests
 
-State Transition Testing (0-switch coverage)
+状態遷移テスト（0スイッチカバレッジ）
 
 | Test Method         | Verification                                  | Tags       |
 |---------------------|-----------------------------------------------|------------|
 | `<条件>_<期待結果>` | `<プロパティ>` が `<期待値または状態>` である |            |
 
-Equivalence Partitioning (Boundary value coverage)
+同値分割法（境界値カバレッジ）
 
 | Test Method         | Verification                                  | Tags       |
 |---------------------|-----------------------------------------------|------------|

@@ -1,12 +1,12 @@
 ### <ClassName>Test
 
-Decision Table Testing (Every rule, Boundary value coverage)
+デシジョンテーブルテスト（すべてのルール、境界値カバレッジ）
 
 | Test Method                      | Verification                                  | Tags       |
 |----------------------------------|-----------------------------------------------|------------|
 | `<MethodName>_<条件>_<期待結果>` | `<プロパティ>` が `<期待値または状態>` である |            |
 
-Equivalence Partitioning (Boundary value coverage)
+同値分割法（境界値カバレッジ）
 
 | Test Method                      | Verification                                  | Tags       |
 |----------------------------------|-----------------------------------------------|------------|
