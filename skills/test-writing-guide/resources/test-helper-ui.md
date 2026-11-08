@@ -16,9 +16,13 @@ Add `TestHelper.UI` to Assembly Definition References.
 
 ## Find a GameObject
 
-Use `GameObjectFinder` instead of `UnityEngine.GameObject.Find`.
-`GameObjectFinder` polls until the object appears (no timing issues), verifies user reachability and interactability, and fails with `TimeoutException` when the object is not found — making test failures actionable.
-`GameObject.Find` returns `null` silently and cannot check reachability.
+When finding a GameObject that the user interacts with, always use `GameObjectFinder` instead of `UnityEngine.GameObject.Find`, `Object.FindFirstObjectByType`, `Object.FindAnyObjectByType`, and `Object.FindObjectOfType`.
+Reasons:
+
+- **Timing safety**: polls until the object appears, so tests pass even when GameObjects are instantiated asynchronously or on the next frame
+- **Reachability and interactability**: verifies the object is actually reachable by the user and (optionally) interactable — matching real user experience
+- **Blocking check**: `reachable: true` (default) naturally catches elements hidden behind a modal or overlay — which is often the bug being caught
+- **Actionable failures**: throws `TimeoutException` with a clear message; `GameObject.Find` silently returns `null` and causes a confusing `NullReferenceException` later
 
 ```csharp
 var finder = new GameObjectFinder();                    // 1 second timeout (default)
@@ -34,8 +38,6 @@ var finder = new GameObjectFinder(timeoutSeconds: 5d);  // custom timeout
 
 Common options: `reachable: true` (default), `interactable: false` (default).
 Result: use `.GameObject` on the returned value.
-
-**UI blocking**: `reachable: true` is also useful for verifying that elements behind a modal dialog or overlay are blocked from interaction — or conversely, that they become reachable once the overlay is dismissed.
 
 ### Matchers
 
@@ -86,15 +88,37 @@ await new UguiClickOperator().OperateAsync(item.GameObject);
 
 `UguiScrollRectPaginator.ResetAsync` resets the scroll position to the top-left before searching so the scan always starts from the beginning.
 
+### Verify modal/overlay blocking
+
+A modal or overlay must block interaction with elements behind it.
+Test from two angles:
+
+- **Behavioural (preferred)**: attempt to reach a background element via `GameObjectFinder` with `reachable: true` (default) while the overlay is open — the finder throws `TimeoutException`, confirming blockage.
+  Repeat with the overlay dismissed to confirm reachability restores.
+- **Structural**: assert the backdrop intercepts raycasts: `Assert.That(background.GetComponent<Image>().raycastTarget, Is.True)` (or `canvasGroup.blocksRaycasts`).
+
+When a decorative full-screen element should not block (e.g., a background image), annotate it with `NonBlockingAnnotation` so `GameObjectFinder` skips it (see [Annotation Components](#annotation-components)).
+
 ---
 
 ## Operate a GameObject
 
-Use an implementation class of `TestHelper.UI.Operators.IOperator` instead of directly calling button events or setting field values.
+When reproducing user actions, always use an implementation class of `TestHelper.UI.Operators.IOperator` (e.g., `UguiClickOperator`, `UguiTextInputOperator`) instead of directly calling button events or setting field values.
+Reasons:
+
+- **Correct event simulation**: operators go through Unity's `EventSystem` and input pipeline, exercising the same code path as a real user interaction
+- **Reachability-gated**: test fails if a UI element is disabled or hidden
+- **Simpler test code**: no need to look up components or call internal methods; just find the GameObject and operate it
 
 ```csharp
-var result = await finder.FindByNameAsync("SubmitButton", interactable: true);
-await new UguiClickOperator().OperateAsync(result.GameObject);
+// NG — bypasses Unity's event pipeline
+button.GetComponent<Button>().onClick.Invoke();
+inputField.GetComponent<InputField>().text = "12345";
+scene.OnConfirmClicked();
+
+// OK — goes through the proper UI event path
+await new UguiClickOperator().OperateAsync(button);
+await new UguiTextInputOperator().OperateAsync(inputField, "12345");
 ```
 
 | Goal                      | Operator                                                                                       |

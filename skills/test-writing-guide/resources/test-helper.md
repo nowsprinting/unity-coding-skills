@@ -150,7 +150,8 @@ Add `using Is = TestHelper.Constraints.Is;` to use these alongside NUnit's `Is`.
 
 ### Layout constraints
 
-These implement the recipes referenced by `test-writing-guide` → **Layout assertion tests**.
+These implement the layout assertion tests of the test design (`test-writing-guide` → Layout Assertion Tests).
+Choose the constraint by the expected result:
 
 | Goal                                                  | Constraint                                            |
 |-------------------------------------------------------|-------------------------------------------------------|
@@ -158,6 +159,10 @@ These implement the recipes referenced by `test-writing-guide` → **Layout asse
 | An element is fully within its parent container       | `Assert.That(element, Is.WithinContainer(container))` |
 | No pair in a collection overlaps                      | `Assert.That(elements, Is.Not.Overlapping)`           |
 | Text does not overflow its own `RectTransform`        | `Assert.That(element, Is.Not.TextOverflowing)`        |
+
+When the expected result is "the user can actually reach this element", use `GameObjectFinder` with `reachable: true` (optionally with a paginator) instead: it proves the element is on screen and not covered by another element (see `test-helper-ui.md`).
+
+Before asserting, settle layout with `Canvas.ForceUpdateCanvases()` then `await Awaitable.NextFrameAsync()` — the former rebuilds pending layout/graphic geometry (rect sizes, text metrics); the latter waits for a real render pass, which is what a raycast reachability check needs, since a newly activated/deactivated `Graphic`'s `CanvasRenderer.depth` stays unset until then and `GraphicRaycaster` silently skips any candidate whose `depth == -1` — `ForceUpdateCanvases()` alone does not assign it.
 
 `Overlapping` and `TextOverflowing` match when the defect is present, so the form you actually write is the negated one (`Is.Not.Overlapping`, `Is.Not.TextOverflowing`) — don't write `Is.Overlapping` meaning "no overlap".
 
@@ -188,8 +193,7 @@ A value that can't be resolved throws `ArgumentNullException`/`ArgumentException
 - `Is.TextOverflowing` only looks at a `Text`/`TMP_Text` on the resolved `RectTransform`'s **own** `GameObject` — passing a parent throws `ArgumentException`.
   When applying it over a collection, filter down to elements that actually carry a text component first.
 - `Is.All.<constraint>` applies a constraint to every item of a collection, e.g. `Is.All.WithinScreen`.
-- Call `Canvas.ForceUpdateCanvases()` before `Is.Not.TextOverflowing` — without it, the assertion fails with "has not been laid out; call `Canvas.ForceUpdateCanvases()` before asserting".
-  (The general layout-settling rule — `Canvas.ForceUpdateCanvases()` then `await Awaitable.NextFrameAsync()` — is already covered in `test-writing-guide` → Layout assertion tests; this note only calls out `TextOverflowing`'s specific failure mode.)
+- Without `Canvas.ForceUpdateCanvases()` (see the layout settling above), `Is.Not.TextOverflowing` fails with "has not been laid out; call `Canvas.ForceUpdateCanvases()` before asserting".
 
 **What these constraints do NOT see**: they compare axis-aligned bounding boxes of the four world corners only — `RectMask2D` clipping, `Canvas.enabled`, `CanvasGroup.alpha`, and `activeInHierarchy` are ignored (geometry only).
 A rotated element is over-approximated by its AABB.

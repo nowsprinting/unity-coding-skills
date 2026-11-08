@@ -396,8 +396,15 @@ Pick the wait that matches the situation:
 
 - **Known frame count** — `await Awaitable.NextFrameAsync()` on Unity 2023+.
   On older Unity, use `UniTask.NextFrame` / `UniTask.DelayFrame`, or write the test with `[UnityTest]` and `yield return null`.
-- **Waiting for a state transition** (e.g., "next turn") — Drive the wait off the game's state machine with `UniTask.WaitUntil` or `UnityEngine.WaitUntil` instead of guessing a duration.
-  Extract the wait into a named helper method (e.g., `async Awaitable WaitForPlayerTurn()`) to make intent clear and allow reuse across tests.
+  When an operation triggers a deferred `Destroy` or UI rebuild, advance one extra frame before asserting on the new hierarchy.
+- **Waiting for a state transition** (e.g., "next turn", the resolution of a played card) — Drive the wait off a production-side state machine or a "busy" signal (`IsPlaying`, coroutine flag, etc.) instead of guessing a duration: a `while` loop over `Awaitable.NextFrameAsync()`, `UniTask.WaitUntil` / `UniTask.WaitUntilValueChanged`, or `UnityEngine.WaitUntil`; never a fixed number of frames or `WaitForSeconds`.
+  Extract the wait into a named helper method (e.g., `async Awaitable WaitForPlayerTurn()`) to make intent clear and allow reuse across tests (see [No Control Flow in Tests](#no-control-flow-in-tests)).
+  ```csharp
+  await DragCard(Cards[1], Enemies[0]);
+  while (battleDirector.IsPlaying) // wait until the played action fully resolves
+      await Awaitable.NextFrameAsync();
+  Assert.That(battleState.Enemies[0].Hp, Is.LessThan(hpBefore));
+  ```
 - **Unknown duration** (UI interactions, asset loads, backend calls) — Poll state at a short interval through a helper.
   The UI Test Helper package (`test-helper.ui`) ships `GameObjectFinder`, which already does this.
 
@@ -516,6 +523,14 @@ Follow the Spy naming convention from [Spy MonoBehaviour Conventions](#spy-monob
 
 ```csharp
 [assembly: InternalsVisibleTo("MyAssembly.Tests")]
+```
+
+- When adding a test seam to production code (e.g., an `internal` accessor or a virtual override point to support injection), always wrap it with `#if UNITY_INCLUDE_TESTS` … `#endif` so it is excluded from non-test builds:
+
+```csharp
+#if UNITY_INCLUDE_TESTS
+internal void SetStateForTest(State state) => _state = state;
+#endif
 ```
 
 - Do not use reflection to access `private` members — reflection-based access tests implementation structure, not observable behaviour; any internal rename or refactor breaks the test without changing the contract (fragile test).
