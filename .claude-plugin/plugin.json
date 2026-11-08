@@ -1,6 +1,6 @@
 {
   "name": "unity-coding-skills",
-  "version": "1.10.0",
+  "version": "2.0.0-alpha",
   "description": "Skills for Claude Code to develop Unity projects autonomously using a test-first approach: passing tests means done. Includes maintainable test design and implementation, coding guidelines, scene editing, and more.",
   "author": {
     "name": "Koji Hasegawa",
