@@ -2,17 +2,17 @@
 
 #### Assertion-based tests
 
+State Transition Testing (0-switch coverage)
+
+| Test Method              | Verification                                | Tags       |
+|--------------------------|---------------------------------------------|------------|
+| `<Condition>_<Expected>` | `<property>` is `<expected value or state>` |            |
+
 Equivalence Partitioning (Boundary value coverage)
 
 | Test Method              | Verification                                | Tags       |
 |--------------------------|---------------------------------------------|------------|
 | `<Condition>_<Expected>` | `<property>` is `<expected value or state>` | acceptance |
-| `<Condition>_<Expected>` | `<property>` is `<expected value or state>` |            |
-
-State Transition Testing (0-switch coverage)
-
-| Test Method              | Verification                                | Tags       |
-|--------------------------|---------------------------------------------|------------|
 | `<Condition>_<Expected>` | `<property>` is `<expected value or state>` |            |
 
 **Notes:**

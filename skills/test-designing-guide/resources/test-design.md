@@ -234,11 +234,11 @@ Output the test cases of a test target as one section per test class, in this or
   - Test perspectives — *what* behavioral aspects, conditions, or interactions are verified for this target.
     NOT a test technique name
 
-For unit tests and assertion-based tests, output one table per test technique, in the order equivalence partitioning, decision table testing, combinatorial testing, state transition testing, error guessing.
+For unit tests and assertion-based tests, output one table per test technique, in the order state transition testing, decision table testing, equivalence partitioning, combinatorial testing, error guessing: a technique with a structural model comes first, so that a test case shared with equivalence partitioning stays in the table whose coverage, every transition or every rule, the reader checks by it.
 Write a plain-text line above each table naming the technique, followed by its chosen test selection criteria in parentheses, separated by `, ` when it has several, e.g., `Equivalence Partitioning (Boundary value coverage)`, `Decision Table Testing (Every rule, Boundary value coverage)`, `State Transition Testing (1-switch coverage)`.
 Name each criterion as the technique's resource does; a technique without one, e.g., error guessing, has no parentheses.
 Write the line in English whatever the project language.
-List a test case that several techniques derive once, in the table of the first of them.
+List a test case that several techniques derive once, in the table of the first of them; the row keeps the parameters and the tags of every technique that derives it, e.g., the boundary values of equivalence partitioning in a state transition row.
 Validators, visual verification tests, and manual tests derive their test cases from properties, visual aspects, and human judgment instead of a technique, so each keeps a single table without the line.
 
 > **Note:** Do NOT write "Edit Mode" or "Play Mode" in test case output — that is a test-writing concern, not a test design concern.

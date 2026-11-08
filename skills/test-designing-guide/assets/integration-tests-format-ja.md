@@ -2,17 +2,17 @@
 
 #### Assertion-based tests
 
+State Transition Testing (0-switch coverage)
+
+| Test Method         | Verification                                  | Tags       |
+|---------------------|-----------------------------------------------|------------|
+| `<条件>_<期待結果>` | `<プロパティ>` が `<期待値または状態>` である |            |
+
 Equivalence Partitioning (Boundary value coverage)
 
 | Test Method         | Verification                                  | Tags       |
 |---------------------|-----------------------------------------------|------------|
 | `<条件>_<期待結果>` | `<プロパティ>` が `<期待値または状態>` である | acceptance |
-| `<条件>_<期待結果>` | `<プロパティ>` が `<期待値または状態>` である |            |
-
-State Transition Testing (0-switch coverage)
-
-| Test Method         | Verification                                  | Tags       |
-|---------------------|-----------------------------------------------|------------|
 | `<条件>_<期待結果>` | `<プロパティ>` が `<期待値または状態>` である |            |
 
 **Notes:**

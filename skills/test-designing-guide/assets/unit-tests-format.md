@@ -1,17 +1,17 @@
 ### <ClassName>Test
 
+Decision Table Testing (Every rule, Boundary value coverage)
+
+| Test Method                           | Verification                                | Tags       |
+|---------------------------------------|---------------------------------------------|------------|
+| `<MethodName>_<Condition>_<Expected>` | `<property>` is `<expected value or state>` |            |
+
 Equivalence Partitioning (Boundary value coverage)
 
 | Test Method                           | Verification                                | Tags       |
 |---------------------------------------|---------------------------------------------|------------|
 | `<MethodName>_<Condition>_<Expected>` | `<property>` is `<expected value or state>` | acceptance |
 | `<Condition>_<Expected>`              | `<property>` is `<expected value or state>` |            |
-
-Decision Table Testing (Every rule, Boundary value coverage)
-
-| Test Method                           | Verification                                | Tags       |
-|---------------------------------------|---------------------------------------------|------------|
-| `<MethodName>_<Condition>_<Expected>` | `<property>` is `<expected value or state>` |            |
 
 **Notes:**
 

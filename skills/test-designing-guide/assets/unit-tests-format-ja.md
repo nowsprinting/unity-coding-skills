@@ -1,17 +1,17 @@
 ### <ClassName>Test
 
+Decision Table Testing (Every rule, Boundary value coverage)
+
+| Test Method                      | Verification                                  | Tags       |
+|----------------------------------|-----------------------------------------------|------------|
+| `<MethodName>_<条件>_<期待結果>` | `<プロパティ>` が `<期待値または状態>` である |            |
+
 Equivalence Partitioning (Boundary value coverage)
 
 | Test Method                      | Verification                                  | Tags       |
 |----------------------------------|-----------------------------------------------|------------|
 | `<MethodName>_<条件>_<期待結果>` | `<プロパティ>` が `<期待値または状態>` である | acceptance |
 | `<条件>_<期待結果>`              | `<プロパティ>` が `<期待値または状態>` である |            |
-
-Decision Table Testing (Every rule, Boundary value coverage)
-
-| Test Method                      | Verification                                  | Tags       |
-|----------------------------------|-----------------------------------------------|------------|
-| `<MethodName>_<条件>_<期待結果>` | `<プロパティ>` が `<期待値または状態>` である |            |
 
 **Notes:**
 
