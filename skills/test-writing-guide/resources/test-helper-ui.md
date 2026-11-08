@@ -151,7 +151,7 @@ await new UguiToggleOperator().OperateAsync(toggle.GameObject);
 When operating a `GameObject` (clicking, typing, etc.), write a private helper method that combines the `GameObjectFinder` lookup and the operator call:
 
 ```csharp
-private async UniTask Click(string name)
+private async Awaitable Click(string name)
 {
     var finder = new GameObjectFinder();
     var result = await finder.FindByNameAsync(name, interactable: true);

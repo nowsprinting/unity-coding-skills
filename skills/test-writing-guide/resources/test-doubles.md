@@ -11,16 +11,18 @@ When separation is impractical, replace the DOC with a **test double**: a contro
 A test double works only when the SUT receives its DOC from outside.
 Prefer constructor injection; method, property, or field injection also works.
 A DI container is not required.
-The examples below inject a PRNG through a minimal `IRandom` interface that declares only `float Range(float minInclusive, float maxInclusive)`.
+The examples below inject a PRNG through the `IRandom` interface of the `TestHelper.Random` package, whose `RandomWrapper` implements it with `virtual` members (see `test-helper-random.md`).
 
 ```csharp
+using TestHelper.Random;
+
 public class Janken
 {
     private readonly IRandom _random;
 
     public Janken(IRandom random = null)
     {
-        _random = random ?? new UnityEngineRandom();
+        _random = random ?? new RandomWrapper();
     }
 
     public Hand Pon()
@@ -52,7 +54,7 @@ A return value from a DOC to the SUT is an **indirect input**.
 A test stub fixes the indirect input so that the SUT's output becomes predictable.
 
 ```csharp
-public class StubRandom : IRandom
+public class StubRandom : RandomWrapper
 {
     private readonly float _value;
 
@@ -61,7 +63,7 @@ public class StubRandom : IRandom
         _value = value;
     }
 
-    public float Range(float minInclusive, float maxInclusive)
+    public override float Range(float minInclusive, float maxInclusive)
     {
         return _value;
     }
@@ -88,12 +90,12 @@ A test spy records the calls and their arguments so that the test can assert on 
 What a spy returns is up to the test: a fixed value like a stub, or a delegation to the real DOC.
 
 ```csharp
-public class SpyRandom : IRandom
+public class SpyRandom : RandomWrapper
 {
     public float LastMinInclusive { get; private set; }
     public float LastMaxInclusive { get; private set; }
 
-    public float Range(float minInclusive, float maxInclusive)
+    public override float Range(float minInclusive, float maxInclusive)
     {
         LastMinInclusive = minInclusive;
         LastMaxInclusive = maxInclusive;

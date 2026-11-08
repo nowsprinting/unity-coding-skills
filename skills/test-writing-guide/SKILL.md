@@ -19,7 +19,6 @@ Guide for writing test code for Unity projects.
   If it is, stop it using the `unity_play_control` tool first.
 - Never create `.meta` files.
   Unity editor creates them automatically.
-- When a test creates a `GameObject` or instantiates a prefab, apply `[CreateScene]` to the test method (not required if `[LoadScene]` is already present).
 - When adding a test seam to production code (e.g., an `internal` accessor or a virtual override point to support injection), always wrap it with `#if UNITY_INCLUDE_TESTS` … `#endif` so it is excluded from non-test builds:
     ```csharp
     #if UNITY_INCLUDE_TESTS
@@ -99,7 +98,7 @@ private static Catalog CreateCatalog(int midCount) { ... }
 
 ### Multi-frame tests
 
-When a game mechanic across frames (e.g., playing a card and waiting for its resolution), wait for the step to finish before asserting — not at a fixed frame count.
+When a game mechanic spans frames (e.g., playing a card and waiting for its resolution), wait for the step to finish before asserting — not at a fixed frame count.
 
 ```csharp
 await DragCard(Cards[1], Enemies[0]);

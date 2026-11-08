@@ -102,6 +102,7 @@ public async Task ClickStartButton_LoadsGameScene() { ... }
 - `[TakeScreenshot]` works with sync `[Test]`, async `[Test]`, and `[UnityTest]` — no need to make the method async just to use it.
 - Saved to `<Application.persistentDataPath>/TestHelper/Screenshots/<TestName>.png` by default.
   The absolute path is recorded in the NUnit test result as the `Screenshot` property — read it from there instead of composing the path by hand (the file name is sanitized, and gets a `_1`, `_2` … suffix when one test saves several).
+- Do not override the resolution or the output directory — let the test run at whatever the environment provides (see `run-tests` skill → Visual Verification).
 
 > [!WARNING]\
 > When combining `[TakeScreenshot]` with `[CreateScene]`:
@@ -124,7 +125,7 @@ public async Task MyScene_SomeState_Screenshot() { ... }
 > If `TearDown` destroys GameObjects or unloads the scene, the screenshot will be empty — call `await ScreenshotHelper.TakeScreenshotAsync()` inside the test method instead.
 
 > [!IMPORTANT]\
-> When the resolution itself is part of the test condition (e.g., verifying element positions at a specific viewport size), apply `[GameViewResolution]` on the test method.
+> **Exception**: when the resolution itself is part of the test condition (e.g., verifying element positions at a specific viewport size), apply `[GameViewResolution]` on the test method.
 > CI runs at a constrained screen resolution and a standalone Player cannot change its resolution at run time, so a resolution-pinned test should also carry `[Category("IgnoreCI")]` and `[UnityPlatform]` restricted to the desktop editors (see `unity-test-framework.md`):
 
 ```csharp
@@ -135,9 +136,6 @@ public async Task MyScene_SomeState_Screenshot() { ... }
 [UnityPlatform(RuntimePlatform.OSXEditor, RuntimePlatform.WindowsEditor, RuntimePlatform.LinuxEditor)]
 public async Task MyScene_SomeLayout_At400x200_Screenshot() { ... }
 ```
-
-> [!NOTE]\
-> Do not override the resolution or the output directory — let the test run at whatever the environment provides, and read the actual path back from the `Screenshot` property (see `run-tests` skill → Visual Verification).
 
 ---
 

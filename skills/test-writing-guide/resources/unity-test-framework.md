@@ -56,12 +56,12 @@ Old Unity Test Framework patterns are common in training data.
 The table below maps outdated patterns to their modern equivalents.
 **Do not use the old forms.**
 
-| Old (outdated)                          | Modern                                      |
-|-----------------------------------------|---------------------------------------------|
-| `[UnityTest] IEnumerator` for async     | `[Test] async Task`                         |
-| `Assert.AreEqual(expected, actual)`     | `Assert.That(actual, Is.EqualTo(expected))` |
-| `Assert.IsTrue(condition)`              | `Assert.That(condition, Is.True)`           |
-| `Assert.IsNull(obj)`                    | `Assert.That(obj, Is.Null)`                 |
+| Old (outdated)                      | Modern                                                                                                                                                                                                                                                       |
+|-------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[UnityTest] IEnumerator` for async | `[Test] async Task` — `[UnityTest]` only where a yield instruction requires it (see [Custom Yield Instructions for Edit Mode tests](#custom-yield-instructions-for-edit-mode-tests) and [MonoBehaviour Lifecycle Testing](#monobehaviour-lifecycle-testing)) |
+| `Assert.AreEqual(expected, actual)` | `Assert.That(actual, Is.EqualTo(expected))`                                                                                                                                                                                                                  |
+| `Assert.IsTrue(condition)`          | `Assert.That(condition, Is.True)`                                                                                                                                                                                                                            |
+| `Assert.IsNull(obj)`                | `Assert.That(obj, Is.Null)`                                                                                                                                                                                                                                  |
 
 ### Play Mode is determined by path, not by attributes
 
@@ -73,20 +73,6 @@ Mode is determined by the **test file's path**, not by test attributes:
 
 `[Test]`, `[UnityTest]`, `[CreateScene]`, and `[LoadScene]` do **not** affect which mode the test runs in.
 
-### Assertions: use the constraint model
-
-```csharp
-// Do NOT use the classic model
-Assert.AreEqual(expected, actual);
-Assert.IsTrue(condition);
-Assert.IsNull(obj);
-
-// Use the constraint model
-Assert.That(actual, Is.EqualTo(expected));
-Assert.That(condition, Is.True);
-Assert.That(obj, Is.Null);
-```
-
 ---
 
 ## Writing Tests
@@ -96,7 +82,6 @@ Assert.That(obj, Is.Null);
 - Prefer one `Assert.That` per test method.
   **Exception**: when the Verification column of the test case lists multiple properties (the multi-property exception in the test design, e.g., the state resulting from a transition), multiple `Assert.That` calls are permitted in a single test.
   In that case, pass a short `message` string as the third argument to **each** `Assert.That` to identify which property is being verified.
-- Use the **constraint model only**: `Assert.That(actual, constraint)` — never use the classic model (`Assert.AreEqual`, etc.)
 - Do NOT pass the `message` argument to `Assert.That` in single-assertion tests; the test name and constraint must be self-explanatory.
   When a test contains multiple `Assert.That` calls (see exception above), a `message` argument is **required** on every call.
 
@@ -284,14 +269,13 @@ public void Damage_WeaknessAttribute_Returns2x(Element defence, Element attack) 
 
 The following maps the test-designing-guide notation to NUnit attributes:
 
-| Design notation                                                       | NUnit                                                      |
-|-----------------------------------------------------------------------|------------------------------------------------------------|
-| `(flag: (bool))` — bool param, all values                             | `[Values] bool flag`                                       |
-| `(direction: (Direction))` — enum param, all values                   | `[Values] Direction direction`                             |
-| `(n: {3, 6, 9})` — explicit values, single param                      | `[Values(3, 6, 9)] int n`                                  |
-| `(flag: (bool), count: {0, 1, 5})` — mixed                            | `[Values] bool flag, [Values(0, 1, 5)] int count`          |
-| `(a: {0, 1, -1}, b: {0, 1})` — multiple params, exhaustive            | `[Values(0, 1, -1)] int a, [Values(0, 1)] int b`           |
-| `(a: {0, 1, -1}, b: {0, 1}, by pairwise)` — multiple params, pairwise | `[Pairwise]` on the method + `[Values(...)]` on each param |
+| Design notation                           | Meaning                           | NUnit                                                      |
+|-------------------------------------------|-----------------------------------|------------------------------------------------------------|
+| `(flag: (bool))`                          | bool param, all values            | `[Values] bool flag`                                       |
+| `(direction: (Direction))`                | enum param, all values            | `[Values] Direction direction`                             |
+| `(flag: (bool), count: {0, 1, 5})`        | mixed                             | `[Values] bool flag, [Values(0, 1, 5)] int count`          |
+| `(a: {0, 1, -1}, b: {0, 1})`              | multiple params, all combinations | `[Values(0, 1, -1)] int a, [Values(0, 1)] int b`           |
+| `(a: {0, 1, -1}, b: {0, 1}, by pairwise)` | multiple params, pairwise         | `[Pairwise]` on the method + `[Values(...)]` on each param |
 
 - `[Values]` with no argument on a `bool` parameter generates `true` and `false`; on an enum parameter, it generates all defined values
 - Multiple `[Values]` parameters produce the **full Cartesian product** by default
@@ -425,7 +409,7 @@ When a test depends on external state (scene hierarchy, assets), use `Assume.Tha
 var cube = GameObject.Find("Cube");
 Assume.That(cube, Is.Not.Null);     // inconclusive (orange) if missing, not failed (red)
 sut.AttackTo(cube);
-Assert.That((bool)cube, Is.False);
+Assert.That(cube, Is.Destroyed);
 ```
 
 A failed `Assume` marks the test **inconclusive** in the runner, making it easy to distinguish environment problems from real failures.
@@ -542,15 +526,11 @@ Do NOT write XML documentation comments in test code.
 
 ## Troubleshooting
 
-### `[Test]` on an `async` method fails to compile or run
+### A feature of this guide fails, or a test run freezes
 
-If a test written as `[Test]` + `async` method errors out — compile error, `async void` rejection, or the runner refusing to execute the test — the `com.unity.test-framework` package may be too old.
-Check its resolved version in `Packages/packages-lock.json`; if it is older than **v1.4.6**, ask the user to upgrade it.
-
-### `[ParametrizedIgnore]` is not recognized
-
-If `[ParametrizedIgnore]` on a parameterized test errors as an unknown attribute, the `com.unity.test-framework` package may be too old.
-Check its resolved version in `Packages/packages-lock.json`; if it is older than **v1.4.6**, ask the user to upgrade it.
+If a test written as `[Test]` + `async` method errors out (compile error, `async void` rejection, or the runner refusing to execute it), `[ParametrizedIgnore]` errors as an unknown attribute, or a test run freezes the Editor or behaves inexplicably, the `com.unity.test-framework` or [UTF Analyzers](https://github.com/nowsprinting/test-framework.analyzers) package may be too old; this skill provides no information for avoiding the bugs in older versions.
+Check the resolved version of `com.unity.test-framework` in `Packages/packages-lock.json`; if it is older than **v1.4.6**, ask the user to upgrade it.
+Check the installed version of UTF Analyzers — `com.nowsprinting.test-framework.analyzers` in `Packages/packages-lock.json` (UPM) or `UTFAnalyzers` in `Assets/packages.config` (NuGetForUnity); if it is older than **v1.4.0**, ask the user to upgrade it.
 
 ### `[Repeat]` or `[Retry]` test times out unexpectedly
 
@@ -561,9 +541,3 @@ When using `[Repeat(n)]`, set `[Timeout]` to at least `n × per-iteration-budget
 
 `LogAssert.ignoreFailingMessages` resets to `false` before each test.
 Set it explicitly inside the test method where it is needed — it cannot be applied globally via `[SetUp]`.
-
-### A test run freezes or behaves inexplicably
-
-If a test run freezes the Editor or behaves inexplicably, the `com.unity.test-framework` or [UTF Analyzers](https://github.com/nowsprinting/test-framework.analyzers) package may be too old; this skill provides no information for avoiding the bugs in older versions.
-Check the resolved version of `com.unity.test-framework` in `Packages/packages-lock.json`; if it is older than **v1.4.6**, ask the user to upgrade it.
-Check the installed version of UTF Analyzers — `com.nowsprinting.test-framework.analyzers` in `Packages/packages-lock.json` (UPM) or `UTFAnalyzers` in `Assets/packages.config` (NuGetForUnity); if it is older than **v1.4.0**, ask the user to upgrade it.
