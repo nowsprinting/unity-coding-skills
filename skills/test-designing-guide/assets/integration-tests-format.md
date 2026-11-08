@@ -8,7 +8,7 @@ State Transition Testing (0-switch coverage)
 |--------------------------|---------------------------------------------|------------|
 | `<Condition>_<Expected>` | `<property>` is `<expected value or state>` |            |
 
-Equivalence Partitioning (Boundary value coverage)
+Equivalence Partitioning (Equivalence partition coverage)
 
 | Test Method              | Verification                                | Tags       |
 |--------------------------|---------------------------------------------|------------|

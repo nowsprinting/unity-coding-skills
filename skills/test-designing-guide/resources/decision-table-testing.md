@@ -22,7 +22,7 @@ Choose one criterion from each of the following, independently of each other:
   - **Every rule** — every rule is selected
 
   For every condition and every action, select the fewest rules that meet the criterion.
-- **Values of each condition** — the [test selection criterion of equivalence partitioning](equivalence-partitioning.md#test-selection-criterion), applied to the equivalence partitions of every condition; the default is boundary value coverage, which adds the boundary values of an equivalence partition to the parameterized test of each selected rule that states it.
+- **Values of each condition** — the [test selection criterion of equivalence partitioning](equivalence-partitioning.md#test-selection-criterion), applied to the equivalence partitions of every condition, with the same default as equivalence partitioning; boundary value coverage adds the boundary values of an equivalence partition to the parameterized test of each selected rule that states it.
   An instruction that chooses the test selection criterion of equivalence partitioning chooses this one too.
 
 ## Test Methods

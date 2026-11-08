@@ -20,7 +20,7 @@ An enum has no values beyond its members, so it gets no such equivalence partiti
 
 ## Test Selection Criterion
 
-Choose one of the following; the default is boundary value coverage:
+Choose one of the following; the default is boundary value coverage for unit tests, and equivalence partition coverage for integration tests:
 
 - **Equivalence partition coverage** — one test case per equivalence partition, with its representative
 - **Boundary value coverage** — equivalence partition coverage, plus the boundary values of each equivalence partition that [boundary value analysis](boundary-value-analysis.md) finds, in the equivalence partition's parameterized test
