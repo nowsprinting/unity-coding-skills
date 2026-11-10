@@ -5,8 +5,8 @@ A [Claude Code](https://claude.ai/code) plugin for Unity development that enable
 - **Test design** — designing the tests before implementation surfaces gaps and contradictions in the specification, and lets you review the behavior it requires as test cases.
 - **Test first** — the agent writes reliable, maintainable tests before production code, then iterates until they all pass: passing tests means done.
 
-> [!IMPORTANT]\
-> This plugin relies on Claude Code-specific features, such as the bundled `/simplify` skill and frontmatter fields of skills.
+> [!NOTE]\
+> Some skills rely on Claude Code-specific features, such as the bundled `/simplify` skill and skill frontmatter fields.
 > If you use the skills with a different coding agent, please adapt them accordingly.
 
 ## Skills
@@ -28,7 +28,7 @@ A [Claude Code](https://claude.ai/code) plugin for Unity development that enable
 
 > [!IMPORTANT]\
 > Some skills require the JetBrains Rider built-in MCP server, IDE plugins, or UPM packages listed in the "Required" column above.
-> If you don't use Rider or these packages, please modify the skill accordingly.
+> If you don't use Rider or these packages, please adapt them accordingly.
 
 > [!TIP]\
 > The Rider built-in MCP server also provides tools useful for coding agents, such as `list_directory_tree`, `search_file`, `search_regex`, `search_symbol`, and `search_text`.
@@ -37,39 +37,41 @@ A [Claude Code](https://claude.ai/code) plugin for Unity development that enable
 
 ```mermaid
 flowchart LR
-    D1["D1. Requirements/ External specifications"]
+    D1["D1. Specifications"]
     D2["D2. Integration test design"]
-    D3["D3. Reviewed test design"]
-    D4["D4. Design docs"]
-    D5["D5. Unit test design"]
-    D6["D6. Test code"]
-    D7["D7. Production code"]
+    D3["D3. Design docs"]
+    D4["D4. Unit test design"]
+    D5["D5. Test code"]
+    D6["D6. Production code"]
     P1(("P1. /design-tests"))
     P2(("P2. Review test design"))
     P3(("P3. Design<sup>1</sup>"))
-    P4(("P4. /implement"))
-    D1 --> P1
-    D4 -. "optional<sup>2</sup>" .-> P1
+    P4(("P4. /implement<sup>3</sup>"))
+    D1 <--> P1
+    D3 -. "optional<sup>2</sup>" .-> P1
     P1 --> D2
-    D2 --> P2
-    P1 -.-> D5
-    D5 -.-> P2
-    D1 <--> P2
+    D2 <--> P2
+    P1 -.-> D4
     D4 <-.-> P2
-    P2 --> D3
-    D3 --> P4
+    D1 <--> P2
+    D3 <-.-> P2
     D1 --> P3
+    P3 --> D3
     D1 --> P4
-    P3 --> D4
-    D4 --> P4
+    D2 --> P4
+    D3 --> P4
+    D4 -.-> P4
+    P4 --> D5
     P4 --> D6
-    P4 --> D7
 ```
 
 <sup>1</sup> Use any design skills you prefer, e.g., [grilling](https://github.com/mattpocock/skills), [pstack](https://github.com/cursor/plugins/tree/main/pstack), or [modularity](https://github.com/vladikk/modularity).
 
-<sup>2</sup> Giving `/design-tests` the design docs makes the test design more accurate, but adds test cases for you to review.
-Without them, `/implement` designs the test cases for the classes the design docs add on its own, internally.
+<sup>2</sup> Dashed flows are optional.
+Giving `/design-tests` the design docs makes the test design more accurate, but adds test cases for you to review.
+Giving them only to `/implement` skips that review: it designs the unit tests internally.
+
+<sup>3</sup> Test-first: it writes the test code, then the production code that passes it.
 
 ### Design tests from specifications
 
