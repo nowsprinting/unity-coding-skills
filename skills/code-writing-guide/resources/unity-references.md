@@ -12,14 +12,7 @@ Read the Unity version from the `m_EditorVersion:` line of `ProjectSettings/Proj
 Call it `<FULL_VERSION>`.
 For web URLs, truncate to `MAJOR.MINOR` (e.g., `6000.3`).
 Call it `<SHORT_VERSION>`.
-
-**If the version is found:**
-- Say: "This project is using Unity X.Y, so I'll use modern Unity APIs and C# features up to this version."
-- Do NOT list features, do NOT ask for confirmation
-
-**If the file or the line is missing:**
-- Say: "Could not detect Unity version in this repository"
-- Use AskUserQuestion: "Which Unity version should I target?" with common version options
+If the file or the line is missing, use `AskUserQuestion` to ask the user which Unity version to target.
 
 ### Official documentation
 
