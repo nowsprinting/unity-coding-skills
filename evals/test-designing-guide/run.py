@@ -37,10 +37,14 @@ def parse_golden(path):
 
 def run_once(fixture_dir, model, effort, out_md):
     with tempfile.TemporaryDirectory() as work:
-        # golden.md and prompt.md stay out of the workspace: the agent must not see the checklist
-        shutil.copytree(fixture_dir, work, dirs_exist_ok=True, ignore=shutil.ignore_patterns("golden.md", "prompt.md"))
+        # golden.md, draft-golden.md and prompt.md stay out of the workspace: the agent must not see the checklist
+        # instruction.md goes into the prompt, not the workspace: an instruction is what the user says, not a document a subagent may come across
+        shutil.copytree(fixture_dir, work, dirs_exist_ok=True,
+                        ignore=shutil.ignore_patterns("golden.md", "draft-golden.md", "instruction.md", "prompt.md"))
         prompt = fixture_dir / "prompt.md" if (fixture_dir / "prompt.md").exists() else HERE / "prompt.md"
-        res = claude(prompt.read_text(), "--model", model, "--effort", effort,
+        instruction = fixture_dir / "instruction.md"
+        text = prompt.read_text().replace("{instruction}", instruction.read_text().strip() if instruction.exists() else "none")
+        res = claude(text, "--model", model, "--effort", effort,
                      "--plugin-dir", str(PLUGIN_DIR), "--allowedTools", "Read,Glob,Grep,Skill,Agent",
                      "--permission-mode", "manual", cwd=work)
     out_md.write_text(res["result"])

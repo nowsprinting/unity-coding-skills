@@ -4,11 +4,16 @@ Per that skill, do the test analysis of the input below:
 
 - Specification under test: `spec.md` in this directory
 - Reference: `reference.md` in this directory, when it exists
+- Instruction: the text in the `<instruction>` tags below, unless it is "none"
+
+<instruction>
+{instruction}
+</instruction>
 
 There is no implementation code.
 
 Then do the test design of each test target in its own general-purpose subagent, launched in parallel, so that the working material of one target stays out of the others' context.
-Give each subagent its test target with its assigned specifications quoted verbatim, the test targets it contains with their assigned specifications if any, and the reference if any.
+Give each subagent its test target with its assigned specifications quoted verbatim, the test targets it contains with their assigned specifications if any, the reference if any, and the instruction if any.
 Instruct it to load the `unity-coding-skills:test-designing-guide` skill with the Skill tool, to do the test design per that skill up to modeling the specifications with test techniques, and to return only the **modeling result**, in this order, stopping before deriving test cases:
 
 1. The list of inputs, states, and outputs of the test target
