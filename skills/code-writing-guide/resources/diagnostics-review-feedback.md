@@ -27,5 +27,5 @@ Consider each one carefully and decide whether it actually applies to your situa
   This prevents the same suggestion from being raised again in future reviews and helps future readers (human or AI) understand the intent.
 - A suggestion to remove a test case (a test method, or a `TestCase` / `TestCaseSource` / `Values` entry) because it is a "duplicate of what another test already proves", is "subsumed" by it, or "cannot fail unless the other test also fails" is decided by whether the specification names the case:
   - **Not named**: apply the suggestion as usual.
-  - **Named** — an input, state, API, or scenario listed in a document that states the specification (external specification, software design, or the plan): decline it.
+  - **Named** — an input, state, API, or scenario listed in a document that states the specification (external specification, design docs, or the plan): decline it.
     Such a test case documents the specification rather than adding coverage, and it stays even when it exercises the same branch as a combined case.

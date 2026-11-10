@@ -17,7 +17,7 @@ The test analysis and test design knowledge lives in the `test-designing-guide` 
 
 ## Input
 
-Take the specification document from the `PATH` argument: any document that states specifications, e.g., a requirements document, a software design document, or an ADR.
+Take the specification document from the `PATH` argument: any document that states specifications, e.g., a requirements document, design docs, or an ADR.
 If it is omitted or names no file, use `AskUserQuestion` to ask the user for it.
 If it names a test design document — a file whose frontmatter lists `test-basis:` — do not measure it: its test cases are derived from the specifications, so measuring against it checks the tests only against the test design, and misses the specifications the test design left out.
 Tell the user so, name the test bases it lists as the documents to pass instead, and stop.
@@ -25,7 +25,7 @@ Tell the user so, name the test bases it lists as the documents to pass instead,
 In this skill, the terms mean:
 
 - **Specification** — the observable behavior at the boundary of a unit (a scene, prefab, class, or asset).
-  "Specification" names the behavior, never a document.
+  It is the content a document states, not the document itself.
 - **Coverage item** — in the ISTQB CT-MBT sense, one item of the specification model that a test case exercises: an equivalence partition, a decision table rule, or a state transition.
   The coverage items are the denominator of the coverage.
   Boundary values are not coverage items: equivalence partitioning, decision table testing, and state transition testing model only the conditions the specification states, and a combination or a transition they find missing is a gap in the specification, whereas boundary value analysis adds conditions the specification does not state, so counting them would charge the tests for conditions no specification asks for.

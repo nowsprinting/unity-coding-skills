@@ -37,7 +37,7 @@ For an N-switch or a state-to-state reachability test case, write the source sta
 
 ## Acceptance Tests
 
-Mark as an acceptance test (see [Output Format](test-design.md#output-format)) only the state-to-state reachability test case of each reachability that an external specification, or a specification that realizes a stated requirement, explicitly states.
+Mark as an acceptance test (see [Output Format](test-design.md#output-format)) only the state-to-state reachability test case of each reachability that an external specification explicitly states.
 The test cases the test selection criterion selects get no mark, even for a transition the specification describes.
 
 ## Screen Transitions

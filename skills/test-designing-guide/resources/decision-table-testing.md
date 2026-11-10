@@ -32,7 +32,7 @@ Rules with different outcomes become separate test methods (one method = one out
 
 ## Acceptance Tests
 
-Mark as an acceptance test (see [Output Format](test-design.md#output-format)) the test case of each rule whose action is a normal outcome, not an error, and is one that an external specification, or a specification that realizes a stated requirement, explicitly states.
+Mark as an acceptance test (see [Output Format](test-design.md#output-format)) the test case of each rule whose action is a normal outcome, not an error, and is one that an external specification explicitly states.
 
 ## Gaps and Contradictions
 

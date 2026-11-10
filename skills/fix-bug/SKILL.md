@@ -53,7 +53,7 @@ When a step delegates to a subagent or another skill (the test design subagent i
 
 ### Step 1: Clarify the Bug Report
 
-> Work from the user's report and the documents that state the specification (external specification, software design) only — do not read code yet.
+> Work from the user's report and the documents that state the specification (external specification, design docs) only — do not read code yet.
 > Reading the implementation here biases "Expected" toward what the code does rather than what the specification says.
 
 Extract the following from the bug report (see [Input](#input)):
@@ -73,7 +73,7 @@ Also determine the **report type**:
 - **Behavioral bug** — the user describes unexpected runtime behavior with no mention of a failing test.
   Proceed normally through Step 2.
 
-Also check the relevant documentation (external specification, software design) for consistency with the user's bug report.
+Also check the relevant documentation (external specification, design docs) for consistency with the user's bug report.
 If the documentation and the report conflict, use `AskUserQuestion` to clarify with the user which is correct.
 If the user answers that the specification itself is to change, rather than that the documentation misstates it, the request is a specification change: stop and guide the user to invoke the `/implement` skill instead.
 If the docs contain errors or are missing relevant information, note them; Step 9 writes the corrections into the docs.
@@ -175,7 +175,7 @@ Before applying the fix, cover the adjacent behavior the fix could disturb:
 
 ### Step 9: Feed Back the Fix to the Specification
 
-When the fix changed a software design, e.g., a method's contract, or Step 1 found errors or missing information in the documents that state the specification, including an expected behavior confirmed with the user that no document states, write the change into those documents, so that they agree with the fixed code and its tests:
+When the fix changed what the design docs state, e.g., a method's contract, or Step 1 found errors or missing information in the documents that state the specification, including an expected behavior confirmed with the user that no document states, write the change into those documents, so that they agree with the fixed code and its tests:
 
 - A file → edit the passage it concerns, in the document's own style; place a specification it adds beside the specifications it relates to.
   Commit the edited files.

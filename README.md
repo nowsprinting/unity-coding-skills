@@ -79,7 +79,7 @@ Giving them only to `/implement` skips that review: it designs the unit tests in
 /design-tests [SPECIFICATION]
 ```
 
-You can state the `SPECIFICATION` in any document—a requirements document, a software design document, or an ADR—given as file paths, issue URLs, or written directly; if omitted, it is read from the conversation.
+You can state the `SPECIFICATION` in any document—a requirements document, design docs, or an ADR—given as file paths, issue URLs, or written directly; if omitted, it is read from the conversation.
 For a file path, the output goes to a Markdown file with a `-tests` suffix next to it; otherwise, to the conversation.
 
 It designs tests that match the passed specification layer: integration tests (including the UI) from the external specifications, and unit tests from the design docs.
@@ -126,7 +126,7 @@ design-tests
 /implement [SPECIFICATION]
 ```
 
-The `SPECIFICATION` can state requirements, specifications, a software design, and a test design document (e.g., the output of `/design-tests`), for a new feature or a specification change.
+The `SPECIFICATION` can state external specifications, design docs, and a test design document (e.g., the output of `/design-tests`), for a new feature or a specification change.
 It is given as file paths, issue URLs, or written directly; when omitted, it is read from the conversation.
 Given a test design document, it also reads the files and issues listed in its `test-basis` frontmatter, so the test design document alone is enough.
 

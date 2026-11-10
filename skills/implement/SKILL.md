@@ -6,7 +6,7 @@ description: >-
   cases, then writes failing tests and the production code that passes them.
   Use this skill whenever the user asks to implement or add a feature, or to
   change an existing specification, whether the input is a requirements
-  document, a specification, a software design, a test design document, an
+  document, an external specification, design docs, a test design document, an
   issue URL, or the current conversation.
   Typically invoked as `/implement [SPECIFICATION]`.
 argument-hint: "[specification, design, and/or test design, file paths, or issue URLs]"
@@ -28,21 +28,25 @@ If the user's request is to investigate or fix a bug rather than implement a new
 
 ## Input
 
-Take the input from the `SPECIFICATION` argument: the text written directly, file paths, or the URLs of issues in an issue tracker, in any combination.
+Take the input from the `SPECIFICATION` argument, or from the conversation when the argument is omitted:
+
+- **Specification** — the specification to implement: written directly, file paths, or the URLs of issues in an issue tracker, in any combination.
+  If no specification can be found, use `AskUserQuestion` to ask the user before proceeding.
+- **Test design document** (optional) — the test cases of each **test target** (the unit a test design is made for, e.g., the screen transitions, a screen, a prefab, or a class), as the `design-tests` skill outputs it.
+  Also take as the specification the files and issues its `test-basis` frontmatter lists: the production code implements every specification, including those no test case covers.
+- **Reference** (optional) — what the user gives to read besides the specification.
+  Read it only to settle what the specification leaves open; derive no implementation target and no test case from it.
+- **Instruction** (optional):
+  - Which part of a given document is the specification
+  - The test techniques to apply or to suppress, e.g., error guessing, or their test selection criteria, e.g., 1-switch coverage
+
 For an issue URL, fetch its body and comments (e.g., `gh issue view <URL> --comments` for GitHub Issues) and treat them as text written directly: the comments often revise the body, and a subagent may lack the credentials to fetch them.
-When the argument is omitted, take it from the conversation.
-The input states any of the following:
 
-- **Requirement** — what users need to hold true, e.g., "defeating an enemy feels satisfying"; it has no pass/fail criterion of its own.
-- **Specification** — the observable behavior at the boundary of a unit (a scene, prefab, class, or asset).
+In this skill, the terms mean:
+
+- **Specification** — the observable behavior at the boundary of a unit (a scene, prefab, class, or asset); it covers both kinds below.
   The **external specification** is the one at the outermost boundary of the product, as the player or the API user observes it.
-- **Software design** — the structure of a unit under test, at any level: the smaller units it divides into (modules, scenes, prefabs, classes), how they depend on one another, method signatures, and the file and assembly (`.asmdef`) of each class; it covers the production code and assets, not the test design.
-  The classes and signatures it fixes are the specifications of the units below.
-- **Test design document** — the test cases of each **test target** (the unit a test design is made for, e.g., the screen transitions, a screen, a prefab, or a class), as the `design-tests` skill outputs it.
-
-When the input includes a test design document, also take as input the files and issues its `test-basis` frontmatter lists: the production code implements every specification, including those no test case covers.
-
-If no specification can be found, use `AskUserQuestion` to ask the user before proceeding.
+  The **design docs** are the one inside the product, at any level: the smaller units a unit divides into (modules, scenes, prefabs, classes), how they depend on one another, method signatures, and the file and assembly (`.asmdef`) of each class; they cover the production code and assets, not the test design.
 
 **TBD items:** If the specification explicitly contains the text "TBD" for any item, treat that item as non-existent — do not design, test, or implement it.
 Only ask the user via `AskUserQuestion` if the TBD item is a prerequisite that cannot be deferred without blocking the implementation.
@@ -59,7 +63,7 @@ Append your own judgment calls in Step 1 as `Design decisions` as soon as you ma
 
 ### Step 1: Plan the Phases
 
-List the implementation targets the specification describes — the units a phase implements: the screen transitions, each screen, prefab, and `ScriptableObject` class, and each class the software design fixes.
+List the implementation targets the specification describes — the units a phase implements: the screen transitions, each screen, prefab, and `ScriptableObject` class, and each class the design docs fix.
 Assign each specification to exactly one implementation target; when the subject of one implementation target contains others — e.g., a screen contains the classes placed on it — assign the behavior within a contained implementation target to it, and leave the container only the behavior that combines them.
 A class no specification describes is no implementation target here: the phase that needs it designs it.
 
@@ -77,8 +81,8 @@ Run the phases one at a time, in order, each in its own general-purpose subagent
 Instruct the subagent to read `${CLAUDE_SKILL_DIR}/resources/phase-workflow.md` (write its absolute path literally) and follow it, including its commits: the workflow commits at fixed points, so that the test code committed before the implementation stays verifiable — write no instruction that stops the subagent from committing.
 Give it:
 
-- The phase's implementation targets, each with its assigned specifications, which of them are external specifications, and the requirements they realize, if any
-- The test bases of each implementation target: the input files and issue URLs that state its assigned specifications or its test cases, not every input, so that the tests of a specification do not list the specifications of other phases
+- The phase's implementation targets, each with its assigned specifications, and which of them are external specifications
+- The test bases of each implementation target: the input files and issue URLs that state its assigned specifications or its test cases, not every input, so that the tests of a specification do not list the specifications of other phases; add every reference the user gave to each, whether or not it was consulted
 - The implementation targets of the earlier phases, already implemented
 - The input — the path of each file, or the full text when written directly, fetched from an issue, or taken from the conversation
 - The user's instructions on the test techniques, if any

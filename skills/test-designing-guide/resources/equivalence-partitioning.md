@@ -60,7 +60,7 @@ The non-empty method keeps both `1` and `5` because they share the outcome `true
 
 ## Acceptance Tests
 
-Mark as an acceptance test (see [Output Format](test-design.md#output-format)) the test case of each valid equivalence partition that an external specification, or a specification that realizes a stated requirement, explicitly states.
+Mark as an acceptance test (see [Output Format](test-design.md#output-format)) the test case of each valid equivalence partition that an external specification explicitly states.
 An equivalence partition added only by completing the input domain, e.g., one beyond an upper limit the specification does not mention, gets no mark.
 
 ## Invalid equivalence partition

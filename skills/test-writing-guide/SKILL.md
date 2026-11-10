@@ -25,7 +25,7 @@ Test code is code: load the `code-writing-guide` skill too, which holds the Unit
 
 ### Test Basis
 
-A **test basis** is a file or an issue that states the specification or software design the test code is written from; text written directly or taken from the conversation is no test basis.
+A **test basis** is a file or an issue that states the specification the test code is written from, or that the user gave to read with it; text written directly or taken from the conversation is no test basis.
 A test design document is no test basis, but list it with them: the lines are for searching.
 List the test bases at the top of each test file you write or modify, below its header comment if any, one `// Test-basis:` line each:
 

@@ -6,13 +6,24 @@ Out of scope:
 
 - Writing test code — see the `test-writing-guide` skill
 
+## Input
+
+The output of test analysis for one test target, with the input it passes on:
+
+- **Test target** with its **assigned specifications** — derive the test cases from them alone.
+- **Contained test targets** (if any), each with its assigned specifications (see [Contained Test Targets](#contained-test-targets)).
+- **References** (optional) — what the user gives to read besides the specification under test.
+- **Instructions** (optional) — the test techniques to apply or to suppress, and their test selection criteria.
+
+Read a reference, or a document the assigned specifications link to, only to settle what the assigned specifications leave open; derive no test case from it.
+
 ## Reading Code
 
 Derive test cases from the specification, never from the implementation: a test case derived from the implementation passes whatever the implementation does.
 Read only the following code, and no method bodies of production code:
 
 - **Existing tests** — when the test target has test classes, the signatures of their test methods, with the attributes that give a parameterized test its arguments, to tag the test cases they already implement (see [Existing Tests](#existing-tests))
-- **Production code** — for unit tests and validators, the signatures and XML documentation comments of the test target's members, to judge whether a test case can arrange its inputs and observe the actual result (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); for a class the input's software design introduces, read the signatures it fixes instead.
+- **Production code** — for unit tests and validators, the signatures and XML documentation comments of the test target's members, to judge whether a test case can arrange its inputs and observe the actual result (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); for a class the input's design docs introduce, read the signatures they fix instead.
   Take the inputs to model from the specification, not from the parameters of a signature.
 
 ## Test Layers
@@ -152,7 +163,7 @@ Further notation rules:
 - **Hidden input values** — when the expected result depends on input values that neither the `<Condition>` segment nor the parameters show, e.g., the representative of an equivalence partition, write each such input and its value before the expected result, so the reader can check the expected result against them.
   Write only the inputs the expected result depends on; the test-writing phase gives the others neutral values.
 - When a single test asserts multiple properties (the multi-property exception in [Test Case Naming](#test-case-naming)), list each property being verified in the Verification column.
-- **Test doubles and logs** — when a test case uses one of the following, write it in parentheses after the expected result, in the project language, naming the dependency as the specification or the software design names it; separate several with `, ` in one pair of parentheses.
+- **Test doubles and logs** — when a test case uses one of the following, write it in parentheses after the expected result, in the project language, naming the dependency as the specification names it; separate several with `, ` in one pair of parentheses.
   These are the only details of how the test is built that the Verification column states; write no other test double or means of observation, e.g., a fake or a file the test reads.
   - A **test stub** — a test double that replaces an indirect input with fixed values — supplies an indirect input: e.g., `(use a stub of IFoo)`, in Japanese `（IFooのスタブを使用）`
   - A **test spy** — a test double that records the calls and arguments it receives — verifies an interaction the specification defines: e.g., `(use a spy of IBar)`, in Japanese `（IBarのスパイを使用）`
@@ -302,7 +313,7 @@ Record every issue found while designing instead of guessing.
 ```
 
 For `⚠️WARN` or `❌FAIL`, add `#### Issues` with the affected specification and a proposed remedy of each issue.
-For an unverifiable test case, propose a software design that makes it verifiable, e.g., a dependency through which the test target reads the input, and when the test target reads it, so that a test stub can replace it before then; for one whose events pass through a coarse-grained state, propose stating the path through that state, or testing the transitions on each side of it separately, so that the path inside it belongs to that target's own test design; for a combinatorial explosion, propose breaking the test down into tests at a more detailed level.
+For an unverifiable test case, propose a design that makes it verifiable, e.g., a dependency through which the test target reads the input, and when the test target reads it, so that a test stub can replace it before then; for one whose events pass through a coarse-grained state, propose stating the path through that state, or testing the transitions on each side of it separately, so that the path inside it belongs to that target's own test design; for a combinatorial explosion, propose breaking the test down into tests at a more detailed level.
 For `❌FAIL`, also add `#### Modeling result` — the model that revealed the issues, e.g., the equivalence partition table, the decision table, the state transition diagram — so the user can see where the specification breaks:
 
 ```markdown

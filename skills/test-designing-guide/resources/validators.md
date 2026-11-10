@@ -44,4 +44,4 @@ When the specification states no location, record it as an issue (an unclear spe
 
 ## Acceptance Tests
 
-Mark as an acceptance test (see [Output Format](test-design.md#output-format)) the test case of each property that an external specification, or a specification that realizes a stated requirement, explicitly states.
+Mark as an acceptance test (see [Output Format](test-design.md#output-format)) the test case of each property that an external specification explicitly states.

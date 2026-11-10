@@ -10,7 +10,7 @@ You cannot ask the user: return `STATUS: QUESTION` instead (see [Report](#report
 As soon as one of the following occurs, append a line to the notes file the caller gives, in the form `<category>: <note>` — your context is gone once you return:
 
 - You designed a class no specification describes, or the specification was ambiguous and you made a judgment call → `Design decisions`
-- You intentionally departed from the specification or the software design, and why → `Deviations`
+- You intentionally departed from the specification, and why → `Deviations`
 - You considered alternatives and chose one, and why → `Tradeoffs`
 - You modified or deleted test code already committed in Step 2, and why → `Test changes`
 - An undefined, ambiguous, or unverifiable test case, or an Issue in the Assessment of a given test target → `Open questions`
@@ -29,7 +29,7 @@ Design the test cases before reading any method body of production code: a test 
 
 1. When the input includes a test design document, take from it the test cases of each implementation target of the phase it has
 2. Design the test cases of the implementation targets without test cases in a general-purpose subagent, so that the specifications test analysis leaves out stay out of the test design while you keep every specification for the implementation.
-   Give it those implementation targets, each with its specifications quoted verbatim, which of them are external specifications, and the requirements they realize, if any, and the user's instructions on the test techniques, if any.
+   Give it those implementation targets, each with its specifications quoted verbatim, which of them are external specifications, and the user's instructions on the test techniques, if any.
    Instruct it to load the `test-designing-guide` skill — do not rely on automatic skill triggering — and:
    1. Analyze the specifications per the guide's test analysis resource, taking each implementation target as a test target
    2. Design the test cases of each test target per the guide's test design resource: Test Layers, Contained Test Targets, Test Techniques, Test Case Naming, Parameterized Tests, Verification Column, and Existing Tests.
@@ -56,7 +56,7 @@ Step 1 is complete when every implementation target of the phase and every class
 2. Write the skeleton of the production code: types and method signatures only — must compile, need not work yet.
    **New methods: empty body only** (no logic, no exceptions; value-returning methods must return a literal default: `0`, `false`, or `null`); **modify: signature only, body unchanged**; **delete: remove the entire method**.
    For a `ScriptableObject` class with a validator, also declare the fields the validator reads.
-   Place each file at the path and in the assembly of the software design
+   Place each file at the path and in the assembly the design docs state
 3. Write the test code of the test cases, including the updates to existing tests tagged `test fix` or `spec change`, and list the test bases of its test target in each test file (`test-writing-guide`, Test Basis).
    Use the real classes of the earlier phases as the dependencies of the test targets.
    When the structure of the existing production code keeps a test case from being written as designed, e.g., a class creates its dependency itself, weigh the approaches *Working Effectively with Legacy Code* (Michael Feathers) gives and take the one that fits; when none fits, return `STATUS: QUESTION` with the approaches you weighed

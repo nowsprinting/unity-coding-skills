@@ -1,7 +1,16 @@
 # Test Analysis
 
-Analyzes the test basis to identify the testable features and the test conditions.
-Here, a testable feature is a test target, and a test condition is a specification assigned to it: extract the test targets from the specifications, assign each specification to one of them, and leave out the specifications that get no test case.
+Analyzes the specification under test to identify what to test: extract the test targets from the specifications, assign each specification to one of them, and leave out the specifications that get no test case.
+In ISTQB terms, a test target is a testable feature, and its assigned specifications are test conditions.
+
+## Input
+
+- **Specification under test** — the specification to design tests for: the specification the user gives, or the part of it an instruction selects; test targets and test cases derive from it alone.
+  "The specification" below means the specification under test.
+- **References** (optional) — what the user gives to read besides the specification under test.
+- **Instructions** (optional) — which part of the specification to design tests for, and the test techniques or test selection criteria to use.
+
+Read a reference, or a document the specification under test links to, only to settle what the specification under test leaves open, e.g., the definition of a term it uses; extract no test target from it.
 
 ## Test Targets
 
@@ -14,7 +23,7 @@ Extract the test targets the specifications describe, e.g.:
 - A `ScriptableObject` class (its methods implemented as unit tests, the constraints on its data as a validator)
 
 Extract only targets the specification describes; do NOT derive targets at a level no specification describes — e.g., internal classes guessed from the external specification of a screen — because such tests couple to an implementation no specification fixes.
-When the input includes a software design, the classes and signatures it fixes are specifications, and are valid targets.
+When the input includes design docs, the classes and signatures they fix are specifications, and are valid targets.
 
 Assign each specification to exactly one test target, so that no test case or coverage item derives from it twice.
 

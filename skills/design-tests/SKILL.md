@@ -2,7 +2,7 @@
 name: design-tests
 description: >-
   Designs tests from a specification, whatever document states it — a
-  requirements document, a software design document, or an ADR:
+  requirements document, design docs, or an ADR:
   extracts the test targets, then creates test cases for each target at the
   test layer of its subject — e.g., integration tests for a scene or prefab,
   unit tests for a class's API.
@@ -21,26 +21,21 @@ The test design knowledge lives in the `test-designing-guide` skill; this skill 
 
 ## Input
 
-Take the specification to test against from the `SPECIFICATION` argument: the specification written directly, file paths, or the URLs of issues in an issue tracker, in any combination.
+Take the input from the `SPECIFICATION` argument, or from the conversation when the argument is omitted:
+
+- **Specification under test** — the specification to design tests for: written directly, file paths, or the URLs of issues in an issue tracker, in any combination; "the specification" below means it.
+  If no specification can be found, use `AskUserQuestion` to ask the user before proceeding.
+- **Reference** (optional) — what the user gives to read besides the specification under test.
+  Read it only to settle what the specification leaves open; extract no test target and derive no test case from it.
+- **Instruction** (optional):
+  - Which part of a given document is the specification under test
+  - The test techniques to apply or to suppress, e.g., error guessing, or their test selection criteria, e.g., 1-switch coverage
+
 When the input alone leaves a specification, or its split into test targets, unsettled, consult the documents it links to, e.g., another file or an issue: read only the parts that settle it, up to two hops from the input — a document the input links to, and a document that one links to.
 For an issue URL, fetch its body and comments (e.g., `gh issue view <URL> --comments` for GitHub Issues) and treat them as text written directly: the comments often revise the body, and a subagent may lack the credentials to fetch them.
-When the argument is omitted, take it from the conversation.
-The argument or the conversation may also include instructions on the test techniques to apply or to suppress, e.g., error guessing, or on their test selection criteria, e.g., 1-switch coverage.
-If no specification can be found, use `AskUserQuestion` to ask the user before proceeding.
 
-In this skill and `test-designing-guide`, the terms mean:
-
-- **Specification** — the observable behavior at the boundary of a unit (a scene, prefab, class, or asset).
-  It is relative: the software design of one unit, e.g., a class's method signatures and their contracts, is the specification of the units below it.
-  "Specification" names the behavior, never a document.
-- **External specification** — the specification at the outermost boundary of the product, as the player or the API user observes it.
-- **Requirement** — what users need to hold true, e.g., "defeating an enemy feels satisfying".
-  A requirement alone has no pass/fail criterion; the specification that realizes it does.
-
-The input may state the specification in any document: a requirements document, a software design document, or an ADR.
-Note which specifications are external specifications and, when the input also states requirements, which specifications realize them, to mark acceptance tests.
-
-Read existing code and tests only as `test-designing-guide` allows (Reading Code in its test design resource).
+The input may state the specification in any document: a requirements document, design docs, or an ADR.
+Note which specifications are external specifications (as `test-designing-guide` defines them), to mark acceptance tests.
 
 ## Rules
 
@@ -67,8 +62,8 @@ Instruct each subagent to load the `test-designing-guide` skill — do not rely 
 6. Assess the target (Assessment)
 7. Write the test cases and the Assessment in the output format (Output Format)
 
-Give each subagent the test target with its assigned specifications, which of them are external specifications, and the requirements they realize if any, the test targets it contains with their assigned specifications if any, whether the user states the specification changed since the existing tests were written, and the user's instructions on the test techniques and their test selection criteria if any, and have it return its output verbatim.
-Quote each specification and requirement verbatim with its source, e.g., the file path and heading or the issue URL, together with the passages it depends on, e.g., the definitions of the terms it uses, whether they lie in the input or in a linked document you read (see Input).
+Give each subagent the test target with its assigned specifications, which of them are external specifications, the test targets it contains with their assigned specifications if any, whether the user states the specification changed since the existing tests were written, and the user's instructions on the test techniques and their test selection criteria if any, and have it return its output verbatim.
+Quote each specification verbatim with its source, e.g., the file path and heading or the issue URL, together with the passages it depends on, e.g., the definitions of the terms it uses, whether they lie in the input or in a linked document you read (see Input).
 Instruct the subagent to derive no test case from a specification stated in a quoted dependency passage, as for a passed link below: the passage may state a specification Step 1 assigned to another target or left out, and it is quoted only to define what the target's specifications use.
 Pass the links within two hops of the input that the quoted passages cite and you did not read, each with the sentence that cites it.
 Instruct the subagent not to read the source documents: a subagent reading a whole document would see the specifications Step 1 assigned to other targets, and could design duplicate test cases for them.
@@ -101,12 +96,16 @@ Choose the destination in this order:
    When a file of that name already exists, ask the user via `AskUserQuestion` whether to overwrite it or to write to a file name they specify.
 3. Otherwise (the specification was written directly in the argument, fetched from issues, or taken from the conversation) → output in the conversation.
 
-Write the output verbatim per Step 3; when writing a file, add only a frontmatter listing the test bases and a top-level heading naming the input above it.
-The test bases are the input files, as paths from the root of the repository you work in (the superproject, when the file lies in a submodule), and the issue URLs; text written directly or taken from the conversation is no test basis.
-`test-writing-guide` copies them into the test files written from the test design document:
+Write the output verbatim per Step 3; when writing a file, add only a frontmatter holding the prompt and the test bases, and a top-level heading naming the input above it.
+The prompt is the user's message that invoked this skill, verbatim, as a YAML block scalar; when you cannot see it, e.g., a caller's instruction invoked the skill, write the `SPECIFICATION` argument instead.
+The test bases are the files of the specification under test and of every reference the user gave, whether or not it was consulted, as paths from the root of the repository you work in (the superproject, when the file lies in a submodule), and the issue URLs; text written directly or taken from the conversation is no test basis.
+`test-writing-guide` copies the test bases into the test files written from the test design document:
 
 ```markdown
 ---
+prompt: |
+  /design-tests docs/inventory.md
+  Design only the "Sorting" section, with 1-switch coverage.
 test-basis:
   - docs/inventory.md
   - https://github.com/owner/repo/issues/42
