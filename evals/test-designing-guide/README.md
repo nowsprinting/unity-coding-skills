@@ -19,7 +19,7 @@ python3 run.py --report-only                                    # every fixture;
 python3 run.py fsm-card-draw --model sonnet --effort medium --judge-only   # re-judge after editing golden.md
 ```
 
-Each run launches `claude -p` in an empty temporary directory holding the fixture's files, with only project-level settings (the user's `~/.claude/CLAUDE.md` is excluded), tools limited to Read/Glob/Grep/Skill, and the shared `prompt.md` as the task. The judge (`--judge-model`, default sonnet; `--votes`, default 3) gets `judge.md` with the golden items and the run's output.
+Each run launches `claude -p` in an empty temporary directory holding the fixture's files, with only project-level settings (the user's `~/.claude/CLAUDE.md` is excluded), tools limited to Read/Glob/Grep/Skill/Agent, and the shared `prompt.md` as the task. The judge (`--judge-model`, default sonnet; `--votes`, default 3) gets `judge.md` with the golden items and the run's output.
 
 Results land in `results/<fixture>/<model>-<effort>/`: `run-N.md` (raw output), `run-N.json` (cost, duration, permission denials), `judge-N.json` (verdicts with evidence). Rerunning the same configuration appends runs. The report prints one row per configuration and, below it, every missed `must`, hit `must_not`, and unmatched regex per run.
 
@@ -31,10 +31,10 @@ A fixture is `fixtures/<name>/` with `spec.md` (the specification under test) an
 
 Every file in the directory except `golden.md`, `draft-golden.md`, and `prompt.md` is copied into the run's workspace.
 
-1. **`spec.md` is always the test target; `reference.md` is optional reference material.** The test layer follows the subject of `spec.md`, as the skill's Test Layers rule says:
+1. **`spec.md` is always the specification under test; `reference.md` is an optional reference.** The test layer follows the subject of `spec.md`, as the skill's Test Layers rule says:
    - `spec.md` alone, describing a screen → integration tests
-   - `spec.md` an external specification, `reference.md` its software design → integration tests only; the design settles contained test targets and verifiability
-   - `spec.md` a software design (class API), `reference.md` the external specification → unit tests only; the external specification settles what the design leaves open and marks acceptance tests
+   - `spec.md` an external specification, `reference.md` its design docs → integration tests only; the design docs only settle what `spec.md` leaves open, e.g., whether an input can be arranged or an output observed
+   - `spec.md` design docs (class API), `reference.md` the external specification → unit tests only; the external specification settles what the design docs leave open
 2. **Linked documents**: `spec.md` may link to other files in the directory (`[報酬テーブル](docs/rewards.md)`). They are read the same way as `reference.md`: only to settle what `spec.md` leaves open, never as a source of test targets.
 3. **Project settings**: a `CLAUDE.md` in the fixture is the run's project memory, e.g., to state the project language the skill reads from it. Without one, the skill's default is English; the judge compares by meaning and the regexes list both languages, so the language of the output does not affect the scores.
 4. **Custom prompt**: a fixture-local `prompt.md` replaces the shared one, for a case the shared prompt does not fit (e.g., a validator, or instructions enabling error guessing).

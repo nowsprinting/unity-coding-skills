@@ -41,7 +41,7 @@ def run_once(fixture_dir, model, effort, out_md):
         shutil.copytree(fixture_dir, work, dirs_exist_ok=True, ignore=shutil.ignore_patterns("golden.md", "prompt.md"))
         prompt = fixture_dir / "prompt.md" if (fixture_dir / "prompt.md").exists() else HERE / "prompt.md"
         res = claude(prompt.read_text(), "--model", model, "--effort", effort,
-                     "--plugin-dir", str(PLUGIN_DIR), "--allowedTools", "Read,Glob,Grep,Skill",
+                     "--plugin-dir", str(PLUGIN_DIR), "--allowedTools", "Read,Glob,Grep,Skill,Agent",
                      "--permission-mode", "manual", cwd=work)
     out_md.write_text(res["result"])
     out_md.with_suffix(".json").write_text(json.dumps(
