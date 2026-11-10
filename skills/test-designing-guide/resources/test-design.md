@@ -219,6 +219,7 @@ Design a test case even when it cannot be verified as specified, and mark it ins
 - **Undefined** — the specification states no expected result for the test case: e.g., an equivalence partition, a decision table combination, or a state transition table cell it leaves empty.
   End the method name with `_UNDEFINED` in place of `<Expected>`, and write `**undefined**` in the Verification column.
   - Example: `Attack_HpIsNegative_UNDEFINED` | **undefined**
+  - A cell of a modal dialog's state for an operation of the screen behind it is such a cell (see [Screen Transitions](state-transition-testing.md#screen-transitions)): the specification most likely just omits that the modal dialog blocks operations on the UI behind it.
   - When the specification explicitly states that the behavior under a condition is undefined, e.g., "the result is undefined when HP is negative", or that the condition need not be considered, e.g., "a negative width need not be considered", it leaves no gap, and this skill counts both as explicitly stating the condition undefined: design no test case for the condition, and list it in the Notes (see [Output Format](#output-format)).
 - **Ambiguous** — the specification states an expected result that admits more than one reading, so it gives no deterministic pass/fail criterion: e.g., "attack +2" while a buff multiplies attack, without stating whether the addition comes before or after the multiplication; random behavior without a specified distribution, range, or structural property (see [Testing randomness](testing-randomness.md)).
   The author of a specification rarely notices its own ambiguity, so state the reason.
@@ -314,7 +315,9 @@ Record every issue found while designing instead of guessing.
 ```
 
 For `⚠️WARN` or `❌FAIL`, add `#### Issues` with the affected specification and a proposed remedy of each issue.
-For an unverifiable test case, propose a design that makes it verifiable, e.g., a dependency through which the test target reads the input, and when the test target reads it, so that a test stub can replace it before then; for one whose events pass through a coarse-grained state, propose stating the path through that state, or testing the transitions on each side of it separately; for a combinatorial explosion, propose breaking the test down into tests at a more detailed level.
+For an unverifiable test case, propose a design that makes it verifiable, e.g., a dependency through which the test target reads the input, and when the test target reads it, so that a test stub can replace it before then; for one whose events pass through a coarse-grained state, propose stating the path through that state, or testing the transitions on each side of it separately.
+For an undefined test case of an operation on the UI behind a modal dialog, propose stating that the modal dialog blocks those operations, or the destination of each.
+For a combinatorial explosion, propose breaking the test down into tests at a more detailed level.
 For `❌FAIL`, also add `#### Modeling result` — the model that revealed the issues, e.g., the equivalence partition table, the decision table, the state transition diagram — so the user can see where the specification breaks:
 
 ```markdown
