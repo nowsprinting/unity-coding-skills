@@ -82,7 +82,7 @@ Mode is determined by the **test file's path**, not by test attributes:
 - Prefer one `Assert.That` per test method.
   **Exception**: when the Verification column of the test case lists multiple properties (the multi-property exception in the test design, e.g., the state resulting from a transition), multiple `Assert.That` calls are permitted in a single test.
   In that case, pass a short `message` string as the third argument to **each** `Assert.That` to identify which property is being verified.
-- Do NOT pass the `message` argument to `Assert.That` in single-assertion tests; the test name and constraint must be self-explanatory.
+- Do not pass the `message` argument to `Assert.That` in single-assertion tests; the test name and constraint must be self-explanatory.
   When a test contains multiple `Assert.That` calls (see exception above), a `message` argument is **required** on every call.
 
 ```csharp
@@ -281,7 +281,7 @@ The following maps the test-designing-guide notation to NUnit attributes:
 - Multiple `[Values]` parameters produce the **full Cartesian product** by default
 - `[ParametrizedIgnore]` on the method → exclude specific combinations
 - `[Pairwise]` on the method → pairwise coverage instead of full Cartesian; use when the test cases specify `by pairwise`
-- `[Sequential]` on the method → match parameters by index (not combinatorial); do NOT use in principle — use `[TestCase]` / `[TestCaseSource]` instead to make each combination explicit
+- `[Sequential]` on the method → match parameters by index (not combinatorial); do not use in principle — use `[TestCase]` / `[TestCaseSource]` instead to make each combination explicit
 
 ### Validators
 
@@ -454,7 +454,7 @@ LogAssert.ignoreFailingMessages = true;
 
 **Async caveat**: in async tests, log failure is evaluated at each `yield` point — call `LogAssert.Expect` before yielding.
 
-- Do NOT use `LogAssert` to verify log messages emitted by the production code under test; create a Spy logger that the production code writes through.
+- Do not use `LogAssert` to verify log messages emitted by the production code under test; create a Spy logger that the production code writes through.
   This keeps tests independent of Unity's global log handler.
 - `LogAssert` is acceptable only when a Spy cannot be injected — i.e., the log is emitted by `UnityEngine` itself or a third-party library outside our control.
   Typical uses: asserting an expected `Debug.LogError` / `LogException` from such a source, or `LogAssert.NoUnexpectedReceived()` to ensure no unexpected engine/library errors during a test.
@@ -464,7 +464,7 @@ LogAssert.ignoreFailingMessages = true;
 When creating a Spy `MonoBehaviour` (placed under `Tests/Runtime/TestDoubles/`) to capture events such as `IPointerClickHandler.OnPointerClick`:
 
 - Record invocations into public properties (call count, last arguments, etc.) and let the test read them directly.
-  Do NOT log to `Debug.Log` and assert with `LogAssert` — that couples the test to Unity's global log handler and is harder to inspect than typed state.
+  Do not log to `Debug.Log` and assert with `LogAssert` — that couples the test to Unity's global log handler and is harder to inspect than typed state.
 
 ```csharp
 [AddComponentMenu("/")]
@@ -537,7 +537,7 @@ internal void SetStateForTest(State state) => _state = state;
 
 ## Comments
 
-Do NOT write XML documentation comments in test code.
+Do not write XML documentation comments in test code.
 
 ## Troubleshooting
 

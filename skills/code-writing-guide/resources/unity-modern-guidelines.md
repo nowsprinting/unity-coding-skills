@@ -155,7 +155,7 @@ _ = SpawnAsync(destroyCancellationToken);
 ### Unity 2023.2+
 
 **TextMesh Pro:**
-- TMP is merged into uGUI (`com.unity.ugui` **v2.0**); do NOT add the separate `com.unity.textmeshpro` package
+- TMP is merged into uGUI (`com.unity.ugui` **v2.0**); do not add the separate `com.unity.textmeshpro` package
 - Import and usage are unchanged: use `TMPro.TextMeshProUGUI`, `TMPro.TMP_Text`, etc.
 
 **Mobile Screen Reader (Accessibility):**
@@ -180,8 +180,8 @@ _ = SpawnAsync(destroyCancellationToken);
 
 **InstanceID → EntityId migration:**
 - `InstanceID` (int) is deprecated in favour of the new `EntityId` type
-- Do NOT cast `EntityId` to/from `int`
-- Do NOT rely on hash codes, string serialisation, or creation-order sorting of `EntityId`
+- Do not cast `EntityId` to/from `int`
+- Do not rely on hash codes, string serialisation, or creation-order sorting of `EntityId`
 - `GetInstanceID()` and related methods are deprecated; prefer `EntityId`-based APIs
 - `InstanceID` will be removed in a future release
 - For code under `Packages/` whose minimum supported version is below 6000.4, guard with `UNITY_6000_4_OR_NEWER`

@@ -105,8 +105,8 @@ If no language is specified, default to English.
 - Use the naming convention based on whether the test target is a method:
   - **Method target** — `<MethodName>_<Condition>_<Expected>`: **Unit tests whose target is a method**.
   - **Non-method target** — `<Condition>_<Expected>`: all **Integration tests** and **Visual verification tests** (multi-component interaction or on-screen rendering), **Unit tests whose target is an asset** (asset file validation, cross-asset consistency checks — the SUT is an asset or set of assets), **Unit tests of behavior no method call triggers** (e.g., a state transition on time elapsing or on an event a dependency raises), and **Validators**.
-    Do NOT include a method name.
-    Do NOT add a feature-area or category prefix before `<Condition>` — the name starts directly with the condition (e.g., `OnVictoryForced_AllCardViewsAreFullyWithinHandArea`, not `Reward_OnVictoryForced_AllCardViewsAreFullyWithinHandArea`).
+    Do not include a method name.
+    Do not add a feature-area or category prefix before `<Condition>` — the name starts directly with the condition (e.g., `OnVictoryForced_AllCardViewsAreFullyWithinHandArea`, not `Reward_OnVictoryForced_AllCardViewsAreFullyWithinHandArea`).
   - The `<Condition>` segment names only the equivalence partitions the expected result depends on; leave out an input that does not affect it, e.g., a condition marked "don't care" in a decision table.
     The test-writing phase gives such an input a neutral value; the test case [combinatorial testing](combinatorial-testing.md) derives from it takes the input as a factor in the parameters instead.
   - For **parameterized tests**, the `<Condition>` segment is the **equivalence partition name**, not an enumeration of individual argument values.
@@ -116,7 +116,7 @@ If no language is specified, default to English.
     **Exceptions**: a test case of combinatorial testing names the absence of effect, e.g., `InputsOtherThanStrengthDoNotAffectDamage` (see [Combinatorial testing](combinatorial-testing.md#naming)); an undefined or ambiguous test case uses `UNDEFINED` or `AMBIGUOUS` (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); a consolidated layout assertion test may use the generic `LayoutIsCorrect` (see [Integration testing](integration-testing.md#perspectives), UI layout).
     Words like `Matches…`, `OnlyWhen…`, `DependingOn…`, `BasedOn…` in the name — or "only when / only if / depending on" in the verification description — signal that the outcome varies with input, meaning two partitions were merged into one method — split into one method per outcome (see [Deriving test methods from equivalence partitions](equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)).
   - Write `<Expected>` in active voice: `ReturnsTrue`, `ThrowsArgumentException`, `ReducesHpBy3`, etc. For an exception, include its type: `ThrowsArgumentException`, not just `ThrowsException`.
-- Do NOT create sequential IDs in test case names
+- Do not create sequential IDs in test case names
 - Verify one condition per test.
   **Exception (multi-property)**: when multiple properties of the state resulting from a transition must all be correct simultaneously, a single test may assert all of them together.
   The same applies to a consolidated layout assertion test asserting multiple layout properties under one condition (see [Integration testing](integration-testing.md#perspectives), UI layout).
@@ -124,12 +124,12 @@ If no language is specified, default to English.
 ## Parameterized Tests
 
 When multiple test cases share the same expected result — such as the representative and the boundary values of the same equivalence partition, decision table rules sharing an outcome, or [combinations of parameters](combinatorial-testing.md) — consolidate them into a single parameterized test.
-Do NOT over-consolidate: keep separate rows for tests that belong to **different** equivalence partitions or produce **different** expected results (see [Deriving test methods from equivalence partitions](equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)).
+Do not over-consolidate: keep separate rows for tests that belong to **different** equivalence partitions or produce **different** expected results (see [Deriving test methods from equivalence partitions](equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)).
 
 Write each parameterized test as a single table row, with its parameter names and values after the method name in the Test Method column.
 Leave out of the parameters an input the expected result does not depend on, e.g., a condition marked "don't care" in a decision table: the test-writing phase gives it a neutral value.
 The factors of [combinatorial testing](combinatorial-testing.md) are the exception: they go in the parameters of the test case it derives.
-Do NOT specify the framework mechanism (`TestCase`, `Values`, etc.) — that's a test-writing decision.
+Do not specify the framework mechanism (`TestCase`, `Values`, etc.) — that's a test-writing decision.
 
 - **Bool parameter, all values**: `(flag: (bool))`
 - **Enum parameter, all values**: `(direction: (Direction))`
@@ -144,17 +144,17 @@ Example: `IsValidLevel_WithinRange_ReturnsTrue` (level: {1, 50, 99}) | `Returns 
 
 In the **Verification** column, state **which observable property or behavior** is checked and **what its expected value or state** is — this corresponds to the `<Expected>` segment of the test method name, not the `<Condition>` segment, which the method name already captures.
 Write the prose in the project language.
-Describe observable behavior only; do NOT include any of the following **anywhere in the test case output** — this prohibition applies to the Verification column, class header descriptions (text after `### ClassName`), and any other field:
+Describe observable behavior only; do not include any of the following **anywhere in the test case output** — this prohibition applies to the Verification column, class header descriptions (text after `### ClassName`), and any other field:
 
 - Test framework attributes (`[Test]`, `[UnityTest]`, `[LoadScene]`, `[Category(...)]`, `[TakeScreenshot]`, etc.)
 - Sync vs async / coroutine choice
 - Construction details of test inputs (e.g., how to build `PointerEventData`, how to instantiate fixtures)
-- The test's **precondition or arranged state** — anything that restates the `<Condition>` segment already encoded in the method name (e.g., for `..._WhenBossNext_...`, do NOT write "When the holder RunState has IsBossNext true, …" in Verification).
+- The test's **precondition or arranged state** — anything that restates the `<Condition>` segment already encoded in the method name (e.g., for `..._WhenBossNext_...`, do not write "When the holder RunState has IsBossNext true, …" in Verification).
   State only the expected observable outcome, with the input values it depends on (see Hidden input values in Further notation rules).
 - Assertion helper class names (e.g., `LayoutAssert`, `GameObjectFinder`)
 - Exact private or serialized field names, or field-qualified member access (e.g., `drawPileButton.interactable`) whose owner is not present in the specification — name the element descriptively instead (e.g., "the draw pile button is not interactable").
   Exact identifiers are not required at design time; resolving the precise field name is a test-writing concern.
-  You MAY name exactly: public framework API members (e.g., `CanvasGroup.blocksRaycasts`) and identifiers that appear in the specification.
+  You may name exactly: public framework API members (e.g., `CanvasGroup.blocksRaycasts`) and identifiers that appear in the specification.
 - Rationale or intent text — why the test exists, which requirement it serves, or what the current (buggy) behavior is.
   Observable behavior only.
 - Any other detail of how the test is built, except the test doubles and logs below — those decisions belong to the test-writing phase
@@ -246,7 +246,7 @@ Output the test cases of a test target as one section per test class, in this or
   - The section heading names the subject the manual tests verify, so write it even when the target has only manual tests
   - Manual tests have no test methods and use a table of test cases with a "Test perspectives / Verification method" column instead of "Verification"
   - Test perspectives — *what* behavioral aspects, conditions, or interactions are verified for this target.
-    NOT a test technique name
+    not a test technique name
 
 For unit tests and assertion-based integration tests, output one table per test technique, in the order: state transition testing, decision table testing, equivalence partitioning, combinatorial testing, error guessing; a technique with a structural model comes first, so that a test case shared with equivalence partitioning stays in the table whose coverage, every transition or every rule, the reader checks by it.
 Write a plain-text line above each table naming the technique, followed by its chosen test selection criteria, if any, in parentheses, e.g., `Equivalence Partitioning (Boundary value coverage)`, `Decision Table Testing (Every rule, Boundary value coverage)`, `State Transition Testing (1-switch coverage)`, `Error Guessing`.
@@ -254,7 +254,7 @@ Name each technique and criterion as its resource does, translated into the proj
 List a test case that several techniques derive once, in the table of the first of them; the row keeps the parameters and the tags of every technique that derives it, e.g., the boundary values of equivalence partitioning in a state transition row.
 Validators, visual verification tests, and manual tests derive their test cases from properties, visual aspects, and human judgment instead of a technique, so each keeps a single table without the line.
 
-> **Note:** Do NOT write "Edit Mode" or "Play Mode" in test case output — that is a test-writing concern, not a test design concern.
+> **Note:** Do not write "Edit Mode" or "Play Mode" in test case output — that is a test-writing concern, not a test design concern.
 
 **Tags** — annotations that flag test case categories, written in the **Tags** column, not the Verification column.
 Separate multiple tags with `, ` in the order of the list below, e.g., `acceptance, spec change`, and leave the cell empty when no tag applies:

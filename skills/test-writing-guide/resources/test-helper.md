@@ -91,7 +91,7 @@ public async Task ClickStartButton_LoadsGameScene() { ... }
 
 - Put `[TimeScale]` on tests that wait for animations to finish, so the animations play faster and the test runs in less time.
 
-### Screenshots and video (Play Mode only — do NOT use in Edit Mode)
+### Screenshots and video (Play Mode only — do not use in Edit Mode)
 
 | Goal                                              | Solution                                          |
 |---------------------------------------------------|---------------------------------------------------|
@@ -195,7 +195,7 @@ A value that can't be resolved throws `ArgumentNullException`/`ArgumentException
 - `Is.All.<constraint>` applies a constraint to every item of a collection, e.g. `Is.All.WithinScreen`.
 - Without `Canvas.ForceUpdateCanvases()` (see the layout settling above), `Is.Not.TextOverflowing` fails with "has not been laid out; call `Canvas.ForceUpdateCanvases()` before asserting".
 
-**What these constraints do NOT see**: they compare axis-aligned bounding boxes of the four world corners only — `RectMask2D` clipping, `Canvas.enabled`, `CanvasGroup.alpha`, and `activeInHierarchy` are ignored (geometry only).
+**What these constraints do not see**: they compare axis-aligned bounding boxes of the four world corners only — `RectMask2D` clipping, `Canvas.enabled`, `CanvasGroup.alpha`, and `activeInHierarchy` are ignored (geometry only).
 A rotated element is over-approximated by its AABB.
 All three Canvas render modes (Overlay / Camera / World Space) are supported.
 

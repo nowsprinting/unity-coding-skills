@@ -22,7 +22,7 @@ Extract the test targets the specifications describe, e.g.:
 - A component (class)
 - A `ScriptableObject` class (its methods implemented as unit tests, the constraints on its data as a validator)
 
-Extract only targets the specification describes; do NOT derive targets at a level no specification describes — e.g., internal classes guessed from the external specification of a screen — because such tests couple to an implementation no specification fixes.
+Extract only targets the specification describes; do not derive targets at a level no specification describes — e.g., internal classes guessed from the external specification of a screen — because such tests couple to an implementation no specification fixes.
 When the input includes design docs, the classes and signatures they fix are specifications, and are valid targets.
 
 Assign each specification to exactly one test target, so that no test case or coverage item derives from it twice.

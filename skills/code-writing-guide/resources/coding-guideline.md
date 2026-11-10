@@ -9,7 +9,7 @@ Out of scope:
 
 ## Backward Compatibility
 
-Do NOT maintain backward compatibility unless explicitly requested.
+Do not maintain backward compatibility unless explicitly requested.
 Break things boldly — backward compatibility layers accumulate over time, increasing maintenance cost and making the codebase harder to evolve.
 
 - Under `Assets/`: delete unused methods outright.
@@ -23,7 +23,7 @@ Code under `Assets/` is built with a single Unity version — write it directly 
 When code is **needed on some Unity versions and not on others** — it is required on one side of a version boundary and redundant or invalid on the other — wrap it in a `#if` directive.
 This includes `using` directives.
 
-Do NOT leave such code unconditional with a diagnostic-suppression comment (`// ReSharper disable once ...`, `[SuppressMessage]`, `#pragma warning disable`): the IDE and analyzers only ever see one Unity version, so their verdict is correct on just one side of the boundary, and suppressing it makes that misjudgement permanent.
+Do not leave such code unconditional with a diagnostic-suppression comment (`// ReSharper disable once ...`, `[SuppressMessage]`, `#pragma warning disable`): the IDE and analyzers only ever see one Unity version, so their verdict is correct on just one side of the boundary, and suppressing it makes that misjudgement permanent.
 
 - Use `UNITY_<version>_OR_NEWER` symbols.
   There is no `_OR_OLDER` form, so express "older only" as `#if !UNITY_<version>_OR_NEWER`.
@@ -106,7 +106,7 @@ Guard on whether a package is installed with an asmdef `versionDefines` symbol i
 
 ## IL2CPP and Reflection
 
-- Do NOT use `System.Reflection.Emit`.
+- Do not use `System.Reflection.Emit`.
   It is not supported under IL2CPP.
 - Methods invoked only via reflection must be annotated with `[UnityEngine.Scripting.Preserve]` so that managed code stripping does not remove them.
 
