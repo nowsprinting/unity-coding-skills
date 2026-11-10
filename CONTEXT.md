@@ -1,6 +1,6 @@
 # Unity Coding Skills
 
-Skills and agents that drive test-first development of Unity games. The terms below fix the vocabulary that the skills share.
+Skills that drive test-first development of Unity games. The terms below fix the vocabulary that the skills share.
 
 ## Language
 
