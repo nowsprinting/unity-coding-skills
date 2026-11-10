@@ -10,11 +10,6 @@ A cell the specification explicitly states as undefined is not a gap: design no 
 
 As the modeling result, draw a state transition diagram in Mermaid (`stateDiagram-v2`) instead of the table, and point out each gap and contradiction on it with a note.
 
-## Coarse-Grained States
-
-A state is coarse-grained when it has state transitions inside it, as a contained test target of its own (see [Contained Test Targets](test-analysis.md#contained-test-targets)), e.g., a battle screen.
-An N-switch or a state-to-state reachability test case whose events pass through a coarse-grained state and leave it by an event its inner transitions lead to, e.g., "the battle ends" after several commands of the player, rather than by one operation on the state itself, is unverifiable, because the test cannot arrange those events (see [Unverifiable, Undefined, and Ambiguous Test Cases](test-design.md#unverifiable-undefined-and-ambiguous-test-cases)).
-
 ## Test Selection Criterion
 
 Choose one of the following; the default is 0-switch coverage:
@@ -28,6 +23,12 @@ Whatever the criterion, design the test case of each gap as undefined.
 
 When the specification explicitly states that one state is reachable from another, e.g., "the player can reach the shop screen from the title screen", also apply **state-to-state reachability**: add one test case per such statement, following the shortest path of transitions in the model from the source state to the destination state.
 A sequence or a use case states its transitions, not a reachability; its transitions get their test cases by the criterion above (see [Screen Transitions](#screen-transitions)).
+
+### Coarse-Grained States
+
+A state is coarse-grained when it has states of its own inside it: e.g., a state that is a scene usually has several, and so does a screen with an editing feature.
+A state-to-state reachability test case whose path passes through a coarse-grained state and leaves it by an event its inner transitions lead to, e.g., "the battle ends" after several commands of the player, rather than by one operation on the state itself, is unverifiable, because the test cannot arrange those events (see [Unverifiable, Undefined, and Ambiguous Test Cases](test-design.md#unverifiable-undefined-and-ambiguous-test-cases)).
+An N-switch test case that passes through a coarse-grained state is verifiable when the test can arrange that state and has a means to move it to the next state.
 
 ## Test Methods
 

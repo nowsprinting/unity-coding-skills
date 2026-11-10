@@ -25,6 +25,7 @@ Read only the following code, and no method bodies of production code:
 - **Existing tests** — when the test target has test classes, the signatures of their test methods, with the attributes that give a parameterized test its arguments, to tag the test cases they already implement (see [Existing Tests](#existing-tests))
 - **Production code** — for unit tests and validators, the signatures and XML documentation comments of the test target's members, to judge whether a test case can arrange its inputs and observe the actual result (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); for a class the input's design docs introduce, read the signatures they fix instead.
   Take the inputs to model from the specification, not from the parameters of a signature.
+  Arrange and observe through `public` members wherever they suffice; use an `internal` class or method only when no `public` means exists.
 
 ## Test Layers
 
@@ -200,7 +201,7 @@ Design a test case even when it cannot be verified as specified, and mark it ins
 - **Unverifiable** — the test cannot arrange an input the test case needs, or cannot observe its actual result.
   Judge both from the specification and what [Reading Code](#reading-code) allows.
   - **Arranging** — the test can arrange an input when it sets the input, and restores it, during the test run: e.g., `Time.timeScale` and `PlayerPrefs` can be arranged; a project setting, e.g., `activeInputHandler`, which takes effect only after the Editor restarts, cannot.
-    Neither can the events that pass through a coarse-grained state and leave it by an event its inner transitions lead to (see [Coarse-Grained States](state-transition-testing.md#coarse-grained-states)): the specification fixes no path through it, and driving it takes a bot that plays the game autonomously, which lies outside what this plugin covers.
+    Neither can the events of a state-to-state reachability test case that pass through a coarse-grained state and leave it by an event its inner transitions lead to (see [Coarse-Grained States](state-transition-testing.md#coarse-grained-states)): the specification fixes no path through it, and driving it takes a bot that plays the game autonomously, which lies outside what this plugin covers.
     An input the test target reads through a dependency a test stub can replace can be arranged.
     A test of Editor code or of assets runs in the Edit Mode tests, so it can also:
     - Run the menu item under test
@@ -313,7 +314,7 @@ Record every issue found while designing instead of guessing.
 ```
 
 For `⚠️WARN` or `❌FAIL`, add `#### Issues` with the affected specification and a proposed remedy of each issue.
-For an unverifiable test case, propose a design that makes it verifiable, e.g., a dependency through which the test target reads the input, and when the test target reads it, so that a test stub can replace it before then; for one whose events pass through a coarse-grained state, propose stating the path through that state, or testing the transitions on each side of it separately, so that the path inside it belongs to that target's own test design; for a combinatorial explosion, propose breaking the test down into tests at a more detailed level.
+For an unverifiable test case, propose a design that makes it verifiable, e.g., a dependency through which the test target reads the input, and when the test target reads it, so that a test stub can replace it before then; for one whose events pass through a coarse-grained state, propose stating the path through that state, or testing the transitions on each side of it separately; for a combinatorial explosion, propose breaking the test down into tests at a more detailed level.
 For `❌FAIL`, also add `#### Modeling result` — the model that revealed the issues, e.g., the equivalence partition table, the decision table, the state transition diagram — so the user can see where the specification breaks:
 
 ```markdown
