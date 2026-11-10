@@ -7,8 +7,8 @@ In ISTQB terms, a test target is a testable feature, and its assigned specificat
 
 - **Specification under test** — the specification to design tests for: the specification the user gives, or the part of it an instruction selects; test targets and test cases derive from it alone.
   "The specification" below means the specification under test.
-- **References** (optional) — what the user gives to read besides the specification under test.
-- **Instructions** (optional) — which part of the specification to design tests for, and the test techniques or test selection criteria to use.
+- **Reference** (optional) — what the user gives to read besides the specification under test.
+- **Instruction** (optional) — which part of the specification to design tests for, and the test techniques or test selection criteria to use.
 
 Read a reference, or a document the specification under test links to, only to settle what the specification under test leaves open, e.g., the definition of a term it uses; extract no test target from it.
 

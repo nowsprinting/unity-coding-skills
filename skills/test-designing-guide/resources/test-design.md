@@ -12,8 +12,8 @@ The output of test analysis for one test target, with the input it passes on:
 
 - **Test target** with its **assigned specifications** — derive the test cases from them alone.
 - **Contained test targets** (if any), each with its assigned specifications (see [Contained Test Targets](#contained-test-targets)).
-- **References** (optional) — what the user gives to read besides the specification under test.
-- **Instructions** (optional) — the test techniques to apply or to suppress, and their test selection criteria.
+- **Reference** (optional) — what the user gives to read besides the specification under test.
+- **Instruction** (optional) — the test techniques to apply or to suppress, and their test selection criteria.
 
 Read a reference, or a document the assigned specifications link to, only to settle what the assigned specifications leave open; derive no test case from it.
 
