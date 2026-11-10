@@ -24,7 +24,7 @@ If the user's request is to implement a new feature, change a specification, or 
 
 Take the bug report from the `INCIDENT` argument: the report written directly, the name of a failing test, file paths, or the URLs of issues in an issue tracker, in any combination.
 For an issue URL, fetch its body and comments (e.g., `gh issue view <URL> --comments` for GitHub Issues): the comments often correct the body.
-When the argument is omitted, take it from the conversation.
+Combine the argument with the bug report in the conversation, if any; when the argument is omitted, take it from the conversation alone.
 
 ## Workflow
 

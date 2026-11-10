@@ -28,7 +28,7 @@ If the user's request is to investigate or fix a bug rather than implement a new
 
 ## Input
 
-Take the input from the `SPECIFICATION` argument, or from the conversation when the argument is omitted:
+Take the input from the `SPECIFICATION` argument combined with the conversation, if any; when the argument is omitted, take it from the conversation alone:
 
 - **Specification** — the specification to implement: written directly, file paths, or the URLs of issues in an issue tracker, in any combination.
   If no specification can be found, use `AskUserQuestion` to ask the user before proceeding.

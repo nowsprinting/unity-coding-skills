@@ -21,7 +21,7 @@ The test design knowledge lives in the `test-designing-guide` skill; this skill 
 
 ## Input
 
-Take the input from the `SPECIFICATION` argument, or from the conversation when the argument is omitted:
+Take the input from the `SPECIFICATION` argument combined with the conversation, if any; when the argument is omitted, take it from the conversation alone:
 
 - **Specification under test** — the specification to design tests for: written directly, file paths, or the URLs of issues in an issue tracker, in any combination; "the specification" below means it.
   If no specification can be found, use `AskUserQuestion` to ask the user before proceeding.

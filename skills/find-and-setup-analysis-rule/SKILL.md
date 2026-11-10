@@ -18,7 +18,7 @@ An analysis rule is an IDE inspection or a Roslyn analyzer rule, and a diagnosti
 ## Input
 
 Take the coding pattern from the `PATTERN` argument: a description, the code the analysis rule should flag, and optionally the code it should not, e.g., the code before and after a bug fix.
-When the argument is omitted, take it from the conversation.
+Combine the argument with the coding pattern in the conversation, if any; when the argument is omitted, take it from the conversation alone.
 If the code to flag is missing, or the input fits several patterns, use `AskUserQuestion` to ask the user before proceeding.
 
 ## Workflow
