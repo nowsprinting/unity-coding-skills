@@ -41,6 +41,9 @@ Guide for directly editing Unity YAML-serialized asset files for Unity projects.
   Unity's YAML parser drops or rejects them, and re-save would strip cosmetic formatting anyway — don't bother polishing what Unity will normalize.
 - **After editing, let Unity re-import the asset** (focus the Editor) and confirm successful import using `get_unity_compilation_result`.
   Review the diff Unity produces on next save to confirm the edit was accepted as intended.
+- **After editing a ScriptableObject asset, run its validator with the `run-tests` skill when the project has one.**
+  A validator is an Edit Mode test that verifies the data of every asset of a `ScriptableObject` class, e.g., `CardValidator` for `Card`.
+  A project may name it differently, so search the Edit Mode tests for the class name; when none exists, skip this.
 
 ## Gotchas
 
