@@ -84,9 +84,9 @@ A standalone-player run writes `Temp/PlayerTestResult.txt`, not an XML result fi
 
 ### Procedure
 
-1. Run: `python3 ${CLAUDE_SKILL_DIR}/scripts/extract_visual_verification.py <unity-project-root>`
+1. Run: `${CLAUDE_SKILL_DIR}/scripts/extract_visual_verification.sh <unity-project-root>`
    This prints, per `[Category("VisualVerification")]` test found in `Application.persistentDataPath/TestResults.xml`, its NUnit `result`, its `Description` property (the verification aspects), and its `Screenshot` propert(y/ies) (absolute path(s)).
-   See the script's own comments for why an XML library is used instead of grep/awk (class-scoped `[Category]` lands on the ancestor `<test-suite>`, not the `<test-case>`; a test can record more than one `Screenshot`).
+   See the script's own comments for why it tokenizes the XML instead of matching lines with grep (class-scoped `[Category]` lands on the ancestor `<test-suite>`, not the `<test-case>`; a test can record more than one `Screenshot`).
 2. Check freshness before trusting the output: compare the printed list of "All N test(s) in this result file" against the tests you actually just ran.
    A filtered run's XML contains only the test-cases that were executed, so a mismatch (extra tests you didn't run, or missing ones you did) means this file is from an earlier run — `TestResults.xml` is overwritten on each run, not appended.
    Treat the printed age (`— N seconds ago`) as a secondary signal only; it can't discriminate a stale file from a few minutes ago from a run that legitimately took a few minutes.
@@ -107,7 +107,7 @@ If it is absent, fall back:
 ### Helper script
 
 `${CLAUDE_SKILL_DIR}/scripts/get_persistent_data_path.sh <unity-project-root>` prints the Editor's `Application.persistentDataPath` for the current OS (from `companyName`/`productName` in `ProjectSettings/ProjectSettings.asset`, per [Unity's docs](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html)).
-`extract_visual_verification.py` calls it automatically; use it directly only when you need the raw directory.
+`extract_visual_verification.sh` calls it automatically; use it directly only when you need the raw directory.
 
 ## Rules for Test Failures
 

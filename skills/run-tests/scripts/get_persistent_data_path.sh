@@ -12,8 +12,8 @@ if [ ! -f "$settings" ]; then
   exit 1
 fi
 
-company=$(grep -m 1 '^  companyName: ' "$settings" | sed -E 's/^  companyName: //' | tr -d '"')
-product=$(grep -m 1 '^  productName: ' "$settings" | sed -E 's/^  productName: //' | tr -d '"')
+company=$(grep -m 1 '^  companyName: ' "$settings" | sed -E 's/^  companyName: //' | tr -d '"\r')
+product=$(grep -m 1 '^  productName: ' "$settings" | sed -E 's/^  productName: //' | tr -d '"\r')
 
 if [ -z "$company" ] || [ -z "$product" ]; then
   echo "Error: missing companyName or productName in $settings" >&2
