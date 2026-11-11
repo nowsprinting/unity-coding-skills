@@ -49,7 +49,7 @@ Adjust these values before compiling:
 Fetch the project's PlayerSettings values with:
 
 ```bash
-${CLAUDE_SKILL_DIR}/scripts/get-player-settings.sh <project-root>
+${CLAUDE_SKILL_DIR}/scripts/get_player_settings.sh <project-root>
 ```
 
 It prints the screen settings (`fullscreenMode`, `defaultScreenWidth`, `defaultScreenHeight`) and the Standalone build settings (`scriptingBackend`, `il2cppCodeGeneration`, `managedStrippingLevel`) from `ProjectSettings/ProjectSettings.asset`.
@@ -93,7 +93,7 @@ Run `get_unity_compilation_result` and confirm the script compiles.
 ### 3. Invoke the runner
 
 Call `run_method_in_unity` with type `UnityCodingSkills.RunTests.PlayerTestRunner` and method `RunOnStandalonePlayer`.
-For `assemblyName`, run `${CLAUDE_SKILL_DIR}/scripts/resolve-assembly.sh <project-root>/Assets/UnityCodingSkills/Editor/PlayerTestRunner.cs` and use the assembly name it prints.
+For `assemblyName`, run `${CLAUDE_SKILL_DIR}/scripts/resolve_assembly.sh <project-root>/Assets/UnityCodingSkills/Editor/PlayerTestRunner.cs` and use the assembly name it prints.
 
 The tool returns immediately: `TestRunnerApi.Execute` is asynchronous, and the player build plus the test run continue in the Editor.
 `success: true` means only that the method was invoked.

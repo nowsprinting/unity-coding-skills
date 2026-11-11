@@ -3,12 +3,12 @@
 # Generate a Unity Test Framework asmdef file for a test assembly.
 #
 # Usage:
-#   scripts/create-test-asmdef.sh <ProductionAsmdefPath>
+#   scripts/create_test_asmdef.sh <ProductionAsmdefPath>
 #
 # Examples:
-#   scripts/create-test-asmdef.sh Assets/MyGame/Scripts/Runtime/MyGame.asmdef
+#   scripts/create_test_asmdef.sh Assets/MyGame/Scripts/Runtime/MyGame.asmdef
 #     -> Assets/MyGame/Tests/Runtime/MyGame.Tests.asmdef
-#   scripts/create-test-asmdef.sh Assets/MyGame/Scripts/Editor/MyGame.Editor.asmdef
+#   scripts/create_test_asmdef.sh Assets/MyGame/Scripts/Editor/MyGame.Editor.asmdef
 #     -> Assets/MyGame/Tests/Editor/MyGame.Editor.Tests.asmdef
 #
 # The output directory is derived from the production asmdef path:
@@ -23,7 +23,7 @@ set -euo pipefail
 
 usage() {
     cat <<'EOF'
-Usage: scripts/create-test-asmdef.sh <ProductionAsmdefPath>
+Usage: scripts/create_test_asmdef.sh <ProductionAsmdefPath>
 
 Arguments:
   ProductionAsmdefPath  Path to the production assembly definition file.

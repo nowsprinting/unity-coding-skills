@@ -15,7 +15,7 @@ Resolves diagnostics from the compiler, Roslyn analyzers, and IDE inspections at
 ## Input
 
 One or more file or directory path arguments.
-Resolve them with `${CLAUDE_SKILL_DIR}/scripts/resolve-targets.sh <unity-project-root> <path>...` — it prints the project-root-relative path of every `.cs` file in the solution, one per line, in the form `lint_files`, `get_file_problems`, and `reformat_file` expect, and reports each dropped path (docs, `.meta`, `.asmdef`, assets, files outside the solution) on stderr.
+Resolve them with `${CLAUDE_SKILL_DIR}/scripts/resolve_targets.sh <unity-project-root> <path>...` — it prints the project-root-relative path of every `.cs` file in the solution, one per line, in the form `lint_files`, `get_file_problems`, and `reformat_file` expect, and reports each dropped path (docs, `.meta`, `.asmdef`, assets, files outside the solution) on stderr.
 Use that list as-is.
 
 If no path argument is given, use `AskUserQuestion` to ask the user for the targets.

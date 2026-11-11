@@ -21,7 +21,7 @@ Re-check before assuming these still hold.
 
 `RunFinished` always writes `Application.persistentDataPath/PerformanceTestResults.json` (parsed from a `TestResults.xml` beside it).
 From 3.6.0, the file is also updated as each test finishes, and a command-line run given `-testResults` without `-perfTestResults` also writes it next to the NUnit results file.
-Resolve the directory with the `run-tests` skill's `get-persistent-data-path.sh`.
+Resolve the directory with the `run-tests` skill's `get_persistent_data_path.sh`.
 
 ## `Measure.Method()` takes synchronous delegates only (3.5.0)
 

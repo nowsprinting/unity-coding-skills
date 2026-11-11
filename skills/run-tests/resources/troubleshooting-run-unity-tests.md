@@ -103,7 +103,7 @@ All of `passCount`, `failCount`, `skipCount`, `inconclusiveCount` are `0`.
 No tests matched the filter.
 See [Zero test results returned as success](#zero-test-results-returned-as-success) for log patterns, then:
 
-- Verify `assemblyNames` by running `resolve-test-target.sh` against any test file in the target assembly.
+- Verify `assemblyNames` by running `resolve_test_target.sh` against any test file in the target assembly.
 - Check spelling of any `testNames` or `categoryNames` values.
 
 ### `success: true` — Failures present
@@ -267,5 +267,5 @@ For recovery steps, see [Zero test results](#success-true--zero-test-results).
    Check `Editor.log` for the lifecycle marker sequence: if the Editor froze, retrying or adjusting `MCP_TOOL_TIMEOUT` will not help — ask the user to restart the Editor first.
    Otherwise, increase `MCP_TOOL_TIMEOUT` or narrow the test filter.
 4. `became null` → domain reload occurred; `did not reconnect` → check `Editor.log` for a crash or compile error.
-5. `snapshot.Count=0` → filter mismatch; verify `assemblyNames` by running `resolve-test-target.sh` against any test file in the target assembly, or check `testNames` spelling.
+5. `snapshot.Count=0` → filter mismatch; verify `assemblyNames` by running `resolve_test_target.sh` against any test file in the target assembly, or check `testNames` spelling.
 6. If `idea.log` shows the launch started but stopped silently, check `Editor.log` for the lifecycle marker sequence to determine whether the hang occurred before or after test code started running.

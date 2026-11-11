@@ -102,7 +102,7 @@ namespace UnityCodingSkills.RunTests
     public class PlayerTestBuildSettings : ITestRunSettings
     {
         // Filled with the project's own PlayerSettings values (fetched with
-        // get-player-settings.sh — see run-on-standalone-player.md step 1), so the test build
+        // get_player_settings.sh — see run-on-standalone-player.md step 1), so the test build
         // matches the project configuration; replace a value only when the user
         // specifies a different one. Notes: ManagedStrippingLevel.Disabled is a
         // Mono-only option — under IL2CPP, Unity treats it as Minimal. Stripping

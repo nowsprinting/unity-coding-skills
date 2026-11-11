@@ -48,7 +48,7 @@ Counting a specification in two targets would count its coverage items twice, an
 ### Step 2: Measure Each Test Target
 
 Measure each test target in its own general-purpose subagent, launched in parallel, so that the model and the test code of one target stay out of the others' context.
-Before launching them, list the test files that name the specification document with `${CLAUDE_SKILL_DIR}/scripts/find-test-files.sh <PATH>`: it prints the path of each `.cs` file with a `// Test-basis:` line naming the document, one per line, searching each repository level from the document's own repository up to its superprojects, and exits with code 3 when none has one.
+Before launching them, list the test files that name the specification document with `${CLAUDE_SKILL_DIR}/scripts/find_test_files.sh <PATH>`: it prints the path of each `.cs` file with a `// Test-basis:` line naming the document, one per line, searching each repository level from the document's own repository up to its superprojects, and exits with code 3 when none has one.
 On exit code 3, proceed with an empty list: a project whose tests predate the `// Test-basis:` lines still has tests, and item 4 below finds them by name.
 Give each subagent the test target with its assigned specifications, the list of test files, and the definitions of coverage item and test basis above, and instruct it to:
 

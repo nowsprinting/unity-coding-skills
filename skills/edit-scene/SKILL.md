@@ -26,7 +26,7 @@ Guide for creating and editing Unity scene files in Unity projects.
 - Before running an editor script, check if the editor is in Play Mode using the `unity_play_control` tool.
   If it is, stop it first — Play Mode may skip recompilation, leaving stale code active.
 - After modifying code, confirm compilation success using the `get_unity_compilation_result` tool before running.
-- **To determine which assembly an editor script belongs to**, run `${CLAUDE_SKILL_DIR}/scripts/resolve-assembly.sh <cs-file-path>`.
+- **To determine which assembly an editor script belongs to**, run `${CLAUDE_SKILL_DIR}/scripts/resolve_assembly.sh <cs-file-path>`.
   It walks up directories to find the nearest `.asmdef`; if none is found, it falls back to `Assembly-CSharp-Editor` (path contains `/Editor/`) or `Assembly-CSharp`.
 - **Prefer the `run_method_in_unity` tool (MCP Server Extension for Unity) for execution.**
   Define a `public static` method in the script (applying `[MenuItem("Tools/...")]` is optional) and invoke it directly via `run_method_in_unity`.

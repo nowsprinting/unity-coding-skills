@@ -23,11 +23,11 @@ If a feature marked "UTF v1.5+" fails to compile, do not use it; write the test 
 
 ### Creating a Test Assembly
 
-When `Tests/Runtime/` or `Tests/Editor/` does not exist yet, run `${CLAUDE_SKILL_DIR}/scripts/create-test-asmdef.sh <ProductionAsmdefPath>` to generate `<ProductionAssembly>.Tests.asmdef`.
+When `Tests/Runtime/` or `Tests/Editor/` does not exist yet, run `${CLAUDE_SKILL_DIR}/scripts/create_test_asmdef.sh <ProductionAsmdefPath>` to generate `<ProductionAssembly>.Tests.asmdef`.
 
 Examples:
-- `${CLAUDE_SKILL_DIR}/scripts/create-test-asmdef.sh Assets/MyGame/Scripts/Runtime/MyGame.asmdef` → `Assets/MyGame/Tests/Runtime/MyGame.Tests.asmdef`
-- `${CLAUDE_SKILL_DIR}/scripts/create-test-asmdef.sh Assets/MyGame/Scripts/Editor/MyGame.Editor.asmdef` → `Assets/MyGame/Tests/Editor/MyGame.Editor.Tests.asmdef`
+- `${CLAUDE_SKILL_DIR}/scripts/create_test_asmdef.sh Assets/MyGame/Scripts/Runtime/MyGame.asmdef` → `Assets/MyGame/Tests/Runtime/MyGame.Tests.asmdef`
+- `${CLAUDE_SKILL_DIR}/scripts/create_test_asmdef.sh Assets/MyGame/Scripts/Editor/MyGame.Editor.asmdef` → `Assets/MyGame/Tests/Editor/MyGame.Editor.Tests.asmdef`
 
 ## Naming
 

@@ -32,7 +32,7 @@ Guide for running Unity tests with the `run_unity_tests` tool, running Play Mode
 Before running tests, complete the following steps in order:
 
 1. If any code was modified, confirm compilation success using the `get_unity_compilation_result` tool before proceeding.
-2. To determine `assemblyNames` and `testMode` for a specific test class, run `${CLAUDE_SKILL_DIR}/scripts/resolve-test-target.sh <test-class-cs-path>`.
+2. To determine `assemblyNames` and `testMode` for a specific test class, run `${CLAUDE_SKILL_DIR}/scripts/resolve_test_target.sh <test-class-cs-path>`.
    The script prints `<assemblyName>\t<testMode>` (e.g. `MyGame.Tests\tPlayMode`).
    Skip this step when running an already-known assembly.
 
@@ -50,7 +50,7 @@ A skipped test does not count as a failure: it is excluded on purpose, e.g., by 
 ### Performance Test Results
 
 When `com.unity.test-framework.performance` is installed, each run writes its measurements to `PerformanceTestResults.json` under `Application.persistentDataPath`.
-Resolve that directory with `${CLAUDE_SKILL_DIR}/scripts/get-persistent-data-path.sh <unity-project-root>`.
+Resolve that directory with `${CLAUDE_SKILL_DIR}/scripts/get_persistent_data_path.sh <unity-project-root>`.
 
 For the other locations the package writes the file to, and for its measurement pitfalls, see the `test-writing-guide` skill's `resources/unity-test-framework-performance.md`.
 
@@ -79,12 +79,12 @@ Skip the analysis when nothing is under verification: a regression run over unch
 When in doubt, skip.
 
 This applies to Editor runs (`run_unity_tests`) only.
-A standalone-player run writes `Temp/PlayerTestResult.txt`, not an XML result file (see `resources/run-on-standalone-player.md`), and on macOS the Player's `persistentDataPath` differs from the Editor's (see the comment in `scripts/get-persistent-data-path.sh`).
+A standalone-player run writes `Temp/PlayerTestResult.txt`, not an XML result file (see `resources/run-on-standalone-player.md`), and on macOS the Player's `persistentDataPath` differs from the Editor's (see the comment in `scripts/get_persistent_data_path.sh`).
 `[TakeScreenshot]` itself is Play Mode only.
 
 ### Procedure
 
-1. Run: `python3 ${CLAUDE_SKILL_DIR}/scripts/extract-visual-verification.py <unity-project-root>`
+1. Run: `python3 ${CLAUDE_SKILL_DIR}/scripts/extract_visual_verification.py <unity-project-root>`
    This prints, per `[Category("VisualVerification")]` test found in `Application.persistentDataPath/TestResults.xml`, its NUnit `result`, its `Description` property (the verification aspects), and its `Screenshot` propert(y/ies) (absolute path(s)).
    See the script's own comments for why an XML library is used instead of grep/awk (class-scoped `[Category]` lands on the ancestor `<test-suite>`, not the `<test-case>`; a test can record more than one `Screenshot`).
 2. Check freshness before trusting the output: compare the printed list of "All N test(s) in this result file" against the tests you actually just ran.
@@ -106,8 +106,8 @@ If it is absent, fall back:
 
 ### Helper script
 
-`${CLAUDE_SKILL_DIR}/scripts/get-persistent-data-path.sh <unity-project-root>` prints the Editor's `Application.persistentDataPath` for the current OS (from `companyName`/`productName` in `ProjectSettings/ProjectSettings.asset`, per [Unity's docs](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html)).
-`extract-visual-verification.py` calls it automatically; use it directly only when you need the raw directory.
+`${CLAUDE_SKILL_DIR}/scripts/get_persistent_data_path.sh <unity-project-root>` prints the Editor's `Application.persistentDataPath` for the current OS (from `companyName`/`productName` in `ProjectSettings/ProjectSettings.asset`, per [Unity's docs](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html)).
+`extract_visual_verification.py` calls it automatically; use it directly only when you need the raw directory.
 
 ## Rules for Test Failures
 

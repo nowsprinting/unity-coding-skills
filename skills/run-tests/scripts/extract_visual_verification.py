@@ -30,14 +30,14 @@ CATEGORY = "VisualVerification"
 def usage_error(message):
     print(f"Usage: {Path(sys.argv[0]).name} <unity-project-root> [test-results-xml]", file=sys.stderr)
     print("  <unity-project-root> is only read when [test-results-xml] is omitted", file=sys.stderr)
-    print("  (it is passed to get-persistent-data-path.sh to locate the default file).", file=sys.stderr)
+    print("  (it is passed to get_persistent_data_path.sh to locate the default file).", file=sys.stderr)
     print(f"Error: {message}", file=sys.stderr)
     sys.exit(EXIT_USAGE)
 
 
 def resolve_results_xml(project_root):
     script_dir = Path(__file__).resolve().parent
-    helper = script_dir / "get-persistent-data-path.sh"
+    helper = script_dir / "get_persistent_data_path.sh"
     try:
         result = subprocess.run(
             ["bash", str(helper), project_root],
