@@ -42,6 +42,20 @@ Test execution can take several minutes.
 Do not re-run while a test is in progress — always wait for it to complete or time out.
 If a timeout occurs, narrow down the tests using filter settings and re-run.
 
+### Unsaved Scene Dialog (macOS)
+
+When an open scene has unsaved changes, the Unity Editor shows the "Scene(s) Have Been Modified" dialog, and the run does not start until the dialog is closed; nothing is written to `Editor.log` meanwhile.
+On macOS, start the following command with the Bash tool's `run_in_background: true`, in the same message as the `run_unity_tests` call and before it.
+The calls in a message run in order, and `run_unity_tests` does not return until the run ends, so a command placed after it starts too late.
+
+```bash
+${CLAUDE_SKILL_DIR}/scripts/wait_for_test_run_start.sh <unity-project-root> || osascript ${CLAUDE_SKILL_DIR}/scripts/osx/DiscardCloseSceneHaveBeenModified.applescript
+```
+
+It waits 5 seconds, and when `Editor.log` shows no test run started, it clicks the dialog's "Don't Save" button, which discards the unsaved changes of the scene.
+The output is `clicked (pid <N>)` or `not found`.
+If the command is denied, run the tests without it.
+
 ### Judging the Result
 
 The tests pass only when none of them fails or is inconclusive: count an inconclusive test as a failure, since its `Assume` stopped it before it could verify the expected result.

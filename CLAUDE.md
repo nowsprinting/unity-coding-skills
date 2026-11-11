@@ -10,3 +10,4 @@ A plugin user's agent cannot read `CONTEXT.md`, so define inline in a skill any 
 
 Write a skill's scripts in Bash, not Python: on native Windows, Claude Code runs them with Git Bash, and Python is not guaranteed to be installed.
 Name script files in snake_case (e.g., `resolve_test_target.sh`), following the Google Shell Style Guide.
+Name AppleScript files in CamelCase (e.g., `DiscardCloseSceneHaveBeenModified.applescript`).

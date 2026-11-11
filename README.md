@@ -208,6 +208,12 @@ resolve-diagnostics
 
 It runs the tests in the Unity Editor or on the player.
 
+> [!NOTE]\
+> On macOS, it closes the "Scene(s) Have Been Modified" dialog automatically using `osascript`.
+> To run it, you need to grant permission in **System Settings > Privacy & Security > Automation** and **Device Control and Data Access**("Accessibility" when old macOS).\
+> Detecting whether the dialog is blocking a test run depends on the logs that the `com.unity.test-framework.performance` package outputs.
+> If the package is not installed, the focus moves to the Unity Editor on every test run.
+
 ### Edit scenes and prefabs
 
 ```bash

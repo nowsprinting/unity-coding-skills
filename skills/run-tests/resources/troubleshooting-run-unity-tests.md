@@ -67,6 +67,7 @@ Distinguishing the two determines whether retrying can help at all.
 - Inspect `idea.log` for `UnitTestLaunch created` and `RunUnitTestLaunch.Start called` (confirming the run started), then check `Editor.log` for the lifecycle marker sequence described in [Tests launched but timed out](#tests-launched-but-timed-out).
   - Markers 1–3 present but marker 5 absent → the Editor froze — see [Editor freeze](#possible-cause-editor-freeze) for causes.
   - Marker 5 present → the run completed; this was not a freeze — go to Step 2.
+  - No marker at all → the run never started; the "Scene(s) Have Been Modified" dialog may be blocking it — see "Unsaved Scene Dialog (macOS)" in `SKILL.md`, or ask the user to close the dialog.
 - If still unclear, ask the user whether the Unity Editor UI is responding to input at all.
   A genuinely unresponsive Editor confirms a freeze.
 
