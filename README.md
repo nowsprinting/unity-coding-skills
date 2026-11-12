@@ -213,6 +213,7 @@ It runs the tests in the Unity Editor or on the player.
 > To run it, you need to grant permission in **System Settings > Privacy & Security > Automation** and **Device Control and Data Access**("Accessibility" when old macOS).\
 > Detecting whether the dialog is blocking a test run depends on the logs that the `com.unity.test-framework.performance` package outputs.
 > If the package is not installed, the focus moves to the Unity Editor on every test run.
+> The check runs 5 seconds after the test run is requested; set the `UNITY_RUN_TESTS_START_CHECK_DELAY_SECONDS` environment variable to change the delay.
 
 ### Edit scenes and prefabs
 

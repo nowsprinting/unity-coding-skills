@@ -52,7 +52,7 @@ The calls in a message run in order, and `run_unity_tests` does not return until
 ${CLAUDE_SKILL_DIR}/scripts/wait_for_test_run_start.sh <unity-project-root> || osascript ${CLAUDE_SKILL_DIR}/scripts/osx/DiscardCloseSceneHaveBeenModified.applescript
 ```
 
-It waits 5 seconds, and when `Editor.log` shows no test run started, it clicks the dialog's "Don't Save" button, which discards the unsaved changes of the scene.
+It waits 5 seconds (the `UNITY_RUN_TESTS_START_CHECK_DELAY_SECONDS` environment variable overrides it), and when `Editor.log` shows no test run started, it clicks the dialog's "Don't Save" button, which discards the unsaved changes of the scene.
 The output is `clicked (pid <N>)` or `not found`.
 If the command is denied, run the tests without it.
 

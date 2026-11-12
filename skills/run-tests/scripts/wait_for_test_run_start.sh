@@ -3,7 +3,7 @@ set -euo pipefail
 
 if [ $# -ne 1 ]; then
   echo "Usage: $(basename "$0") <unity-project-root>" >&2
-  echo "Waits 5 seconds; exits 0 when a test run started in the meantime, 1 otherwise. macOS only." >&2
+  echo "Waits UNITY_RUN_TESTS_START_CHECK_DELAY_SECONDS (default 5) seconds; exits 0 when a test run started in the meantime, 1 otherwise. macOS only." >&2
   exit 2
 fi
 
@@ -20,7 +20,7 @@ for log in "${logs[@]}"; do
   offsets+=("$({ wc -c <"$log"; } 2>/dev/null || echo 0)")
 done
 
-sleep 5
+sleep "${UNITY_RUN_TESTS_START_CHECK_DELAY_SECONDS:-5}"
 
 # ponytail: Unity Test Framework itself logs nothing when a run starts, so
 # these are side effects: the first needs an IPrebuildSetup class in the
