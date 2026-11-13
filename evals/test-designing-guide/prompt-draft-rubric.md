@@ -1,4 +1,4 @@
-Draft a golden checklist for evaluating test-design modeling results against the specification below. A judge model will later check each item as present or absent in other modeling results of the same specification, so write items that are:
+Draft a rubric checklist for evaluating test-design modeling results against the specification below. A judge model will later check each item as present or absent in other modeling results of the same specification, so write items that are:
 
 - **Traceable to the specification**: every `must` item follows from a statement in the specification, not from a choice this one modeling result happened to make. Skip findings that need judgment unless the specification clearly forces them.
 - **Phrased by meaning, not notation**: "Pressing X with count 0 is not accepted: no transition and the count stays 0" rather than a Mermaid edge or a table row, so that a result modeling the same facts with another notation (product states vs. guards, one table vs. two) still passes.
@@ -13,7 +13,7 @@ Under `## regex`: a few case-insensitive regexes for fixed vocabulary the raw ou
 Output only the Markdown file, in exactly this shape, with no other text:
 
 ```
-# Golden: {name}
+# Rubric: {name}
 
 <one line stating what the fixture exercises>
 

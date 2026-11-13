@@ -1,4 +1,4 @@
-# Golden: fsm-card-draw
+# Rubric: fsm-card-draw
 
 Items the modeling result must state (`must`), must not state (`must_not`), and regexes the raw output must match (`regex`).
 Phrase each item by meaning, not by one notation: a run may model screen × count as product states or as three screens with guards, and both are correct.

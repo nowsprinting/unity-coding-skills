@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Run the test-designing-guide skill on a fixture across model x effort, judge each run against golden.md, report.
+"""Run the test-designing-guide skill on a fixture across model x effort, judge each run against rubric.md, report.
 
   python3 run.py fsm-card-draw --model opus --effort high --runs 3
-  python3 run.py fsm-card-draw --model opus --effort xhigh --runs 1 --draft-golden   # golden candidate -> draft-golden.md
+  python3 run.py fsm-card-draw --model opus --effort xhigh --runs 1 --draft-rubric   # rubric candidate -> rubric.md
   python3 run.py fsm-card-draw --report-only
   python3 run.py --report-only                                    # every fixture, for RESULTS.md
 """
@@ -24,7 +24,7 @@ def claude(prompt, *args, cwd=None):
     return json.loads(out.stdout)
 
 
-def parse_golden(path):
+def parse_rubric(path):
     """## must / ## must_not / ## regex sections, one `- ` bullet per item."""
     sections, current = {"must": [], "must_not": [], "regex": []}, None
     for line in path.read_text().splitlines():
@@ -37,10 +37,10 @@ def parse_golden(path):
 
 def run_once(fixture_dir, model, effort, out_md):
     with tempfile.TemporaryDirectory() as work:
-        # golden.md, draft-golden.md and prompt.md stay out of the workspace: the agent must not see the checklist
+        # rubric.md and prompt.md stay out of the workspace: the agent must not see the checklist
         # instruction.md goes into the prompt, not the workspace: an instruction is what the user says, not a document a subagent may come across
         shutil.copytree(fixture_dir, work, dirs_exist_ok=True,
-                        ignore=shutil.ignore_patterns("golden.md", "draft-golden.md", "instruction.md", "prompt.md"))
+                        ignore=shutil.ignore_patterns("rubric.md", "instruction.md", "prompt.md"))
         prompt = fixture_dir / "prompt.md" if (fixture_dir / "prompt.md").exists() else HERE / "prompt.md"
         instruction = fixture_dir / "instruction.md"
         text = prompt.read_text().replace("{instruction}", instruction.read_text().strip() if instruction.exists() else "none")
@@ -52,8 +52,8 @@ def run_once(fixture_dir, model, effort, out_md):
         {k: res.get(k) for k in ("total_cost_usd", "duration_ms", "num_turns", "is_error", "permission_denials", "session_id")}, indent=2))
 
 
-def judge(golden, output, judge_model, votes):
-    items = golden["must"] + golden["must_not"]
+def judge(rubric, output, judge_model, votes):
+    items = rubric["must"] + rubric["must_not"]
     listing = "\n".join(f"{i + 1}. {text}" for i, text in enumerate(items))
     prompt = (HERE / "judge.md").read_text().format(items=listing, output=output)
     tally = [0] * len(items)
@@ -66,23 +66,24 @@ def judge(golden, output, judge_model, votes):
             if 0 <= i < len(items) and item["present"]:
                 tally[i] += 1
                 evidence[i] = item["evidence"]
-    n_must = len(golden["must"])
+    n_must = len(rubric["must"])
     present = [t * 2 > votes for t in tally]
     return {
         "must": [{"text": items[i], "present": present[i], "evidence": evidence[i]} for i in range(n_must)],
         "must_not": [{"text": items[i], "present": present[i], "evidence": evidence[i]} for i in range(n_must, len(items))],
-        "regex": [{"pattern": p, "matched": bool(re.search(p, output, re.I | re.S))} for p in golden["regex"]],
+        "regex": [{"pattern": p, "matched": bool(re.search(p, output, re.I | re.S))} for p in rubric["regex"]],
     }
 
 
-def draft_golden(fixture_dir, run_md, model):
-    """Write draft-golden.md from one run; the user reviews it and renames it to golden.md."""
-    prompt = (HERE / "prompt-draft-golden.md").read_text().format(
+def draft_rubric(fixture_dir, run_md, model):
+    """Write rubric.md from one run; the user reviews it against spec.md before committing."""
+    prompt = (HERE / "prompt-draft-rubric.md").read_text().format(
         name=fixture_dir.name, spec=(fixture_dir / "spec.md").read_text(), output=run_md.read_text())
     with tempfile.TemporaryDirectory() as work:
         text = claude(prompt, "--model", model, cwd=work)["result"]
     text = re.sub(r"^```[a-z]*\n|\n```\s*$", "", text.strip())
-    out = fixture_dir / "draft-golden.md"
+    # Overwrites rubric.md rather than writing a draft beside it: git holds the reviewed version, and a second checklist file would have to be kept out of the workspace too
+    out = fixture_dir / "rubric.md"
     out.write_text(text + "\n")
     print(f"drafted {out} from {run_md}", file=sys.stderr)
 
@@ -138,9 +139,9 @@ def main():
     ap.add_argument("--judge-model", default="sonnet")
     ap.add_argument("--votes", type=int, default=3)
     ap.add_argument("--no-judge", action="store_true", help="run only")
-    ap.add_argument("--draft-golden", action="store_true",
-                    help="run, then write fixtures/<name>/draft-golden.md from the newest run; no judging. --runs 0 drafts from an existing run")
-    ap.add_argument("--judge-only", action="store_true", help="re-judge existing runs, e.g., after editing golden.md")
+    ap.add_argument("--draft-rubric", action="store_true",
+                    help="run, then overwrite fixtures/<name>/rubric.md from the newest run; no judging. --runs 0 drafts from an existing run")
+    ap.add_argument("--judge-only", action="store_true", help="re-judge existing runs, e.g., after editing rubric.md")
     ap.add_argument("--report-only", action="store_true")
     a = ap.parse_args()
 
@@ -159,21 +160,21 @@ def main():
             for n in range(start, start + a.runs):
                 print(f"run {n} ({a.model}-{a.effort})", file=sys.stderr)
                 run_once(fixture_dir, a.model, a.effort, cfg_dir / f"run-{n}.md")
-        if a.draft_golden:
-            draft_golden(fixture_dir, sorted(cfg_dir.glob("run-*.md"))[-1], a.model)
+        if a.draft_rubric:
+            draft_rubric(fixture_dir, sorted(cfg_dir.glob("run-*.md"))[-1], a.model)
             return
         if not a.no_judge:
-            golden = parse_golden(fixture_dir / "golden.md")
+            rubric = parse_rubric(fixture_dir / "rubric.md")
             for md in sorted(cfg_dir.glob("run-*.md")):
                 print(f"judge {md.stem}", file=sys.stderr)
                 md.with_name(md.name.replace("run-", "judge-")).with_suffix(".json").write_text(
-                    json.dumps(judge(golden, md.read_text(), a.judge_model, a.votes), ensure_ascii=False, indent=2))
+                    json.dumps(judge(rubric, md.read_text(), a.judge_model, a.votes), ensure_ascii=False, indent=2))
     report([results_dir])
 
 
 def _selfcheck():
     assert jaccard({1, 2}, {2, 3}) == 1 / 3 and jaccard(set(), set()) == 1.0
-    g = parse_golden(HERE / "fixtures" / "fsm-card-draw" / "golden.md")
+    g = parse_rubric(HERE / "fixtures" / "fsm-card-draw" / "rubric.md")
     assert g["must"] and g["must_not"] and g["regex"] and all(not t.startswith("-") for t in g["must"])
 
 
