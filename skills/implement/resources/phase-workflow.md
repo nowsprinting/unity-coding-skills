@@ -65,6 +65,7 @@ Step 1 is complete when every implementation target of the phase and every class
    A validator may pass too: it verifies the data of the assets, not the production code, so assets that already satisfy the specification pass it.
    A new test that runs no method the skeleton added may pass too: the production code from before this phase already produces its expected result, e.g., for a test case of an unchanged specification that no existing test covered.
    A new test whose expected result is what an empty body already gives — the literal default it returns, or no state change, event, or call — may pass too, e.g., `CanAttack_HpIsZero_ReturnsFalse` against `return false`.
+   A visual verification test with no `Assert` statement may pass too: nothing in it can fail against the skeleton, since its verification is the image analysis of its screenshot.
    When any other test passes, return `STATUS: BLOCKED` with the unexpected passes.
    When the tests fail to compile repeatedly, return `STATUS: BLOCKED` with the blocker rather than looping
 5. Commit the skeleton and the test code to git — if test code is modified in Step 3 or later, the integrity of Test First is compromised; commit here without fail so the diff remains verifiable
