@@ -8,8 +8,8 @@ description: >-
   change an existing specification, whether the input is a requirements
   document, an external specification, design docs, a test design document, an
   issue URL, or the current conversation.
-  Typically invoked as `/implement [SPECIFICATION]`.
-argument-hint: "[specification, design, and/or test design, file paths, or issue URLs]"
+  Typically invoked as `/implement [SPECIFICATION and/or TEST-DESIGN]`.
+argument-hint: "[specification and/or test design, file paths, or issue URLs]"
 license: Unlicense
 metadata:
   author: Koji Hasegawa
@@ -28,12 +28,12 @@ If the user's request is to investigate or fix a bug rather than implement a new
 
 ## Input
 
-Take the input from the `SPECIFICATION` argument combined with the conversation, if any; when the argument is omitted, take it from the conversation alone:
+Take the input from the `SPECIFICATION and/or TEST-DESIGN` argument combined with the conversation, if any; when the argument is omitted, take it from the conversation alone:
 
 - **Specification** — the specification to implement: written directly, file paths, or the URLs of issues in an issue tracker, in any combination.
   If no specification can be found, use `AskUserQuestion` to ask the user before proceeding.
-- **Test design document** (optional) — the test cases of each **test target** (the unit a test design is made for, e.g., the screen transitions, a screen, a prefab, or a class), as the `design-tests` skill outputs it.
-  Also take as the specification the files and issues its `test-basis` frontmatter lists: the production code implements every specification, including those no test case covers.
+- **Test design document** (optional) — the test cases of each **test target** (the unit a test design is made for, e.g., the screen transitions, a screen, a prefab, or a class), as the `design-tests` skill outputs it, one file per specification file.
+  Also take as the specification the files and issues the `test-basis` frontmatter of each lists: the production code implements every specification, including those no test case covers.
 - **Reference** (optional) — what the user gives to read besides the specification.
   Read it only to settle what the specification leaves open; derive no implementation target and no test case from it.
 - **Instruction** (optional):

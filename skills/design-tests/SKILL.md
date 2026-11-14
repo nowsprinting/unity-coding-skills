@@ -39,7 +39,7 @@ Note which specifications are external specifications (as `test-designing-guide`
 
 ## Rules
 
-- Modify no files in the repository other than the output file (Step 5) and the documents Step 6 writes the resolutions into.
+- Modify no files in the repository other than the output files (Step 5) and the documents Step 6 writes the resolutions into.
   Record a gap or a contradiction in the specification that stays unresolved in the target's Assessment instead of editing the input documents.
 
 ## Workflow
@@ -91,14 +91,17 @@ When one is not covered, run Step 2 again for that target.
 Choose the destination in this order:
 
 1. The user or the caller specified a destination → write there.
-2. The input includes a file → write a Markdown file next to it, named after the input file with a `-tests` suffix (e.g., `docs/inventory.md` → `docs/inventory-tests.md`).
-   When several input files were given, name it after the first one.
+2. The specification under test includes files → write one Markdown file for each of them, next to it and named after it with a `-tests` suffix (e.g., `docs/inventory.md` → `docs/inventory-tests.md`), holding the sections of the test targets whose assigned specifications that file states.
+   A reference gets no file of its own: no test target derives from it.
+   When several files state the assigned specifications of one test target, put its section only in the file of the one that states the most of them: a section written to two files would have its test cases implemented twice.
+   Output in the conversation the sections of the test targets whose assigned specifications no file states, e.g., those fetched from an issue.
    When a file of that name already exists, ask the user via `AskUserQuestion` whether to overwrite it or to write to a file name they specify.
 3. Otherwise (the specification was written directly in the argument, fetched from issues, or taken from the conversation) → output in the conversation.
 
-Write the output verbatim per Step 3; when writing a file, add only a frontmatter holding the prompt and the test bases, and a top-level heading naming the input above it.
+Write the output verbatim per Step 3, keeping its order within each file; when writing a file, add only a frontmatter holding the prompt and the test bases, and a top-level heading above it naming the specification file it is written for, or the input when the destination was specified.
 The prompt is the user's message that invoked this skill, verbatim, as a YAML block scalar; when you cannot see it, e.g., a caller's instruction invoked the skill, write the `SPECIFICATION` argument instead.
-The test bases are the files of the specification under test and of every reference the user gave, whether or not it was consulted, as paths from the root of the repository you work in (the superproject, when the file lies in a submodule), and the issue URLs; text written directly or taken from the conversation is no test basis.
+The test bases of a file are the files and the issue URLs that state the assigned specifications of the test targets it holds, and every reference the user gave, whether or not it was consulted; write a file as its path from the root of the repository you work in (the superproject, when the file lies in a submodule).
+Text written directly or taken from the conversation is no test basis.
 `test-writing-guide` copies the test bases into the test files written from the test design document:
 
 ```markdown
