@@ -5,8 +5,7 @@ description: >-
   plugin, or a custom Roslyn analyzer — and sets it up in the Unity project at `warning` or higher severity.
   Use this skill when the user wants a coding pattern flagged as the code is written, e.g., to keep a fixed bug from
   recurring, to ban an API, to cap method complexity, or to enforce a coding rule.
-  Typically invoked as `/find-and-setup-analysis-rule [PATTERN]`.
-argument-hint: "[coding pattern, with code that should be flagged and code that should not]"
+argument-hint: "[pattern]"
 license: Unlicense
 metadata:
   author: Koji Hasegawa
@@ -17,7 +16,7 @@ An analysis rule is an IDE inspection or a Roslyn analyzer rule, and a diagnosti
 
 ## Input
 
-Take the coding pattern from the `PATTERN` argument: a description, the code the analysis rule should flag, and optionally the code it should not, e.g., the code before and after a bug fix.
+Take the coding pattern from the `pattern` argument: a description, the code the analysis rule should flag, and optionally the code it should not, e.g., the code before and after a bug fix.
 Combine the argument with the coding pattern in the conversation, if any; when the argument is omitted, take it from the conversation alone.
 A named API, e.g., "ban `GameObject.Find`", is the code to flag.
 If the code to flag is missing, or the input fits several patterns, use `AskUserQuestion` to ask the user before proceeding.

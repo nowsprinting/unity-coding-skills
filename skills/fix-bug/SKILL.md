@@ -6,8 +6,7 @@ description: >-
   investigate or fix a defect. Even if the user says "something's broken", "this isn't working",
   "fix this bug", or "why does X happen", load this skill to guide the full
   reproduce → diagnose → fix cycle.
-  Typically invoked as `/fix-bug [INCIDENT]`.
-argument-hint: "[incident, failing test name, file paths, or issue URLs]"
+argument-hint: "[incident, failing test name, or issue URLs]"
 license: Unlicense
 metadata:
   author: Koji Hasegawa
@@ -22,7 +21,7 @@ If the user's request is to implement a new feature, change a specification, or 
 
 ## Input
 
-Take the bug report from the `INCIDENT` argument: the report written directly, the name of a failing test, file paths, or the URLs of issues in an issue tracker, in any combination.
+Take the bug report from the `incident` argument: the report written directly, the name of a failing test, or the URLs of issues in an issue tracker, in any combination.
 For an issue URL, fetch its body and comments (e.g., `gh issue view <URL> --comments` for GitHub Issues): the comments often correct the body.
 Combine the argument with the bug report in the conversation, if any; when the argument is omitted, take it from the conversation alone.
 
@@ -78,7 +77,7 @@ If the documentation and the report conflict, use `AskUserQuestion` to clarify w
 If the user answers that the specification itself is to change, rather than that the documentation misstates it, the request is a specification change: stop and guide the user to invoke the `/implement` skill instead.
 If the docs contain errors or are missing relevant information, note them; Step 9 writes the corrections into the docs.
 
-Note the **test bases** of this bug fix: the files and issue URLs of the bug report and of this documentation.
+Note the **test bases** of this bug fix: the issue URLs of the bug report, and the files and issue URLs of this documentation.
 List them in each test file you write or modify in this run (`test-writing-guide`, Test Basis).
 
 ### Step 2: Write the Reproduction Test

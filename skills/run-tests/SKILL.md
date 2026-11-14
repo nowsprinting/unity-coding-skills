@@ -7,6 +7,7 @@ description: >-
   Also covers running Play Mode tests on the player for verifying player-only behavior (e.g., #if directives and code stripping).
   Also covers verifying `[Category("VisualVerification")]` tests after a run by analyzing the saved screenshots.
   Even if the user just says "run the tests" or "check if it passes", use this skill.
+argument-hint: "[filter]"
 license: Unlicense
 metadata:
   author: Koji Hasegawa

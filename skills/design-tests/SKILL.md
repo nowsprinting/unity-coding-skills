@@ -9,7 +9,6 @@ description: >-
   Use this skill whenever the specification is settled and the next step is to
   design the tests, whether the input is written directly in the argument,
   given as file paths or issue URLs, or taken from the current conversation.
-  Typically invoked as `/design-tests [SPECIFICATION]`.
 argument-hint: "[specification, file paths, or issue URLs]"
 license: Unlicense
 metadata:
@@ -21,7 +20,7 @@ The test design knowledge lives in the `test-designing-guide` skill; this skill 
 
 ## Input
 
-Take the input from the `SPECIFICATION` argument combined with the conversation, if any; when the argument is omitted, take it from the conversation alone:
+Take the input from the `specification` argument combined with the conversation, if any; when the argument is omitted, take it from the conversation alone:
 
 - **Specification under test** — the specification to design tests for: written directly, file paths, or the URLs of issues in an issue tracker, in any combination; "the specification" below means it.
   If no specification can be found, use `AskUserQuestion` to ask the user before proceeding.
@@ -99,7 +98,7 @@ Choose the destination in this order:
 3. Otherwise (the specification was written directly in the argument, fetched from issues, or taken from the conversation) → output in the conversation.
 
 Write the output verbatim per Step 3, keeping its order within each file; when writing a file, add only a frontmatter holding the prompt and the test bases, and a top-level heading above it naming the specification file it is written for, or the input when the destination was specified.
-The prompt is the user's message that invoked this skill, verbatim, as a YAML block scalar; when you cannot see it, e.g., a caller's instruction invoked the skill, write the `SPECIFICATION` argument instead.
+The prompt is the user's message that invoked this skill, verbatim, as a YAML block scalar; when you cannot see it, e.g., a caller's instruction invoked the skill, write the `specification` argument instead.
 The test bases of a file are the files and the issue URLs that state the assigned specifications of the test targets it holds, and every reference the user gave, whether or not it was consulted; write a file as its path from the root of the repository you work in (the superproject, when the file lies in a submodule).
 Text written directly or taken from the conversation is no test basis.
 `test-writing-guide` copies the test bases into the test files written from the test design document:

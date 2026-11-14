@@ -76,10 +76,10 @@ Giving them only to `/implement` skips that review: it designs the unit tests in
 ### Design tests from specifications
 
 ```bash
-/design-tests [SPECIFICATION]
+/design-tests [specification, file paths, or issue URLs]
 ```
 
-You can state the `SPECIFICATION` in any document—a requirements document, design docs, or an ADR—given as file paths, issue URLs, or written directly; if omitted, it is read from the conversation.
+You can state the `specification` in any document—a requirements document, design docs, or an ADR—given as file paths, issue URLs, or written directly; if omitted, it is read from the conversation.
 For each file path, the output goes to a Markdown file with a `-tests` suffix next to it; otherwise, to the conversation.
 
 It designs tests that match the passed specification layer: integration tests (including the UI) from the external specifications, and unit tests from the design docs.
@@ -123,11 +123,11 @@ design-tests
 ### Implement features test-first
 
 ```bash
-/implement [SPECIFICATION and/or TEST-DESIGN]
+/implement [specification and/or test design, file paths, or issue URLs]
 ```
 
-The `SPECIFICATION` can state external specifications and design docs, for a new feature or a specification change.
-The `TEST-DESIGN` is a test design document (e.g., the output of `/design-tests`).
+The `specification` can state external specifications and design docs, for a new feature or a specification change.
+The `test design` is a test design document (e.g., the output of `/design-tests`).
 They are given as file paths, issue URLs, or written directly; when omitted, they are read from the conversation.
 Given a test design document, it also reads the files and issues listed in its `test-basis` frontmatter, so the test design document alone is enough.
 
@@ -161,10 +161,10 @@ implement
 ### Fix bugs through reproduction tests
 
 ```bash
-/fix-bug [INCIDENT]
+/fix-bug [incident, failing test name, or issue URLs]
 ```
 
-The `INCIDENT` can specify a bug report or the failed test name, given as file paths, issue URLs, or written directly; when omitted, it is read from the conversation.
+The `incident` can specify a bug report or the failed test name, given as issue URLs or written directly; when omitted, it is read from the conversation.
 
 Before fixing the bug, it writes a test that reproduces it, runs it to confirm it fails, and shows you the test and its failure message; it starts the fix only after you confirm the reproduction.
 
@@ -188,10 +188,10 @@ fix-bug
 ### Resolve diagnostics
 
 ```bash
-/resolve-diagnostics <PATH>
+/resolve-diagnostics <file paths>
 ```
 
-It targets the diagnostics from the compiler, Roslyn analyzers, and IDE inspections at `warning` or higher severity in the files at `PATH`.
+It targets the diagnostics from the compiler, Roslyn analyzers, and IDE inspections at `warning` or higher severity in the files at the `file paths`.
 
 Dependencies:
 
@@ -204,7 +204,7 @@ resolve-diagnostics
 ### Run tests
 
 ```bash
-/run-tests [CONDITION]
+/run-tests [filter]
 ```
 
 It runs the tests in the Unity Editor or on the player.
@@ -219,7 +219,7 @@ It runs the tests in the Unity Editor or on the player.
 ### Edit scenes and prefabs
 
 ```bash
-/edit-scene <INSTRUCTION>
+/edit-scene <instruction>
 ```
 
 It creates or modifies scene and prefab files through a temporary editor script instead of hand-editing YAML.
@@ -227,7 +227,7 @@ It creates or modifies scene and prefab files through a temporary editor script 
 ### Find and set up an analysis rule for a coding pattern
 
 ```bash
-/find-and-setup-analysis-rule [PATTERN]
+/find-and-setup-analysis-rule [pattern]
 ```
 
 It searches for a code analysis rule (an IDE inspection or a Roslyn analyzer) that flags the coding pattern and sets it up in the project at `warning` or higher severity.
@@ -235,10 +235,10 @@ It searches for a code analysis rule (an IDE inspection or a Roslyn analyzer) th
 ### Measure specification coverage
 
 ```bash
-/measure-spec-coverage <PATH>
+/measure-spec-coverage <specification document path>
 ```
 
-It measures how much of the specification document at `PATH` the test code covers, and lists the coverage items left unchecked:
+It measures how much of the specification document at the `specification document path` the test code covers, and lists the coverage items left unchecked:
 
 1. Models the specification with test techniques (equivalence partitioning, decision table testing, and state transition testing) into coverage items.
    It leaves out boundary value analysis, which adds conditions the specification does not state.

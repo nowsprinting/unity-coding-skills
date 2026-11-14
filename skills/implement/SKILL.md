@@ -8,7 +8,6 @@ description: >-
   change an existing specification, whether the input is a requirements
   document, an external specification, design docs, a test design document, an
   issue URL, or the current conversation.
-  Typically invoked as `/implement [SPECIFICATION and/or TEST-DESIGN]`.
 argument-hint: "[specification and/or test design, file paths, or issue URLs]"
 license: Unlicense
 metadata:
@@ -28,7 +27,7 @@ If the user's request is to investigate or fix a bug rather than implement a new
 
 ## Input
 
-Take the input from the `SPECIFICATION and/or TEST-DESIGN` argument combined with the conversation, if any; when the argument is omitted, take it from the conversation alone:
+Take the input from the `specification and/or test design` argument combined with the conversation, if any; when the argument is omitted, take it from the conversation alone:
 
 - **Specification** — the specification to implement: written directly, file paths, or the URLs of issues in an issue tracker, in any combination.
   If no specification can be found, use `AskUserQuestion` to ask the user before proceeding.
