@@ -60,7 +60,9 @@ Before selecting the techniques, list from the specifications the inputs, states
 - **Outputs** — direct outputs (return values, on-screen display) and indirect outputs (raised events, calls to dependencies, saved data, logs)
 
 The inputs and states drive the techniques: e.g., equivalence partitioning for each input, state transition testing for the states.
-An input the test cannot arrange, or an output without a means to observe it, marks its test cases unverifiable, and a combination of inputs and states with no specified output marks its test case undefined; a combination the specification explicitly states as "undefined" gets no test case (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)).
+Arrange the inputs and observe the outputs of a test case at the same level: a test case of a displayed UI arranges its inputs by operating the UI components and observes the on-screen display, i.e., the `GameObject`s in the scene hierarchy.
+When an input cannot be arranged or an output cannot be observed at that level, fall back in this order: the test target's `public` API, its `internal` API, a test double.
+An input the test cannot arrange, or an output none of these can observe, marks its test cases unverifiable, and a combination of inputs and states with no specified output marks its test case undefined; a combination the specification explicitly states as "undefined" gets no test case (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)).
 Include the list in the modeling result.
 
 When the specification names a method after a well-known naming pattern but leaves out its return type or parameters, e.g., `TryGetFoo` of the Try pattern, which returns `bool` and outputs `Foo` through an `out` parameter, take them from the pattern and design the test cases as if the specification stated them, not as undefined; write the pattern in the Notes (see [Output Format](#output-format)), e.g., "`TryGetFoo`: designed by the Try pattern".
