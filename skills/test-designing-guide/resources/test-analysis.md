@@ -54,6 +54,7 @@ Assign the following specifications to no test target: they get no test case and
 The implementation still fulfills them; only the tests leave them out.
 
 - **A specification a declaration alone fulfills**, e.g., "the character's hit points can be changed in the Inspector", fulfilled by a `public` field or a property with `[field: SerializeField]` — Unity's serialization guarantees the behavior once the declaration exists, so a test only transcribes the declaration a second time.
+- **A specification of a constructor**, e.g., "the constructor sets the maximum hit points to the given value" — a constructor only sets the members of the instance, by assignments with no branch that run whenever an instance is created, so a test only transcribes the assignments a second time; the values it sets are inputs of the test cases of the methods that read them, not expected results.
 - **A table listing each asset's concrete values** (e.g., a master data table) — the source the assets are authored from, not a property: a test comparing an asset or the list of assets with it only transcribes the table a second time.
 - **A specification on the set of assets of a `ScriptableObject` class**, e.g., the number of assets or the presence of a specific asset — not a property of one asset; design a test case for it only when the user explicitly asks.
 
