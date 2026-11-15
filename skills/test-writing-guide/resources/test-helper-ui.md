@@ -185,6 +185,15 @@ private async Awaitable Click(string name)
 
 Grouping the search and operation together keeps test methods concise and avoids repeating the finder/operator pair across every test in the class.
 
+**Tip**: Shorten operators that span multiple frames
+
+Operators such as `UguiDragAndDropOperator`, `UguiSwipeOperator`, and `UguiClickAndHoldOperator` take multiple frames to finish.
+When the test does not verify the speed or duration itself, shorten the test run time in either of these ways:
+
+- **Constructor arguments**: raise the speed or shorten the wait, e.g., `new UguiDragAndDropOperator(dragSpeed: 5000)`, `new UguiClickAndHoldOperator(holdMillis: 100)`
+- **`[TimeScale]` attribute** of the test-helper package (see [Timing](test-helper.md#timing)): `[TimeScale(4.0f)]` on the test method speeds up the pointer movement of drag, swipe, and scroll wheel, because it advances by `Time.deltaTime`.
+  Waits by time (`holdMillis`, `delayBeforeDrop`, the double-click interval) ignore `Time.timeScale`, so shorten them with constructor arguments instead.
+
 ---
 
 ## Monkey Testing

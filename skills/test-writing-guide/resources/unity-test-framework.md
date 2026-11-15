@@ -407,6 +407,8 @@ Pick the wait that matches the situation:
   ```
 - **Unknown duration** (UI interactions, asset loads, backend calls) — Poll state at a short interval through a helper.
   The UI Test Helper package (`test-helper.ui`) ships `GameObjectFinder`, which already does this.
+- **Fixed duration** (e.g., a presentation animation that involves no state transition) — When a wait for a fixed duration is unavoidable, put the `[TimeScale]` attribute of the test-helper package on the test method to shorten the test run time (see [Timing](test-helper.md#timing)).
+  This works only for waits on scaled time, such as `Awaitable.WaitForSecondsAsync`, `WaitForSeconds`, and `UniTask.Delay`; it has no effect on `Task.Delay` or waits with `ignoreTimeScale: true`.
 
 ## Preconditions: Assume
 
