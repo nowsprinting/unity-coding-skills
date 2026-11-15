@@ -11,7 +11,9 @@
 # Not Python: native Windows guarantees no Python, only Git Bash (with awk).
 # Not line-based grep/awk: a class-scoped [Category] is recorded on the
 # ancestor <test-suite type="TestFixture"> element (not on the <test-case>
-# itself), a single test can record multiple "Screenshot" properties,
+# itself), a method-level [Description] on a parameterized test is recorded
+# on the parent <test-suite type="ParameterizedMethod">, a single test can
+# record multiple "Screenshot" properties,
 # property values are XML-entity-escaped, attribute values may contain ">",
 # and CDATA in <output>/<message> may contain "<". So the awk below
 # tokenizes on "<" and parses attributes quote-aware.
@@ -95,6 +97,7 @@ function open_el(name,   d, pn, pv) {
   if (!root_seen) { root_seen = 1; start = A["start-time"] }
   if (name == "test-suite") {
     depth++; suite_sp[depth] = sp; suite_hit[depth] = 0
+    suite_param[depth] = A["type"] == "ParameterizedMethod"; suite_desc[depth] = ""
   } else if (name == "test-case" && sp - 1 == (depth ? suite_sp[depth] : 1)) {
     in_case = 1; case_sp = sp
     cfull = A["fullname"]; cres = A["result"]
@@ -107,6 +110,7 @@ function open_el(name,   d, pn, pv) {
       else if (pn == "Description" && !has_desc) { cdesc = pv; has_desc = 1 }
     } else if (depth && suite_sp[depth] == sp - 2) {
       if (pn == "Category" && pv == CATEGORY) suite_hit[depth] = 1
+      else if (pn == "Description" && suite_param[depth] && suite_desc[depth] == "") suite_desc[depth] = pv
     }
   }
 }
@@ -118,6 +122,8 @@ function close_el(name,   d, hit, k) {
     ncases++
     hit = case_hit
     for (d = 1; d <= depth; d++) if (suite_hit[d]) hit = 1
+    # [TestCaseSource] and [TestCase] put a method-level [Description] on the ParameterizedMethod suite, not on each case; fixture-level ones describe the class, not the aspects.
+    if (!has_desc && depth && suite_param[depth] && suite_desc[depth] != "") cdesc = suite_desc[depth]
     if (hit) {
       nmatch++
       mfull[nmatch] = cfull; mres[nmatch] = cres; mdesc[nmatch] = cdesc; mshots[nmatch] = cshots
