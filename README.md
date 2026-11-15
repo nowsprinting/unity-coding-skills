@@ -262,7 +262,7 @@ measure-spec-coverage
 ## Installation
 
 > [!IMPORTANT]\
-> On native Windows, install [Git for Windows](https://git-scm.com/downloads/win).
+> On native Windows, install [Git for Windows](https://git-scm.com/install/windows).
 > The skills' scripts are Bash scripts, and Claude Code runs them with Git Bash.
 
 ### User-scope installation
