@@ -141,7 +141,7 @@ public async Task MyScene_SomeLayout_At400x200_Screenshot() { ... }
 
 ## Constraints
 
-Add `using Is = TestHelper.Constraints.Is;` to use these alongside NUnit's `Is`.
+Using these custom constraints requires both `using TestHelper.Constraints;` and `using Is = TestHelper.Constraints.Is;`: the alias alone misses constraints that are extension methods of `ConstraintExpression`, e.g., `WithinContainer` after `Is.All` or `Is.Not`.
 
 | Goal                                        | Constraint                              |
 |---------------------------------------------|-----------------------------------------|
