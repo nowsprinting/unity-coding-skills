@@ -3,7 +3,7 @@ set -euo pipefail
 
 if [ $# -ne 1 ]; then
   echo "Usage: $(basename "$0") <unity-project-root>" >&2
-  echo "Waits UNITY_RUN_TESTS_START_CHECK_DELAY_SECONDS (default 5) seconds; exits 0 when a test run started in the meantime, 1 otherwise. macOS only." >&2
+  echo "Exits 0 as soon as Editor.log shows a test run started, 1 when none started within UNITY_RUN_TESTS_DISCARD_SCENE_CHANGES_DELAY_SECONDS (default 20) seconds. macOS only." >&2
   exit 2
 fi
 
@@ -20,8 +20,6 @@ for log in "${logs[@]}"; do
   offsets+=("$({ wc -c <"$log"; } 2>/dev/null || echo 0)")
 done
 
-sleep "${UNITY_RUN_TESTS_START_CHECK_DELAY_SECONDS:-5}"
-
 # ponytail: Unity Test Framework itself logs nothing when a run starts, so
 # these are side effects: the first needs an IPrebuildSetup class in the
 # project (e.g., com.unity.test-framework.performance), the second a Play Mode
@@ -31,12 +29,18 @@ sleep "${UNITY_RUN_TESTS_START_CHECK_DELAY_SECONDS:-5}"
 # start would leave the dialog open.
 markers='Executing IPrebuildSetup for: |Reloading assemblies for play mode'
 
-for i in "${!logs[@]}"; do
-  # Not `grep -q`: it exits at the first match, and under pipefail the SIGPIPE
-  # it sends to `tail` fails the pipeline.
-  if tail -c "+$((offsets[i] + 1))" "${logs[i]}" 2>/dev/null |
-    grep -E "$markers" >/dev/null; then
-    exit 0
+deadline=$((SECONDS + ${UNITY_RUN_TESTS_DISCARD_SCENE_CHANGES_DELAY_SECONDS:-20}))
+while :; do
+  for i in "${!logs[@]}"; do
+    # Not `grep -q`: it exits at the first match, and under pipefail the SIGPIPE
+    # it sends to `tail` fails the pipeline.
+    if tail -c "+$((offsets[i] + 1))" "${logs[i]}" 2>/dev/null |
+      grep -E "$markers" >/dev/null; then
+      exit 0
+    fi
+  done
+  if [ "$SECONDS" -ge "$deadline" ]; then
+    exit 1
   fi
+  sleep 1
 done
-exit 1

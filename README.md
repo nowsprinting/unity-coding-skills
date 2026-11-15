@@ -212,9 +212,9 @@ It runs the tests in the Unity Editor or on the player.
 > [!NOTE]\
 > On macOS, it closes the "Scene(s) Have Been Modified" dialog automatically using `osascript`.
 > To run it, you need to grant permission in **System Settings > Privacy & Security > Automation** and **Device Control and Data Access**("Accessibility" when old macOS).\
-> Detecting whether the dialog is blocking a test run depends on the logs that the `com.unity.test-framework.performance` package outputs.
-> If the package is not installed, the focus moves to the Unity Editor on every test run.
-> The check runs 5 seconds after the test run is requested; set the `UNITY_RUN_TESTS_START_CHECK_DELAY_SECONDS` environment variable to change the delay.
+> If the test run has not started 20 seconds after it is requested, the dialog is closed with "Don't Save"; set the `UNITY_RUN_TESTS_DISCARD_SCENE_CHANGES_DELAY_SECONDS` environment variable to change the delay.
+> Detecting whether the dialog blocks a test run depends on the logs the `com.unity.test-framework.performance` package outputs.
+> If the package is not installed, the focus shifts to the Unity Editor, even if no dialog appears.
 
 ### Edit scenes and prefabs
 
