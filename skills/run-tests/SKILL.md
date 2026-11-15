@@ -55,6 +55,7 @@ ${CLAUDE_SKILL_DIR}/scripts/wait_for_test_run_start.sh <unity-project-root> || o
 
 It polls `Editor.log` every second for up to 20 seconds (the `UNITY_RUN_TESTS_DISCARD_SCENE_CHANGES_DELAY_SECONDS` environment variable overrides it), and when no test run started by then, it clicks the dialog's "Don't Save" button, which discards the unsaved changes of the scene.
 The output is `clicked (pid <N>)` or `not found`.
+When `run_unity_tests` returns while the background command is still running, stop it with the `TaskStop` tool, so that it does not click a dialog that a later action opens.
 If the command is denied, run the tests without it.
 
 ### Judging the Result
