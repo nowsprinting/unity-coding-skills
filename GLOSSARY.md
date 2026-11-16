@@ -98,6 +98,10 @@ _Avoid_: Element
 **Test selection criterion**:
 The rule that selects which items of a test technique's model become test cases, e.g., boundary value coverage, every rule, or 0-switch coverage. Each technique has a default one, which an instruction may replace.
 
+**Combinatorial testing**:
+The test technique that tests that the inputs a test case's expected result does not depend on (factors) leave that expected result unchanged in combination; every combination shares it. Narrower than the ISTQB sense (CTAL-TA v4.0, 3.1.2): of its two approaches, it takes the one that tests every combination with the same test case, applied to input data instead of configuration parameters, and leaves out the one that gives each combination its own expected result. A combination whose expected result changes by the specification's rules belongs to decision table testing.
+_Avoid_: Combinatorial testing for combinations with different expected results (use decision table testing)
+
 **Specification coverage**:
 The ratio of the coverage items of the specifications that the tests verify. The coverage items come from modeling the specifications with equivalence partitioning, decision table testing, and state transition testing.
 _Avoid_: Requirement coverage, test coverage (code coverage)
