@@ -56,7 +56,8 @@ Install every other package with UnityNuGet, which serves NuGet packages as UPM 
 
    When an entry with the URL `https://package.openupm.com` exists, add the scope `org.nuget` to that entry instead: the OpenUPM registry serves the UnityNuGet packages too.
 2. Add the package to `dependencies` as `org.nuget.<package ID in lowercase>` at the chosen version
-3. Add `<package ID>_Unity` to the Assembly Definition References of each `.asmdef` to analyze; the analyzer also runs on every assembly that depends on it, directly or indirectly
+3. Add `<package ID>_Unity` to the Assembly Definition References of each `.asmdef` to analyze.
+   The analyzer also runs on every assembly that references that assembly, directly or indirectly: added to the runtime assembly, it also runs on the test assembly that references it; when the game is split into several assemblies, adding it only to the core assembly applies it to every assembly that depends on the core.
 4. Before Unity 2022.2, turn off Assembly Version Validation (Project Settings > Player > Other Settings > Configuration)
 
 ### Other Methods
