@@ -227,10 +227,11 @@ It creates or modifies scene and prefab files through a temporary editor script 
 ### Find and set up an analysis rule for a coding pattern
 
 ```bash
-/find-and-setup-analysis-rule [pattern]
+/find-and-setup-analysis-rule [pattern or analyzer-name]
 ```
 
 It searches for a code analysis rule (an IDE inspection or a Roslyn analyzer) that flags the coding pattern and sets it up in the project at `warning` or higher severity.
+If you specify an analyzer name, it will be installed.
 
 ### Measure specification coverage
 

@@ -4,8 +4,9 @@ description: >-
   Finds an analysis rule that flags a given coding pattern — a Roslyn analyzer package, an IDE inspection, an IDE
   plugin, or a custom Roslyn analyzer — and sets it up in the Unity project at `warning` or higher severity.
   Use this skill when the user wants a coding pattern flagged as the code is written, e.g., to keep a fixed bug from
-  recurring, to ban an API, to cap method complexity, or to enforce a coding rule.
-argument-hint: "[pattern]"
+  recurring, to ban an API, to cap method complexity, or to enforce a coding rule. Also use it when the user wants a
+  named Roslyn analyzer package installed in the Unity project.
+argument-hint: "[pattern or analyzer-name]"
 license: Unlicense
 metadata:
   author: Koji Hasegawa
@@ -20,6 +21,9 @@ Take the coding pattern from the `pattern` argument: a description, the code the
 Combine the argument with the coding pattern in the conversation, if any; when the argument is omitted, take it from the conversation alone.
 A named API, e.g., "ban `GameObject.Find`", is the code to flag.
 If the code to flag is missing, or the input fits several patterns, use `AskUserQuestion` to ask the user before proceeding.
+
+When the input names a Roslyn analyzer package to install, e.g., "install BannedApiAnalyzers", take the package instead of a coding pattern: skip Step 1, and in Step 2 propose installing it per [Roslyn Analyzer Package](#roslyn-analyzer-package-1).
+Leave every rule at its default severity unless the user specifies one; set a specified severity per [Configuration](#configuration).
 
 ## Workflow
 

@@ -30,7 +30,9 @@ For a package not listed there, tell the user that the repository's README descr
 
 ## Installing
 
-Install with UnityNuGet, which serves NuGet packages as UPM packages, when all the conditions hold; otherwise, with NuGetForUnity:
+Install UTFAnalyzers per [UTFAnalyzers](#utfanalyzers).
+Take a request for "BannedApiAnalyzers" as `BannedApiAnalyzers.Unity`; for `Microsoft.CodeAnalysis.BannedApiAnalyzers` by its full ID, use `AskUserQuestion` to ask whether to install `BannedApiAnalyzers.Unity` instead, giving the reason in [banned-api-analyzers-unity.md](banned-api-analyzers-unity.md).
+Install every other package with UnityNuGet, which serves NuGet packages as UPM packages, when all the conditions hold; otherwise, with NuGetForUnity:
 
 - The project's Unity version is 2021.2 or later
 - The project has no `Assets/NuGet.config`, the sign of a project that uses NuGetForUnity
@@ -61,3 +63,27 @@ Install with UnityNuGet, which serves NuGet packages as UPM packages, when all t
 
 - A package installed with NuGetForUnity runs on every assembly in the project, including those in the package cache
 - An analyzer dll added directly needs, in its import settings, every platform under Select platform for plugin turned off and the asset label `RoslynAnalyzer`; it runs on the assembly of the `.asmdef` in its directory or above, and on every assembly when there is none
+
+### UTFAnalyzers
+
+Propose the UPM package `com.nowsprinting.test-framework.analyzers` from [OpenUPM](https://openupm.com/packages/com.nowsprinting.test-framework.analyzers/); when the user declines it, install the NuGet package `UTFAnalyzers` with NuGetForUnity.
+The UPM package also brings in Unity Test Framework and NUnit.Analyzers as dependencies, which the NuGet package does not.
+Both need Unity 2022.3.12f1 or later.
+
+To install the UPM package:
+
+1. Add a scoped registry to `Packages/manifest.json`, or, when an entry with the URL `https://package.openupm.com` exists, add the scope `com.nowsprinting` to it:
+
+   ```json
+   {
+     "name": "package.openupm.com",
+     "url": "https://package.openupm.com",
+     "scopes": [
+       "com.nowsprinting"
+     ]
+   }
+   ```
+
+2. Add `com.nowsprinting.test-framework.analyzers` to `dependencies` at the latest version on OpenUPM
+
+The package applies to every test assembly through its own `.asmref`: add no Assembly Definition Reference.
