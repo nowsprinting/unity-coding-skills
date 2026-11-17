@@ -106,7 +106,7 @@ Then ask the user to:
 
 ## Configuration
 
-Set every analysis rule to `warning` or `error`: `/resolve-diagnostics` handles only `warning` or higher severity.
+Set the severity the user specifies; when the user specifies none for a rule found in Step 1, set `warning` or `error`: `/resolve-diagnostics` handles only `warning` or higher severity.
 
 ### Severity
 
