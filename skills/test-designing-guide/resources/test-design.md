@@ -255,6 +255,7 @@ Write a plain-text line above each table naming the technique, followed by its c
 Name each technique and criterion as its resource does, translated into the project language.
 List a test case that several techniques derive once, in the table of the first of them; the row keeps the parameters and the tags of every technique that derives it, e.g., the boundary values of equivalence partitioning in a state transition row.
 Validators, visual verification tests, and manual tests derive their test cases from properties, visual aspects, and human judgment instead of a technique, so each keeps a single table without the line.
+Layout assertion tests of a target with no input to partition, e.g., a screen with no input field and no varying content, derive their test cases from the layout properties (see [Integration testing](integration-testing.md#perspectives), UI layout) instead of a technique, so they also go in a table without the line, after the tables of the techniques.
 
 > **Note:** Do not write "Edit Mode" or "Play Mode" in test case output — that is a test-writing concern, not a test design concern.
 
