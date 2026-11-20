@@ -1,4 +1,6 @@
-### <ClassName, or scene/prefab/screen name>Test
+## <ClassName, or scene/prefab/screen/screen transition system name>Test
+
+### Integration test cases
 
 #### Assertion-based tests
 

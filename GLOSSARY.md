@@ -26,6 +26,16 @@ _Avoid_: Design (unqualified)
 The intended appearance of UI: layout, typography, contrast.
 _Avoid_: Design (unqualified)
 
+### Master data
+
+**Master data class**:
+A class that holds master data, e.g., a subclass of `ScriptableObject`, whether or not the specification constrains the data.
+_Avoid_: `ScriptableObject` class (one way to implement it), data class
+
+**Master data record**:
+One instance of a master data class authored in the project, e.g., one asset.
+_Avoid_: Record (unqualified), asset (one way to store it), instance, row
+
 ### Keywords in a specification
 
 **TBD**:
@@ -77,15 +87,15 @@ A test whose subject is a scene or a prefab, verifying the behavior that emerges
 A test whose subject is a class or an asset, verified through its API or content. An external specification given as an API is tested at this layer.
 
 **Test target**:
-The unit a test design is made for, designed as a whole: e.g., the screen transitions, a screen, a prefab, or a class. It names a subject in the product, not a passage of the specification, and a method is no test target of its own. The test target of a `ScriptableObject` class spans two subjects: the class's API (unit tests) and its assets' data (a validator).
+The unit a test design is made for, designed as a whole: e.g., the screen transitions, a screen, a prefab, or a class. It names a subject in the product, not a passage of the specification, and a method is no test target of its own. A master data class and its master data records are two test targets: the class's API (unit tests) and the data of its master data records (a validator).
 
 **Contained test target**:
 A test target whose subject lies within another test target's subject, e.g., a class placed on a screen, or a screen within the screen transitions. The container's tests cover only the behavior that combines its contained test targets.
 _Avoid_: Component (a Unity component), child target
 
 **Validator**:
-A test whose subject is the project's assets of a `ScriptableObject` class, verifying that the data each holds satisfies the class's specification.
-_Avoid_: Unit test (for the data of a `ScriptableObject` class)
+A test whose subject is the master data records of a master data class, verifying that the data each holds satisfies the specification.
+_Avoid_: Unit test (for the data of master data records)
 
 **Test basis**:
 A file or an issue that states the specification under test, or is a reference given with it, that test code or a test design document was written from, listed on it to find it by. It may be outdated or incomplete, so nothing trusts it beyond searching. Text written directly or taken from the conversation is no test basis. A test design document is no test basis, but test code lists it with them for searching.
@@ -113,4 +123,4 @@ The code that realizes design docs or a test design, and the act of writing it.
 _Avoid_: Product code (use production code for the code under test)
 
 **Implementation target**:
-The unit a phase of `implement` implements, e.g., the screen transitions, a screen, a prefab, or a class; test analysis takes it as a test target.
+The unit a phase of `implement` implements, e.g., the screen transitions, a screen, a prefab, a class, or the master data records of a master data class; test analysis takes it as a test target.

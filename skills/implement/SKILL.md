@@ -62,11 +62,12 @@ Append your own judgment calls in Step 1 as `Design decisions` as soon as you ma
 
 ### Step 1: Plan the Phases
 
-List the implementation targets the specification describes — the units a phase implements: the screen transitions, each screen, prefab, and `ScriptableObject` class, and each class the design docs fix.
+List the implementation targets the specification describes — the units a phase implements: the screen transitions, each screen and prefab, each master data class and its master data records, and each class the design docs fix.
+A master data class is a class that holds master data, e.g., a subclass of `ScriptableObject`, and its master data records, the instances of it authored in the project, e.g., its assets, are an implementation target of their own.
 Assign each specification to exactly one implementation target; when the subject of one implementation target contains others — e.g., a screen contains the classes placed on it — assign the behavior within a contained implementation target to it, and leave the container only the behavior that combines them.
 A class no specification describes is no implementation target here: the phase that needs it designs it.
 
-Order the implementation targets so that each comes after every implementation target it depends on: a class after the classes it calls, and a container after its contained implementation targets, e.g., a screen after the classes placed on it, and the screen transitions after the screens.
+Order the implementation targets so that each comes after every implementation target it depends on: a class after the classes it calls, the master data records after their master data class, and a container after its contained implementation targets, e.g., a screen after the classes placed on it, and the screen transitions after the screens.
 
 Group the ordered implementation targets into **phases**: a phase holds only implementation targets whose dependencies lie in earlier phases.
 The tests of a phase then run against the real classes of earlier phases, already implemented and passing, instead of test doubles.

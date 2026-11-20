@@ -20,7 +20,8 @@ Extract the test targets the specifications describe, e.g.:
 - A screen
 - A character (actor)
 - A component (class)
-- A `ScriptableObject` class (its methods implemented as unit tests, the constraints on its data as a validator)
+- A master data class: a class that holds master data, e.g., a subclass of `ScriptableObject` (its methods, tested by unit tests)
+- The master data records of a master data class: the instances of it authored in the project, e.g., its assets (the constraints on their data, tested by a validator)
 
 Extract only targets the specification describes; do not derive targets at a level no specification describes — e.g., internal classes guessed from the external specification of a screen — because such tests couple to an implementation no specification fixes.
 When the input includes design docs, the classes and signatures they fix are specifications, and are valid targets.
@@ -29,12 +30,13 @@ Assign each specification to exactly one test target, so that no test case or co
 
 ### Screen Transitions
 
-Extract all the screen transitions as a single test target, whatever form the specification gives them in — a screen transition diagram, a sequence, a use case, or button operations written per screen: test design models them as one FSM (see [State transition testing](state-transition-testing.md#screen-transitions)), and splitting them across the screens leaves each target a fragment of it.
+Extract the screen transitions of each screen transition system — the screens that transitions connect to one another, e.g., all the screens of a game, or the screens of a feature with transitions of its own — as a single test target, whatever form the specification gives them in — a screen transition diagram, a sequence, a use case, or button operations written per screen: test design models them as one FSM (see [State transition testing](state-transition-testing.md#screen-transitions)), and splitting them across the screens leaves each target a fragment of it.
 
-### ScriptableObject Classes
+### Master Data Classes
 
-Extract a `ScriptableObject` class as one test target holding both the specifications of its methods (unit tests) and the constraints the specification states on its data (a validator); each constraint is a property of one asset (see [Validators](validators.md#properties)).
-The unit tests and the validator then share the equivalence partitions of the fields both refer to, and a gap in a field reaches the user as one issue.
+Extract a master data class and its master data records as two test targets: the class holds the specifications of its methods (unit tests), and the master data records hold the constraints the specification states on their data (a validator); each constraint is a property of one master data record (see [Validators](validators.md#properties)).
+Their subjects differ — the class's API, and the data authored in the project — so each is designed and assessed on its own, even where both refer to the same fields.
+Extract the master data records only when the specification states such a constraint.
 
 ## Contained Test Targets
 
@@ -55,8 +57,8 @@ The implementation still fulfills them; only the tests leave them out.
 
 - **A specification a declaration alone fulfills**, e.g., "the character's hit points can be changed in the Inspector", fulfilled by a `public` field or a property with `[field: SerializeField]` — Unity's serialization guarantees the behavior once the declaration exists, so a test only transcribes the declaration a second time.
 - **A specification of a constructor**, e.g., "the constructor sets the maximum hit points to the given value" — a constructor only sets the members of the instance, by assignments with no branch that run whenever an instance is created, so a test only transcribes the assignments a second time; the values it sets are inputs of the test cases of the methods that read them, not expected results.
-- **A table listing each asset's concrete values** (e.g., a master data table) — the source the assets are authored from, not a property: a test comparing an asset or the list of assets with it only transcribes the table a second time.
-- **A specification on the set of assets of a `ScriptableObject` class**, e.g., the number of assets or the presence of a specific asset — not a property of one asset; design a test case for it only when the user explicitly asks.
+- **A table listing each master data record's concrete values** (e.g., a master data table) — the source the master data records are authored from, not a property: a test comparing a master data record or the list of them with it only transcribes the table a second time.
+- **A specification on the set of master data records of a master data class**, e.g., the number of them or the presence of a specific one — not a property of one master data record; only when the user explicitly asks, assign it to the test target of the master data records.
 
 ## Output
 

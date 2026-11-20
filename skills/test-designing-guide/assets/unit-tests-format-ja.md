@@ -1,4 +1,6 @@
-### <ClassName>Test
+## <ClassName>Test
+
+### Unit test cases
 
 デシジョンテーブルテスト（すべてのルール、境界値カバレッジ）
 

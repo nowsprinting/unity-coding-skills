@@ -55,14 +55,14 @@ Step 1 is complete when every implementation target of the phase and every class
 1. Load the `code-writing-guide` and `test-writing-guide` skills — test code is code, so both guides apply; do not rely on automatic skill triggering
 2. Write the skeleton of the production code: types and method signatures only — must compile, need not work yet.
    **New methods: empty body only** (no logic, no exceptions; value-returning methods must return a literal default: `0`, `false`, or `null`); **modify: signature only, body unchanged**; **delete: remove the entire method**.
-   For a `ScriptableObject` class with a validator, also declare the fields the validator reads.
+   For the master data records of a master data class — a class that holds master data, e.g., a subclass of `ScriptableObject`, and the instances of it authored in the project, e.g., its assets — declare in the class the fields their validator reads.
    Place each file at the path and in the assembly the design docs state
 3. Write the test code of the test cases, including the updates to existing tests tagged `test fix` or `spec change`, and list the test bases of its test target in each test file (`test-writing-guide`, Test Basis).
    Use the real classes of the earlier phases as the dependencies of the test targets.
    When the structure of the existing production code keeps a test case from being written as designed, e.g., a class creates its dependency itself, weigh the approaches *Working Effectively with Legacy Code* (Michael Feathers) gives and take the one that fits; when none fits, return `STATUS: QUESTION` with the approaches you weighed
 4. Run the added and modified tests with `/run-tests` and confirm they **fail**.
    A test tagged `test fix` or `spec change` whose expected result stays the same may pass — only its name, arguments, or construction changed.
-   A validator may pass too: it verifies the data of the assets, not the production code, so assets that already satisfy the specification pass it.
+   A validator may pass too: it verifies the data of the master data records, not the production code, so master data records that already satisfy the specification pass it.
    A new test that runs no method the skeleton added may pass too: the production code from before this phase already produces its expected result, e.g., for a test case of an unchanged specification that no existing test covered.
    A new test whose expected result is what an empty body already gives — the literal default it returns, or no state change, event, or call — may pass too, e.g., `CanAttack_HpIsZero_ReturnsFalse` against `return false`.
    A visual verification test with no `Assert` statement may pass too: nothing in it can fail against the skeleton, since its verification is the image analysis of its screenshot.
@@ -72,7 +72,8 @@ Step 1 is complete when every implementation target of the phase and every class
 
 ## Step 3: Implementation
 
-1. Implement the production code of every specification of the implementation targets, including those without test cases: no test fails when one of them is missing
+1. Implement the production code of every specification of the implementation targets, including those without test cases: no test fails when one of them is missing.
+   For the master data records of a `ScriptableObject` subclass whose concrete values the specification states, e.g., in a master data table, also create their asset files
 2. Run tests with `/run-tests` and confirm **all pass**
 3. Commit the production code to git (including any unavoidable changes to the test code)
 

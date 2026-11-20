@@ -29,20 +29,18 @@ Read only the following code, and no method bodies of production code:
 
 ## Test Layers
 
-A specification's layer follows its subject: a class, or the content of an asset other than `ScriptableObject` data (asset file validation, cross-asset consistency), is a unit test; the data of a `ScriptableObject` class a validator; a scene or a prefab an integration test.
-The test target of a `ScriptableObject` class spans two layers: unit tests for its methods and a validator for its data.
+A specification's layer follows its subject: a class, or the content of an asset other than a master data record (asset file validation, cross-asset consistency), is a unit test; the data of the master data records of a master data class a validator; a scene or a prefab an integration test.
+A **master data class** is a class that holds master data, e.g., a subclass of `ScriptableObject`; a **master data record** is one instance of it authored in the project, e.g., one asset.
 The external specification of a game usually describes a scene or a screen, so it lands in integration tests; when the external specification is an API itself (e.g., a package), it lands in unit tests only, with no integration tests.
 
 - **Unit tests** — for specifications whose subject is a **class or an asset**, written as an **API contract**: a class or method's inputs, return values, state changes, raised events, or calls to its dependencies.
   This includes behavior driven by Unity's lifecycle (Awake, Start, Update, etc.) or UI events when the specification defines it per component.
   When the specification defines a class's collaboration with its dependencies, keep test density low and focus on those interactions.
-- **Validators** — for specifications that constrain the data of a `ScriptableObject` class, e.g., "an attack card's attack is greater than 0", verified on the class's assets authored in the project.
-  Specifications of the class's methods stay unit tests of the same test target.
+- **Validators** — for specifications that constrain the data of master data records, e.g., "an attack card's attack is greater than 0", verified on the master data records authored in the project.
+  Specifications of the master data class's methods are unit tests of the class, a separate test target.
 - **Integration tests** — for specifications whose subject is a **scene or prefab** (or a screen the player sees): UI operations, on-screen display, scene transitions, and behavior emerging from components and the assets they reference.
   - Add the integration test method to the test class of the **primary class** when the specification names one; OR
-  - Create a new dedicated test class named after the scene, prefab, or screen otherwise.
-  - For the screen transitions, name the test target `ScreenTransition` (test class `ScreenTransitionTest`).
-    When the project has several screen transition systems, prefix the name with the system, e.g., `EquipmentScreenTransitionTest`.
+  - Create a new dedicated test class named after the scene, prefab, screen, or screen transition system otherwise.
 
 ## Contained Test Targets
 
@@ -93,7 +91,7 @@ An instruction from the user or from the skill that loads this one may suppress 
 Also read the following when they apply to the test target:
 
 - **Integration testing** — when the test target is an integration test → [integration-testing.md](integration-testing.md)
-- **Validators** — when the test target has constraints on the data of a `ScriptableObject` class → [validators.md](validators.md)
+- **Validators** — when the test target is the master data records of a master data class → [validators.md](validators.md)
 - **Testing randomness** — when the SUT consumes a pseudo-random number generator → [testing-randomness.md](testing-randomness.md)
 - **Round-trip testing** — when an output of one operation is the input of its inverse, e.g., serialize and deserialize, and the specification does not define that intermediate form: neither operation has an expected result of its own, so the expected result is equality with the original after the round trip → [round-trip-testing.md](round-trip-testing.md)
 - **Reproduction tests** — when the request is to reproduce a reported bug → [reproduction-tests.md](reproduction-tests.md)
@@ -146,7 +144,7 @@ Example: `IsValidLevel_WithinRange_ReturnsTrue` (level: {1, 50, 99}) | `Returns 
 
 In the **Verification** column, state **which observable property or behavior** is checked and **what its expected value or state** is — this corresponds to the `<Expected>` segment of the test method name, not the `<Condition>` segment, which the method name already captures.
 Write the prose in the project language.
-Describe observable behavior only; do not include any of the following **anywhere in the test case output** — this prohibition applies to the Verification column, class header descriptions (text after `### ClassName`), and any other field:
+Describe observable behavior only; do not include any of the following **anywhere in the test case output** — this prohibition applies to the Verification column, class header descriptions (text after `## ClassName`), and any other field:
 
 - Test framework attributes (`[Test]`, `[UnityTest]`, `[LoadScene]`, `[Category(...)]`, `[TakeScreenshot]`, etc.)
 - Sync vs async / coroutine choice
@@ -240,15 +238,15 @@ When the test target has test classes, match the test cases against the test met
 
 ## Output Format
 
-Output the test cases of a test target as one section per test class, in this order of layers (omit the layers with no test cases), followed by its [Assessment](#assessment):
+Output the test cases of a test target as one section named after its test class: `## <ClassName>Test`, or the scene, prefab, screen, or screen transition system name followed by `Test` when the specification names no primary class (see [Test Layers](#test-layers)), or `## <ClassName>Validator` for the master data records of `<ClassName>`.
+Under it, write one section per layer in this order, integration tests first, followed by the target's [Assessment](#assessment); write the layer's heading even when the target has a single layer, and omit the layers with no test cases:
 
-- **Unit tests**: `### <ClassName>Test` → table
-- **Validators**: `### <ClassName>Validator` → table
-- **Integration tests** (including visual verification tests and manual tests): `### <ClassName>Test`, or the scene, prefab, or screen name followed by `Test` when the specification names no primary class (see [Test Layers](#test-layers)); when the target also has a unit test section of the same name, append ` (integration tests)` to the heading, e.g., `### FooTest (integration tests)` — one layer, split within the section by the means of verification: assertions (`#### Assertion-based tests`), image analysis (`#### Visual verification tests`), and a human (`#### Manual tests`)
-  - The section heading names the subject the manual tests verify, so write it even when the target has only manual tests
+- **Integration tests** (including visual verification tests and manual tests): `### Integration test cases` — one layer, split within the section by the means of verification: assertions (`#### Assertion-based tests`), image analysis (`#### Visual verification tests`), and a human (`#### Manual tests`)
   - Manual tests have no test methods and use a table of test cases with a "Test perspectives / Verification method" column instead of "Verification"
   - Test perspectives — *what* behavioral aspects, conditions, or interactions are verified for this target.
     not a test technique name
+- **Unit tests**: `### Unit test cases` → table
+- **Validators**: `### Validator test cases` → table
 
 For unit tests and assertion-based integration tests, output one table per test technique, in the order: state transition testing, decision table testing, equivalence partitioning, combinatorial testing, error guessing; a technique with a structural model comes first, so that a test case shared with equivalence partitioning stays in the table whose coverage, every transition or every rule, the reader checks by it.
 Write a plain-text line above each table naming the technique, followed by its chosen test selection criteria, if any, in parentheses, e.g., `Equivalence Partitioning (Boundary value coverage)`, `Decision Table Testing (Every rule, Boundary value coverage)`, `State Transition Testing (1-switch coverage)`, `Error Guessing`.
@@ -270,14 +268,14 @@ Separate multiple tags with `, ` in the order of the list below, e.g., `acceptan
 A test case without `existing`, `test fix`, or `spec change` is a new test.
 Write the tags in English whatever the project language.
 
-**Notes** — a bullet list after the last test case table of a test class section (in integration tests, of its assertion-based tests), not after each technique's table, written in the project language in this order; omit a bullet that does not apply, and the Notes when no bullet remains:
+**Notes** — a bullet list after the last test case table of a layer's section (in integration tests, of its assertion-based tests), not after each technique's table, written in the project language in this order; omit a bullet that does not apply, and the Notes when no bullet remains:
 
 1. For validators, the selection scope (see [Validators](validators.md#selection-scope))
 2. The conditions the specification explicitly states as undefined, which have no test case; write several conditions in one bullet where possible — in unit tests, one bullet per `<MethodName>`
 3. That no test code is generated from the test cases marked unverifiable, undefined, or ambiguous, when the table has any
 4. Any other supplementary remark on the test cases
 
-Read the output format template for the layer and follow it exactly (templates are in [`../assets/`](../assets/)):
+Read the output format template for the layer and follow it exactly (templates are in [`../assets/`](../assets/)); each template starts with the `##` heading of the test class, so write that heading once when the target has several layers:
 
 | Layer                                                                    | Default                       | Japanese                         |
 |--------------------------------------------------------------------------|-------------------------------|----------------------------------|

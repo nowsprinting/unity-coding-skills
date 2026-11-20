@@ -68,7 +68,7 @@ Pass the links within two hops of the input that the quoted passages cite and yo
 Instruct the subagent not to read the source documents: a subagent reading a whole document would see the specifications Step 1 assigned to other targets, and could design duplicate test cases for them.
 Allow it to read a passed link only to fill in what the quoted passages leave undefined or ambiguous: only the part that fills it in, without following the links there, and deriving no test case from a specification stated there.
 When the link cannot be fetched or does not fill it in, the subagent records the question as an issue in the Assessment.
-Also have it write the modeling result to `<scratchpad>/modeling-results/<test target>.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally in the instruction): a subagent's context is gone once it returns, and you need the modeling result to show it when the user asks to see it, without holding every target's modeling result in your context.
+Also have it write the modeling result to `<scratchpad>/modeling-results/<test class>.md`, named after the `##` heading of its output, e.g., `FooTest.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally in the instruction): a subagent's context is gone once it returns, and you need the modeling result to show it when the user asks to see it, without holding every target's modeling result in your context.
 A subagent cannot ask the user, so it records every question as an issue in the Assessment.
 
 When a target's Assessment is `❌FAIL` — e.g., a contradictory specification, or an ambiguous or unverifiable acceptance test — ask the user via `AskUserQuestion`, presenting the Issues that make it FAIL, then design that target again with the answer.
@@ -77,7 +77,7 @@ Proceed with an `⚠️WARN` target as it is: its Issues stay in its Assessment,
 
 ### Step 3: Assemble the Test Cases
 
-Arrange the outputs of Step 2 as one `## <Test target>` section per test target, in the order of Step 1.
+Arrange the outputs of Step 2, each a `## <test class>` section, in the order of Step 1.
 Do not regroup the test cases by layer.
 
 ### Step 4: Review the Coverage
