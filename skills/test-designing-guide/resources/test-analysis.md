@@ -37,6 +37,7 @@ Extract the screen transitions of each screen transition system — the screens 
 Extract a master data class and its master data records as two test targets: the class holds the specifications of its methods (unit tests), and the master data records hold the constraints the specification states on their data (a validator); each constraint is a property of one master data record (see [Validators](validators.md#properties)).
 Their subjects differ — the class's API, and the data authored in the project — so each is designed and assessed on its own, even where both refer to the same fields.
 Extract the master data records only when the specification states such a constraint.
+Record those constraints with the master data class too, without assigning them to it: they bound the values its fields hold, so test design leaves the values they exclude out of the class's unit tests.
 
 ## Contained Test Targets
 
@@ -62,5 +63,5 @@ The implementation still fulfills them; only the tests leave them out.
 
 ## Output
 
-- The test targets, each with its assigned specifications and the test targets it contains
+- The test targets, each with its assigned specifications and the test targets it contains; a master data class also with the constraints on its master data records
 - The specifications left out per [TBD Items](#tbd-items) and [Specifications Without Test Cases](#specifications-without-test-cases), each with its reason

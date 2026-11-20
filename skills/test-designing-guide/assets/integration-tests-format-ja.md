@@ -19,7 +19,6 @@
 
 **Notes:**
 
-- 条件 `<条件>`、`<条件>` は、振る舞いが「未定義」と仕様に明示されているため、テストケースに含まれません
 - unverifiable, undefined, ambiguous と書かれたテストケースからは、テストコードは生成されません
 
 #### Visual verification tests

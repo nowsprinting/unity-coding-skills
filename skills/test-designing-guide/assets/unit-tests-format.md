@@ -17,5 +17,4 @@ Equivalence Partitioning (Boundary value coverage)
 
 **Notes:**
 
-- `<MethodName>`: The specification explicitly states the behavior under conditions `<condition>` and `<condition>` as "undefined", so they are not included in the test cases.
 - No test code is generated from the test cases marked unverifiable, undefined, or ambiguous.

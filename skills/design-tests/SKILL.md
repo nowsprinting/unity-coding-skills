@@ -61,7 +61,7 @@ Instruct each subagent to load the `test-designing-guide` skill — do not rely 
 6. Assess the target (Assessment)
 7. Write the test cases and the Assessment in the output format (Output Format)
 
-Give each subagent the test target with its assigned specifications, which of them are external specifications, the test targets it contains with their assigned specifications if any, whether the user states the specification changed since the existing tests were written, and the user's instructions on the test techniques and their test selection criteria if any, and have it return its output verbatim.
+Give each subagent the test target with its assigned specifications, which of them are external specifications, the test targets it contains with their assigned specifications if any, the constraints on its master data records if Step 1 recorded any with it, whether the user states the specification changed since the existing tests were written, and the user's instructions on the test techniques and their test selection criteria if any, and have it return its output verbatim.
 Quote each specification verbatim with its source, e.g., the file path and heading or the issue URL, together with the passages it depends on, e.g., the definitions of the terms it uses, whether they lie in the input or in a linked document you read (see Input).
 Instruct the subagent to derive no test case from a specification stated in a quoted dependency passage, as for a passed link below: the passage may state a specification Step 1 assigned to another target or left out, and it is quoted only to define what the target's specifications use.
 Pass the links within two hops of the input that the quoted passages cite and you did not read, each with the sentence that cites it.

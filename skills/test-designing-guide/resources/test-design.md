@@ -12,6 +12,7 @@ The output of test analysis for one test target, with the input it passes on:
 
 - **Test target** with its **assigned specifications** — derive the test cases from them alone.
 - **Contained test targets** (if any), each with its assigned specifications (see [Contained Test Targets](#contained-test-targets)).
+- **Constraints on the master data records** (for a master data class, if any) — the specifications assigned to the test target of its master data records; derive no test case from them (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)).
 - **Reference** (optional) — what the user gives to read besides the specification under test.
 - **Instruction** (optional) — the test techniques to apply or to suppress, and their test selection criteria.
 
@@ -220,7 +221,8 @@ Design a test case even when it cannot be verified as specified, and mark it ins
   End the method name with `_UNDEFINED` in place of `<Expected>`, and write `**undefined**` in the Verification column.
   - Example: `Attack_HpIsNegative_UNDEFINED` | **undefined**
   - A cell of a modal dialog's state for an operation of the screen behind it is such a cell (see [Screen Transitions](state-transition-testing.md#screen-transitions)): the specification most likely just omits that the modal dialog blocks operations on the UI behind it.
-  - When the specification explicitly states that the behavior under a condition is undefined, e.g., "the result is undefined when HP is negative", or that the condition need not be considered, e.g., "a negative width need not be considered", it leaves no gap, and this skill counts both as explicitly stating the condition undefined: design no test case for the condition, and list it in the Notes (see [Output Format](#output-format)).
+  - When the specification explicitly states that the behavior under a condition is undefined, e.g., "the result is undefined when HP is negative", or that the condition need not be considered, e.g., "a negative width need not be considered", it leaves no gap, and this skill counts both as explicitly stating the condition undefined: design no test case for the condition.
+  - For a master data class, a field value that a constraint on its master data records excludes, e.g., an attack of 0 or less under "an attack card's attack is greater than 0", counts as a condition that need not be considered too: the validator verifies that no master data record holds it, so a test case for it would report as a gap what the specification already rules out.
 - **Ambiguous** — the specification states an expected result that admits more than one reading, so it gives no deterministic pass/fail criterion: e.g., "attack +2" while a buff multiplies attack, without stating whether the addition comes before or after the multiplication; random behavior without a specified distribution, range, or structural property (see [Testing randomness](testing-randomness.md)).
   The author of a specification rarely notices its own ambiguity, so state the reason.
   End the method name with `_AMBIGUOUS` in place of `<Expected>`, and write `**ambiguous**` followed by the reason in the Verification column.
@@ -271,9 +273,8 @@ Write the tags in English whatever the project language.
 **Notes** — a bullet list after the last test case table of a layer's section (in integration tests, of its assertion-based tests), not after each technique's table, written in the project language in this order; omit a bullet that does not apply, and the Notes when no bullet remains:
 
 1. For validators, the selection scope (see [Validators](validators.md#selection-scope))
-2. The conditions the specification explicitly states as undefined, which have no test case; write several conditions in one bullet where possible — in unit tests, one bullet per `<MethodName>`
-3. That no test code is generated from the test cases marked unverifiable, undefined, or ambiguous, when the table has any
-4. Any other supplementary remark on the test cases
+2. That no test code is generated from the test cases marked unverifiable, undefined, or ambiguous, when the table has any
+3. Any other supplementary remark on the test cases
 
 Read the output format template for the layer and follow it exactly (templates are in [`../assets/`](../assets/)); each template starts with the `##` heading of the test class, so write that heading once when the target has several layers:
 

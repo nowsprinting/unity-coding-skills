@@ -115,7 +115,7 @@ design-tests
 
 > [!TIP]\
 > To leave an item out of the test design, write "TBD" on it in the specification; no test case is designed for it.
-> To leave the behavior under a condition open, state it as undefined, e.g., "the result is undefined when HP is negative"; no test case is designed for the condition, and it is listed in the Notes.
+> To leave the behavior under a condition open, state it as undefined, e.g., "the result is undefined when HP is negative"; no test case is designed for the condition.
 
 > [!NOTE]\
 > Combinatorial testing here varies, in combination, the inputs an equivalence partitioning or decision table test case gives neutral values to, and checks that its result stays the same, e.g., the other ability scores and equipment slots when damage depends on strength and the weapon.
