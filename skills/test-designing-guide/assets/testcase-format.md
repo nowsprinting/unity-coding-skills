@@ -6,7 +6,7 @@
 
 <Test technique> (<Test selection criteria>)
 
-| Test Case                         | Verification   | Tags   |
+| Test case                         | Verification   | Tags   |
 |-----------------------------------|----------------|--------|
 | `<Test method name>` <parameters> | <Verification> | <Tags> |
 
@@ -16,13 +16,13 @@
 
 #### Visual verification tests
 
-| Test Case                         | Image analysis by saved screenshot | Tags   |
+| Test case                         | Image analysis by saved screenshot | Tags   |
 |-----------------------------------|------------------------------------|--------|
 | `<Test method name>` <parameters> | <Visual aspects>                   | <Tags> |
 
 #### Manual tests
 
-| Test Case   | Test perspectives / Verification method   |
+| Test case   | Test perspectives / Verification method   |
 |-------------|-------------------------------------------|
 | <Test case> | <Test perspectives / Verification method> |
 
@@ -30,7 +30,7 @@
 
 <Test technique> (<Test selection criteria>)
 
-| Test Case                         | Verification   | Tags   |
+| Test case                         | Verification   | Tags   |
 |-----------------------------------|----------------|--------|
 | `<Test method name>` <parameters> | <Verification> | <Tags> |
 

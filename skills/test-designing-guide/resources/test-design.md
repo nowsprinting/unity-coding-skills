@@ -134,7 +134,7 @@ When multiple test cases share the same expected result — such as the represen
 Do not over-consolidate: keep separate rows for tests that belong to **different** equivalence partitions or produce **different** expected results (see [Deriving test methods from equivalence partitions](equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)).
 Once the rows are written, re-check every parameterized row against this rule: if substituting any listed value would change the expected result, split the row.
 
-Write each parameterized test as a single table row, with its parameter names and values after the method name in the Test Case column.
+Write each parameterized test as a single table row, with its parameter names and values after the method name in the Test case column.
 Leave out of the parameters an input the expected result does not depend on, e.g., a condition marked "don't care" in a decision table: the test-writing phase gives it a neutral value.
 The factors of [combinatorial testing](combinatorial-testing.md) are the exception: they go in the parameters of the test case it derives.
 Do not specify the framework mechanism (`TestCase`, `Values`, etc.) — that's a test-writing decision.
@@ -182,7 +182,7 @@ Further notation rules:
 
 ### Example: Verification — Bad vs. Good
 
-| Style                    | Test Case                                                 | Verification                                                                                                                                                                        | Tags         |
+| Style                    | Test case                                                 | Verification                                                                                                                                                                        | Tags         |
 |--------------------------|-----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | Bad (mechanism)          | `OnBeginDrag_WhenDragStarts_BlocksRaycastsIsDisabled`     | Call `OnBeginDrag` synchronously with `[Test]` and Assert that `CanvasGroup.blocksRaycasts == false`                                                                                |              |
 | Good                     | `OnBeginDrag_WhenDragStarts_BlocksRaycastsIsDisabled`     | `CanvasGroup.blocksRaycasts` is disabled                                                                                                                                            |              |
@@ -197,10 +197,10 @@ Further notation rules:
 
 The Bad (mechanism) row leaks the test-writing mechanism (attribute choice, sync invocation, exact assertion form).
 The Bad (rationale) row leaks why the test exists and what the current behavior is — none of that belongs in Verification; `reproduction` goes in the Tags column instead.
-The Bad (not parameterized) row hides the concrete argument values in a vague phrase in Verification; they belong in the Test Case column as named parameters, e.g. `(phase: {Defeat, Victory})`.
+The Bad (not parameterized) row hides the concrete argument values in a vague phrase in Verification; they belong in the Test case column as named parameters, e.g. `(phase: {Defeat, Victory})`.
 The Bad (condition restated) row repeats the method name's `<Condition>` segment ("BossIsNext") as a precondition clause; Verification states only the expected result, since the condition already lives in the method name.
 The Bad (inputs hidden) row gives an expected value no reader can check, since the method name shows only the equivalence partition; the Good row writes the inputs that determine it.
-The Good rows state the observable behavior and the input values it depends on only; all other concerns go in the Test Case column, the Tags column, or the test-writing phase.
+The Good rows state the observable behavior and the input values it depends on only; all other concerns go in the Test case column, the Tags column, or the test-writing phase.
 
 ## Unverifiable, Undefined, and Ambiguous Test Cases
 

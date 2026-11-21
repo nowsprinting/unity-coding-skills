@@ -2,7 +2,7 @@
 
 ### Test cases
 
-| Test Case            | Verification   | Tags   |
+| Test case            | Verification   | Tags   |
 |----------------------|----------------|--------|
 | `<Test method name>` | <Verification> | <Tags> |
 

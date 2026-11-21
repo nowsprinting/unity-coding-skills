@@ -80,7 +80,7 @@ When the user or the caller asks for the output in a spreadsheet, write the test
 - One sheet per test target, named after its test class, holding all its test cases in a single table, in the order of its Step 3 section, with the columns "Test level", "Test technique, etc.", "Test method name", "Parameters", "Verification", and "Tags":
   - "Test level" — `Integration` or `Unit`; `-` for a validator, which belongs to no test level
   - "Test technique, etc." — the line above the test case's table, naming the technique and its test selection criteria; for a table without that line, what takes the technique's place: `Visual verification`, `Manual`, or `Validator`
-  - "Test method name" and "Parameters" — the two parts of the "Test Case" column; a manual test case has neither, so it goes in "Test method name"
+  - "Test method name" and "Parameters" — the two parts of the "Test case" column; a manual test case has neither, so it goes in "Test method name"
   - "Verification" — also holds the "Image analysis by saved screenshot" and "Test perspectives / Verification method" columns
 
   Write the Notes below the table, one note per row.

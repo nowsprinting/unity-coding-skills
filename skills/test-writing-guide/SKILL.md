@@ -91,7 +91,7 @@ private static Catalog CreateCatalog(int midCount) { ... }
 
 ### Parameterized Tests
 
-Implement a test case whose Test Case column has parameters after the method name as one parameterized test.
+Implement a test case whose Test case column has parameters after the method name as one parameterized test.
 The parameter notation of the test design and the attribute that implements each form are in `unity-test-framework.md` → Parameterized Tests.
 
 ### Layout Assertion Tests
