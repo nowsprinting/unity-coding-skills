@@ -49,16 +49,7 @@ The targets are designed in parallel in Step 2, so a specification assigned to t
 ### Step 2: Design Each Test Target
 
 Design each test target in its own general-purpose subagent, launched in parallel, so the working material of one target stays out of the others' context.
-Instruct each subagent to load the `test-designing-guide` skill — do not rely on automatic skill triggering — and apply its test design resource:
-
-1. Determine the test level of each of the target's specifications (Test Levels)
-2. Model its specifications with test techniques, and derive test cases from the results (Test Techniques)
-3. Name the test cases (Test Case Naming) and write their Verification column (Verification Column)
-4. Re-check every parameterized row against the one-partition-per-method rule (`resources/equivalence-partitioning.md`, Deriving test methods from equivalence partitions): if substituting any listed value would change the expected result, split the row
-5. Tag the test cases that existing tests implement (Existing Tests)
-6. List the test bases of the target (Test Basis)
-7. Assess the target (Assessment)
-8. Write the test cases, the test bases, and the Assessment in the output format (Output Format)
+Instruct each subagent to load the `test-designing-guide` skill — do not rely on automatic skill triggering — and apply its test design resource, `resources/test-design.md`, in full.
 
 Give each subagent the test target with its assigned specifications, which of them are external specifications, the test targets it contains with their assigned specifications if any, the constraints on its master data records if Step 1 recorded any with it, whether the user states the specification changed since the existing tests were written, and the user's instructions on the test techniques and their test selection criteria if any, and have it return its output verbatim.
 Quote each specification verbatim with its source, e.g., the file path and heading or the issue URL, together with the passages it depends on, e.g., the definitions of the terms it uses, whether they lie in the specification or in another document you read (see Input).

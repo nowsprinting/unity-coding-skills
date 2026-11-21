@@ -132,6 +132,7 @@ If no language is specified, default to English.
 
 When multiple test cases share the same expected result — such as the representative and the boundary values of the same equivalence partition, decision table rules sharing an outcome, or [combinations of parameters](combinatorial-testing.md) — consolidate them into a single parameterized test.
 Do not over-consolidate: keep separate rows for tests that belong to **different** equivalence partitions or produce **different** expected results (see [Deriving test methods from equivalence partitions](equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)).
+Once the rows are written, re-check every parameterized row against this rule: if substituting any listed value would change the expected result, split the row.
 
 Write each parameterized test as a single table row, with its parameter names and values after the method name in the Test Case column.
 Leave out of the parameters an input the expected result does not depend on, e.g., a condition marked "don't care" in a decision table: the test-writing phase gives it a neutral value.
