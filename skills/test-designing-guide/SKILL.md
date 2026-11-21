@@ -24,7 +24,7 @@ Knowledge for testing a test target (e.g., a screen, a class) from its specifica
 
 In this skill, the terms mean:
 
-- **Specification** — the observable behavior at the boundary of a unit (a scene, prefab, class, or asset).
+- **Specification** — the observable behavior at the boundary of a part (system, module, scene, prefab, class, or asset).
   It covers both kinds: the external specification and the design docs.
   It is the content wherever it is stated: a file, an issue, or what the user says in the conversation.
 - **External specification** — the specification at the outermost boundary of the product, as the player or the API user observes it.

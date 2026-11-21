@@ -23,7 +23,7 @@ Tell the user so, name the test bases it lists as the documents to pass instead,
 
 In this skill, the terms mean:
 
-- **Specification** — the observable behavior at the boundary of a unit (a scene, prefab, class, or asset).
+- **Specification** — the observable behavior at the boundary of a part (system, module, scene, prefab, class, or asset).
   It is the content a document states, not the document itself.
 - **Coverage item** — in the ISTQB CT-MBT sense, one item of the specification model that a test case exercises: an equivalence partition, a decision table rule, or a state transition.
   The coverage items are the denominator of the coverage.

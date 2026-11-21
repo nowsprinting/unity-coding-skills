@@ -7,7 +7,7 @@ Skills that drive test-first development of Unity games. The terms below fix the
 ### From need to code
 
 **Specification**:
-The observable behavior at the boundary of a unit (system, module, or class). Unqualified "specification" or "spec" covers both kinds: the external specification and the design docs. It is the content wherever it is stated: a file, an issue, or what the user says in the conversation.
+The observable behavior at the boundary of a part (system, module, scene, prefab, class, or asset). Unqualified "specification" or "spec" covers both kinds: the external specification and the design docs. It is the content wherever it is stated: a file, an issue, or what the user says in the conversation.
 _Avoid_: Requirement, product spec, intent
 
 **External specification**:
@@ -15,7 +15,7 @@ The specification at the outermost boundary of the product, as the player or the
 _Avoid_: Requirement, product spec, functional specification, system specification
 
 **Design docs**:
-The specification inside the product, at any level: the smaller units a unit divides into (modules, scenes, prefabs, classes), how they depend on one another, method signatures, and the behavior at each unit's boundary. It covers the production code and assets, not the test design. Unqualified "design" means design docs.
+The specification inside the product, at any level: the smaller parts a part divides into (modules, scenes, prefabs, classes), how they depend on one another, method signatures, and the behavior at each part's boundary. It covers the production code and assets, not the test design. Unqualified "design" means design docs.
 _Avoid_: Software design, internal specification, implementation design, product design, architecture (only its high-level part)
 
 **Game design**:
@@ -87,7 +87,7 @@ A test whose subject is a scene or a prefab, verifying the behavior that emerges
 A test whose subject is a class or an asset, verified through its API or content, including the behavior Unity's lifecycle or UI events drive in a component.
 
 **Test target**:
-The unit a test design is made for, designed as a whole: e.g., the screen transitions, a screen, a prefab, or a class. It names a subject in the product, not a passage of the specification, and a method is no test target of its own. A master data class and its master data records are two test targets: the class's API (unit tests) and the data of its master data records (a validator).
+The part a test design is made for, designed as a whole: e.g., the screen transitions, a screen, a prefab, or a class. It names a subject in the product, not a passage of the specification, and a method is no test target of its own. A master data class and its master data records are two test targets: the class's API (unit tests) and the data of its master data records (a validator).
 
 **Contained test target**:
 A test target whose subject lies within another test target's subject, e.g., a class placed on a screen, or a screen within the screen transitions. The container's tests cover only the behavior that combines its contained test targets.
@@ -123,4 +123,4 @@ The code that realizes design docs or a test design, and the act of writing it.
 _Avoid_: Product code (use production code for the code under test)
 
 **Implementation target**:
-The unit a phase of `implement` implements, e.g., the screen transitions, a screen, a prefab, a class, or the master data records of a master data class; test analysis takes it as a test target.
+The part a phase of `implement` implements, e.g., the screen transitions, a screen, a prefab, a class, or the master data records of a master data class; test analysis takes it as a test target.

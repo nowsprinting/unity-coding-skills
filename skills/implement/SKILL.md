@@ -2,7 +2,7 @@
 name: implement
 description: >-
   Implements a feature or a specification change test-first, phase by phase
-  from the units with no dependencies up: each phase designs its missing test
+  from the parts with no dependencies up: each phase designs its missing test
   cases, then writes failing tests and the production code that passes them.
   Use this skill whenever the user asks to implement or add a feature, or to
   change an existing specification, whether the input is a requirements
@@ -23,10 +23,10 @@ Out of scope:
 
 Terms:
 
-- **Specification** — the observable behavior at the boundary of a unit (a scene, prefab, class, or asset); it covers both kinds below.
+- **Specification** — the observable behavior at the boundary of a part (system, module, scene, prefab, class, or asset); it covers both kinds below.
 - **External specification** — the specification at the outermost boundary of the product, as the player or the API user observes it.
-- **Design docs** — the specification inside the product, at any level: the smaller units a unit divides into (modules, scenes, prefabs, classes), how they depend on one another, method signatures, and the file and assembly (`.asmdef`) of each class; they cover the production code and assets, not the test design.
-- **Test target** — the unit a test design is made for, e.g., the screen transitions, a screen, a prefab, or a class.
+- **Design docs** — the specification inside the product, at any level: the smaller parts a part divides into (modules, scenes, prefabs, classes), how they depend on one another, method signatures, and the file and assembly (`.asmdef`) of each class; they cover the production code and assets, not the test design.
+- **Test target** — the part a test design is made for, e.g., the screen transitions, a screen, a prefab, or a class.
 
 ## Task Type Check
 
@@ -69,7 +69,7 @@ Append your own judgment calls in Step 1 as `Design decisions` as soon as you ma
 
 ### Step 1: Plan the Phases
 
-List the implementation targets the specification describes — the units a phase implements: the screen transitions, each screen and prefab, each master data class and its master data records, and each class the design docs fix.
+List the implementation targets the specification describes — the parts a phase implements: the screen transitions, each screen and prefab, each master data class and its master data records, and each class the design docs fix.
 A master data class is a class that holds master data, e.g., a subclass of `ScriptableObject`, and its master data records, the instances of it authored in the project, e.g., its assets, are an implementation target of their own.
 Assign each specification to exactly one implementation target; when the subject of one implementation target contains others — e.g., a screen contains the classes placed on it — assign the behavior within a contained implementation target to it, and leave the container only the behavior that combines them.
 A class no specification describes is no implementation target here: the phase that needs it designs it.
