@@ -91,11 +91,8 @@ await new UguiClickOperator().OperateAsync(item.GameObject);
 ### Verify modal/overlay blocking
 
 A modal or overlay must block interaction with elements behind it.
-Test from two angles:
-
-- **Behavioural (preferred)**: attempt to reach a background element via `GameObjectFinder` with `reachable: true` (default) while the overlay is open — the finder throws `TimeoutException`, confirming blockage.
-  Repeat with the overlay dismissed to confirm reachability restores.
-- **Structural**: assert the backdrop intercepts raycasts: `Assert.That(background.GetComponent<Image>().raycastTarget, Is.True)` (or `canvasGroup.blocksRaycasts`).
+Attempt to reach a background element via `GameObjectFinder` with `reachable: true` (default) while the overlay is open — the finder throws `TimeoutException`, confirming blockage.
+Repeat with the overlay dismissed to confirm reachability restores.
 
 When a decorative full-screen element should not block (e.g., a background image), annotate it with `NonBlockingAnnotation` so `GameObjectFinder` skips it (see [Annotation Components](#annotation-components)).
 
