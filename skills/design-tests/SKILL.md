@@ -85,7 +85,7 @@ When the user or the caller asks for the output in a spreadsheet, write the test
 
   Write the Notes below the table, one note per row.
 - One "Test basis" sheet gathering the test bases of all test targets, one row per test basis, with a column for the test class
-- One "Assessment" sheet with one row per issue across all test targets: test class, issue, affected specification, and proposed remedy
+- One "Assessment" sheet with one row per issue across all test targets, with only the columns test class, issue, affected specification, and proposed remedy: leave out the label, and leave out a target with no issue
 
 Leave the Test basis and Assessment sections out of the per-target sheets.
 
