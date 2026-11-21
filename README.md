@@ -245,7 +245,7 @@ It measures how much of the specification document at the `specification documen
    It leaves out boundary value analysis, which adds conditions the specification does not state.
 2. Checks off each coverage item the test code covers, in two passes:
    1. Reads the test code files whose `// Test-basis:` comments name the specification document, and checks off each coverage item their tests cover.
-      `/implement` and `/fix-bug` write these comments at the top of each test code file, listing the specification docs, design docs, and test design docs the tests were written from.
+      `/implement` and `/fix-bug` write these comments at the top of each test code file, listing the specification docs and design docs the tests were written from.
    2. Searches the test classes named after each test target, e.g., `InventoryTest`, and checks off each coverage item still unchecked that their tests cover.
       This finds the tests written without the comments, e.g., before you installed this plugin.
 
