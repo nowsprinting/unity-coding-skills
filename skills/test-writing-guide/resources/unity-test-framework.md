@@ -31,16 +31,15 @@ Examples:
 
 ## Naming
 
-| Target               | Convention                                                                                                                     |
-|----------------------|--------------------------------------------------------------------------------------------------------------------------------|
-| Test assembly        | `<ProductionAssembly>.Tests`                                                                                                   |
-| Test namespace       | Same as the production class under test; `<RootNamespace>.Scenes` for a Scene file, `<RootNamespace>.Prefabs` for a Prefab     |
-| Test class           | `<ClassName>Test` — e.g., `CharacterControllerTest`; `<ClassName>Validator` for a validator — e.g., `CardValidator`            |
-| Test method          | `<MethodName>_<Condition>_<Expected>` — e.g., `TakeDamage_WhenHealthIsZero_ReturnsZero` or `TakeDamage_HPが0のとき_ゼロを返す` |
-| System under test    | `sut`                                                                                                                          |
-| Measured value       | `actual`                                                                                                                       |
-| Expected value       | `expected`                                                                                                                     |
-| Test double variable | Prefix with role: `stub`, `spy`, `mock`, `fake`, `dummy`                                                                       |
+| Target               | Convention                                                                                                                 |
+|----------------------|----------------------------------------------------------------------------------------------------------------------------|
+| Test assembly        | `<ProductionAssembly>.Tests`                                                                                               |
+| Test namespace       | Same as the production class under test; `<RootNamespace>.Scenes` for a Scene file, `<RootNamespace>.Prefabs` for a Prefab |
+| Test class           | `<ClassName>Test` — e.g., `CharacterControllerTest`; `<ClassName>Validator` for a validator — e.g., `CardValidator`        |
+| System under test    | `sut`                                                                                                                      |
+| Measured value       | `actual`                                                                                                                   |
+| Expected value       | `expected`                                                                                                                 |
+| Test double variable | Prefix with role: `stub`, `spy`, `mock`, `fake`, `dummy`                                                                   |
 
 - `<RootNamespace>` is the `rootNamespace` of the assembly that defines the component classes used in the Scene or Prefab; the Scene or Prefab itself belongs to no assembly.
   When those classes span several assemblies (excluding Unity's and third-party ones), use the one that none of the others references.
