@@ -133,7 +133,7 @@ If no language is specified, default to English.
 When multiple test cases share the same expected result — such as the representative and the boundary values of the same equivalence partition, decision table rules sharing an outcome, or [combinations of parameters](combinatorial-testing.md) — consolidate them into a single parameterized test.
 Do not over-consolidate: keep separate rows for tests that belong to **different** equivalence partitions or produce **different** expected results (see [Deriving test methods from equivalence partitions](equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)).
 
-Write each parameterized test as a single table row, with its parameter names and values after the method name in the Test Method column.
+Write each parameterized test as a single table row, with its parameter names and values after the method name in the Test Case column.
 Leave out of the parameters an input the expected result does not depend on, e.g., a condition marked "don't care" in a decision table: the test-writing phase gives it a neutral value.
 The factors of [combinatorial testing](combinatorial-testing.md) are the exception: they go in the parameters of the test case it derives.
 Do not specify the framework mechanism (`TestCase`, `Values`, etc.) — that's a test-writing decision.
@@ -181,7 +181,7 @@ Further notation rules:
 
 ### Example: Verification — Bad vs. Good
 
-| Style                    | Test Method                                               | Verification                                                                                                                                                                        | Tags         |
+| Style                    | Test Case                                                 | Verification                                                                                                                                                                        | Tags         |
 |--------------------------|-----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | Bad (mechanism)          | `OnBeginDrag_WhenDragStarts_BlocksRaycastsIsDisabled`     | Call `OnBeginDrag` synchronously with `[Test]` and Assert that `CanvasGroup.blocksRaycasts == false`                                                                                |              |
 | Good                     | `OnBeginDrag_WhenDragStarts_BlocksRaycastsIsDisabled`     | `CanvasGroup.blocksRaycasts` is disabled                                                                                                                                            |              |
@@ -196,10 +196,10 @@ Further notation rules:
 
 The Bad (mechanism) row leaks the test-writing mechanism (attribute choice, sync invocation, exact assertion form).
 The Bad (rationale) row leaks why the test exists and what the current behavior is — none of that belongs in Verification; `reproduction` goes in the Tags column instead.
-The Bad (not parameterized) row hides the concrete argument values in a vague phrase in Verification; they belong in the Test Method column as named parameters, e.g. `(phase: {Defeat, Victory})`.
+The Bad (not parameterized) row hides the concrete argument values in a vague phrase in Verification; they belong in the Test Case column as named parameters, e.g. `(phase: {Defeat, Victory})`.
 The Bad (condition restated) row repeats the method name's `<Condition>` segment ("BossIsNext") as a precondition clause; Verification states only the expected result, since the condition already lives in the method name.
 The Bad (inputs hidden) row gives an expected value no reader can check, since the method name shows only the equivalence partition; the Good row writes the inputs that determine it.
-The Good rows state the observable behavior and the input values it depends on only; all other concerns go in the Test Method column, the Tags column, or the test-writing phase.
+The Good rows state the observable behavior and the input values it depends on only; all other concerns go in the Test Case column, the Tags column, or the test-writing phase.
 
 ## Unverifiable, Undefined, and Ambiguous Test Cases
 
@@ -253,8 +253,9 @@ Under it, write one section per test level and one for validators, in this order
   - Manual tests have no test methods and use a table of test cases with a "Test perspectives / Verification method" column instead of "Verification"
   - Test perspectives — *what* behavioral aspects, conditions, or interactions are verified for this target.
     not a test technique name
+  - Verification method — *how* a human confirms it: the operations that bring the target into the condition and trigger the behavior, and what to observe
 - **Unit tests**: `### Unit test cases` → table
-- **Validators**: `### Validator test cases` → table
+- **Validators**: `### Test cases` → table
 
 For unit tests and assertion-based integration tests, output one table per test technique, in the order: state transition testing, decision table testing, equivalence partitioning, combinatorial testing, error guessing; a technique with a structural model comes first, so that a test case shared with equivalence partitioning stays in the table whose coverage, every transition or every rule, the reader checks by it.
 Write a plain-text line above each table naming the technique, followed by its chosen test selection criteria, if any, in parentheses, e.g., `Equivalence Partitioning (Boundary value coverage)`, `Decision Table Testing (Every rule, Boundary value coverage)`, `State Transition Testing (1-switch coverage)`, `Error Guessing`.
@@ -278,27 +279,26 @@ Write the tags in English whatever the project language.
 
 **Notes** — a bullet list after the last test case table of a section (in integration tests, of its assertion-based tests), not after each technique's table, written in the project language in this order; omit a bullet that does not apply, and the Notes when no bullet remains:
 
-1. For validators, the selection scope (see [Validators](validators.md#selection-scope))
-2. That no test code is generated from the test cases marked unverifiable, undefined, or ambiguous, when the table has any
+1. For validators, the selection scope (see [Validators](validators.md#selection-scope)), e.g., "All tests are parameterized tests that take each master data record of `CardData` under `Assets/Data/Cards` as an argument."
+2. When the table has test cases marked unverifiable, undefined, or ambiguous: "No test code is generated from the test cases marked unverifiable, undefined, or ambiguous."
 3. Any other supplementary remark on the test cases
 
-Read the output format template for the section and follow it exactly (templates are in [`../assets/`](../assets/)); each template starts with the `##` heading of the test class, so write that heading once when the target has several sections:
+Read the output format template for the test target and follow it exactly (templates are in [`../assets/`](../assets/)):
 
-| Section                                                                  | Default                       | Japanese                         |
-|--------------------------------------------------------------------------|-------------------------------|----------------------------------|
-| Unit tests                                                               | `unit-tests-format.md`        | `unit-tests-format-ja.md`        |
-| Validators                                                               | `validators-format.md`        | `validators-format-ja.md`        |
-| Integration tests (including visual verification tests and manual tests) | `integration-tests-format.md` | `integration-tests-format-ja.md` |
+| Test target           | Template              |
+|-----------------------|-----------------------|
+| Master data records   | `validator-format.md` |
+| Any other test target | `testcase-format.md`  |
 
-When no template exists for the project language, use the default one as the structural reference and write the line naming the test technique, `<Condition>`, `<Expected>`, and the prose columns in the project language.
+Write the line naming the test technique, the placeholders other than the method names (see [Test Case Naming](#test-case-naming)), and the Notes in the project language.
 
 ## Test Basis
 
-List the **test bases** of the test target: the files and issues that state its assigned specifications, and those you or the caller read that settled what they leave open.
+List the **test bases** of the test target as a bullet list: the files and issues that state its assigned specifications, and those you or the caller read that settled what they leave open.
 Leave out a document that settled nothing, and text written directly or taken from the conversation.
 Write a file as its path from the root of the repository you work in (the superproject, when the file lies in a submodule), and an issue as its URL.
 
-**Output format**:
+**Example**:
 
 ```markdown
 ### Test basis
@@ -331,7 +331,7 @@ Record every issue found while designing instead of guessing.
 - **Combinatorial explosion** — in integration tests, test case count grows faster than O(n) relative to the number of conditions
 - **Unclear specification** — the specification leaves out a fact the test design depends on, e.g., whether a dependency whose error path it defines is a library or the game's own code, or the folder of the assets a validator selects
 
-**Output format**:
+**Example**:
 
 ```markdown
 ### Assessment

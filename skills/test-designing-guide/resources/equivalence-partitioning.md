@@ -51,7 +51,7 @@ For each input variable:
 
 Two equivalence partitions, two outcomes → **two** methods (NOT one parameterized method over `{0, 1, 5}`):
 
-| Test Method                                                            | Verification                             |
+| Test Case                                                              | Verification                             |
 |------------------------------------------------------------------------|------------------------------------------|
 | `Sync_DrawPileIsEmpty_DrawPileButtonIsNotInteractable`                 | the draw pile button is not interactable |
 | `Sync_DrawPileIsNotEmpty_DrawPileButtonIsInteractable` (count: {1, 5}) | the draw pile button is interactable     |
