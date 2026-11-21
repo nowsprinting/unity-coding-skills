@@ -47,8 +47,6 @@ Guide for directly editing Unity YAML-serialized asset files for Unity projects.
 
 ## Gotchas
 
-- **Verify the file starts with `%YAML 1.1` before editing.**
-  If it does not, the project is in Binary or Mixed serialization mode and the asset must not be hand-edited — open it in the Unity Editor instead.
 - **Never invent an `m_Script` GUID.**
   Copy from an existing asset of the same ScriptableObject type, or look up the script's `.cs.meta` file — fabricated GUIDs detach the asset from its script.
 - **Auto-property backing fields appear literally as `<PropertyName>k__BackingField`.**
