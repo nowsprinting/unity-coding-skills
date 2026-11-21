@@ -31,11 +31,10 @@ A fixture is `fixtures/<name>/` with `spec.md` (the specification under test) an
 
 Every file in the directory except `rubric.md`, `instruction.md`, and `prompt.md` is copied into the run's workspace.
 
-1. **`spec.md` is always the specification under test; `reference.md` is an optional reference.** The test layer follows the subject of `spec.md`, as the skill's Test Layers rule says:
-   - `spec.md` alone, describing a screen → integration tests
-   - `spec.md` an external specification, `reference.md` its design docs → integration tests only; the design docs only settle what `spec.md` leaves open, e.g., whether an input can be arranged or an output observed
-   - `spec.md` design docs (class API), `reference.md` the external specification → unit tests only; the external specification settles what the design docs leave open
-2. **Linked documents**: `spec.md` may link to other files in the directory (`[報酬テーブル](docs/rewards.md)`). They are read the same way as `reference.md`: only to settle what `spec.md` leaves open, never as a source of test targets.
+1. **`spec.md` is always the specification under test.** The test layer follows the subject of `spec.md`, as the skill's Test Layers rule says:
+   - `spec.md` describing a screen → integration tests
+   - `spec.md` design docs (class API) → unit tests
+2. **Linked documents**: `spec.md` may link to other files in the directory (`[報酬テーブル](docs/rewards.md)`). They are read only to settle what `spec.md` leaves open, never as a source of test targets, e.g., design docs linked from an external specification settle whether an input can be arranged or an output observed, and add no unit tests.
 3. **Project settings**: a `CLAUDE.md` in the fixture is the run's project memory, e.g., to state the project language the skill reads from it. Without one, the skill's default is English; the judge compares by meaning and the regexes list both languages, so the language of the output does not affect the scores.
 4. **Custom instruction**: the text of an optional `instruction.md` is put into the prompt as the skill's instruction, e.g., which part of `spec.md` to design tests for, or the test techniques and test selection criteria to use.
 5. **Custom prompt**: a fixture-local `prompt.md` replaces the shared one, for a case the shared prompt does not fit (e.g., a validator).

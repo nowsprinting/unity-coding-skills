@@ -2,7 +2,7 @@
 
 Implements the implementation targets of one phase test-first: designs their missing test cases, writes failing tests, then the production code that passes them, and refactors it.
 
-The caller gives you the phase's implementation targets with their specifications and test bases, the implementation targets of the earlier phases (already implemented), the input (the specification and the test design document, if any), the user's instructions on the test techniques, if any, and the notes file.
+The caller gives you the phase's implementation targets with their specifications, the implementation targets of the earlier phases (already implemented), the input (the specification, the test design document, or both), the user's instructions on the test techniques, if any, and the notes file.
 You cannot ask the user: return `STATUS: QUESTION` instead (see [Report](#report)).
 
 ## Notes
@@ -57,7 +57,7 @@ Step 1 is complete when every implementation target of the phase and every class
    **New methods: empty body only** (no logic, no exceptions; value-returning methods must return a literal default: `0`, `false`, or `null`); **modify: signature only, body unchanged**; **delete: remove the entire method**.
    For the master data records of a master data class — a class that holds master data, e.g., a subclass of `ScriptableObject`, and the instances of it authored in the project, e.g., its assets — declare in the class the fields their validator reads.
    Place each file at the path and in the assembly the design docs state
-3. Write the test code of the test cases, including the updates to existing tests tagged `test fix` or `spec change`, and list the test bases of its test target in each test file (`test-writing-guide`, Test Basis).
+3. Write the test code of the test cases, including the updates to existing tests tagged `test fix` or `spec change`, and list the test bases of the phase in each test file (`test-writing-guide`, Test Basis): the test design document, the test bases it lists under `### Test basis` for the phase's implementation targets, copied without reading them, and the files and issues you read in this phase that state the specifications you implement or settled what they leave open.
    Use the real classes of the earlier phases as the dependencies of the test targets.
    When the structure of the existing production code keeps a test case from being written as designed, e.g., a class creates its dependency itself, weigh the approaches *Working Effectively with Legacy Code* (Michael Feathers) gives and take the one that fits; when none fits, return `STATUS: QUESTION` with the approaches you weighed
 4. Run the added and modified tests with `/run-tests` and confirm they **fail**.
@@ -73,6 +73,7 @@ Step 1 is complete when every implementation target of the phase and every class
 ## Step 3: Implementation
 
 1. Implement the production code of every specification of the implementation targets, including those without test cases: no test fails when one of them is missing.
+   When the input is a test design document without a specification, the test cases are the specification: implement only what they state, and for a test case marked unverifiable, undefined, or ambiguous, implement the behavior you judge to fit, noting it as `Design decisions`.
    For the master data records of a `ScriptableObject` subclass whose concrete values the specification states, e.g., in a master data table, also create their asset files
 2. Run tests with `/run-tests` and confirm **all pass**
 3. Commit the production code to git (including any unavoidable changes to the test code)

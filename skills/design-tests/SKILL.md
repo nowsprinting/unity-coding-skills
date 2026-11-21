@@ -22,15 +22,13 @@ The test design knowledge lives in the `test-designing-guide` skill; this skill 
 
 Take the input from the `specification` argument combined with the conversation, if any; when the argument is omitted, take it from the conversation alone:
 
-- **Specification under test** — the specification to design tests for: written directly, file paths, or the URLs of issues in an issue tracker, in any combination; "the specification" below means it.
+- **Specification under test** — the specification to design tests for, what the user gives as the specification: written directly, file paths, or the URLs of issues in an issue tracker, in any combination; "the specification" below means it.
   If no specification can be found, use `AskUserQuestion` to ask the user before proceeding.
-- **Reference** (optional) — what the user gives to read besides the specification under test.
-  Read it only to settle what the specification leaves open; extract no test target and derive no test case from it.
 - **Instruction** (optional):
   - Which part of a given document is the specification under test
   - The test techniques to apply or to suppress, e.g., error guessing, or their test selection criteria, e.g., 1-switch coverage
 
-When the input alone leaves a specification, or its split into test targets, unsettled, consult the documents it links to, e.g., another file or an issue: read only the parts that settle it, up to two hops from the input — a document the input links to, and a document that one links to.
+Whatever else you read — a document the specification links to, another document of the project, or one the user tells you to read besides the specification — only settles what the specification leaves open, e.g., the definition of a term it uses: extract no test target and derive no test case from a specification stated there.
 For an issue URL, fetch its body and comments (e.g., `gh issue view <URL> --comments` for GitHub Issues) and treat them as text written directly: the comments often revise the body, and a subagent may lack the credentials to fetch them.
 
 The input may state the specification in any document: a requirements document, design docs, or an ADR.
@@ -58,16 +56,13 @@ Instruct each subagent to load the `test-designing-guide` skill — do not rely 
 3. Name the test cases (Test Case Naming) and write their Verification column (Verification Column)
 4. Re-check every parameterized row against the one-partition-per-method rule (`resources/equivalence-partitioning.md`, Deriving test methods from equivalence partitions): if substituting any listed value would change the expected result, split the row
 5. Tag the test cases that existing tests implement (Existing Tests)
-6. Assess the target (Assessment)
-7. Write the test cases and the Assessment in the output format (Output Format)
+6. List the test bases of the target (Test Basis)
+7. Assess the target (Assessment)
+8. Write the test cases, the test bases, and the Assessment in the output format (Output Format)
 
 Give each subagent the test target with its assigned specifications, which of them are external specifications, the test targets it contains with their assigned specifications if any, the constraints on its master data records if Step 1 recorded any with it, whether the user states the specification changed since the existing tests were written, and the user's instructions on the test techniques and their test selection criteria if any, and have it return its output verbatim.
-Quote each specification verbatim with its source, e.g., the file path and heading or the issue URL, together with the passages it depends on, e.g., the definitions of the terms it uses, whether they lie in the input or in a linked document you read (see Input).
-Instruct the subagent to derive no test case from a specification stated in a quoted dependency passage, as for a passed link below: the passage may state a specification Step 1 assigned to another target or left out, and it is quoted only to define what the target's specifications use.
-Pass the links within two hops of the input that the quoted passages cite and you did not read, each with the sentence that cites it.
-Instruct the subagent not to read the source documents: a subagent reading a whole document would see the specifications Step 1 assigned to other targets, and could design duplicate test cases for them.
-Allow it to read a passed link only to fill in what the quoted passages leave undefined or ambiguous: only the part that fills it in, without following the links there, and deriving no test case from a specification stated there.
-When the link cannot be fetched or does not fill it in, the subagent records the question as an issue in the Assessment.
+Quote each specification verbatim with its source, e.g., the file path and heading or the issue URL, together with the passages it depends on, e.g., the definitions of the terms it uses, whether they lie in the specification or in another document you read (see Input).
+Instruct the subagent to derive test cases from its assigned specifications alone, and none from a specification stated in a quoted dependency passage or in anything else it reads: what it reads there may be a specification Step 1 assigned to another target or left out, and only settles what the assigned specifications leave open.
 Also have it write the modeling result to `<scratchpad>/modeling-results/<test class>.md`, named after the `##` heading of its output, e.g., `FooTest.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally in the instruction): a subagent's context is gone once it returns, and you need the modeling result to show it when the user asks to see it, without holding every target's modeling result in your context.
 A subagent cannot ask the user, so it records every question as an issue in the Assessment.
 
@@ -91,26 +86,19 @@ Choose the destination in this order:
 
 1. The user or the caller specified a destination → write there.
 2. The specification under test includes files → write one Markdown file for each of them, next to it and named after it with a `-tests` suffix (e.g., `docs/inventory.md` → `docs/inventory-tests.md`), holding the sections of the test targets whose assigned specifications that file states.
-   A reference gets no file of its own: no test target derives from it.
    When several files state the assigned specifications of one test target, put its section only in the file of the one that states the most of them: a section written to two files would have its test cases implemented twice.
    Output in the conversation the sections of the test targets whose assigned specifications no file states, e.g., those fetched from an issue.
    When a file of that name already exists, ask the user via `AskUserQuestion` whether to overwrite it or to write to a file name they specify.
 3. Otherwise (the specification was written directly in the argument, fetched from issues, or taken from the conversation) → output in the conversation.
 
-Write the output verbatim per Step 3, keeping its order within each file; when writing a file, add only a frontmatter holding the prompt and the test bases, and a top-level heading above it naming the specification file it is written for, or the input when the destination was specified.
-The prompt is the user's message that invoked this skill, verbatim, as a YAML block scalar; when you cannot see it, e.g., a caller's instruction invoked the skill, write the `specification` argument instead.
-The test bases of a file are the files and the issue URLs that state the assigned specifications of the test targets it holds, and every reference the user gave, whether or not it was consulted; write a file as its path from the root of the repository you work in (the superproject, when the file lies in a submodule).
-Text written directly or taken from the conversation is no test basis.
-`test-writing-guide` copies the test bases into the test files written from the test design document:
+Write the output verbatim per Step 3, keeping its order within each file; when writing a file, add only a frontmatter holding the prompt, and a top-level heading above it naming the specification file it is written for, or the input when the destination was specified.
+The prompt is the user's message that invoked this skill, verbatim, as a YAML block scalar; when you cannot see it, e.g., a caller's instruction invoked the skill, write the `specification` argument instead:
 
 ```markdown
 ---
 prompt: |
   /design-tests docs/inventory.md
   Design only the "Sorting" section, with 1-switch coverage.
-test-basis:
-  - docs/inventory.md
-  - https://github.com/owner/repo/issues/42
 ---
 
 # Test design of docs/inventory.md

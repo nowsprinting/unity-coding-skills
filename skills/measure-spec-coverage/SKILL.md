@@ -18,7 +18,7 @@ The test analysis and test design knowledge lives in the `test-designing-guide` 
 
 Take the specification document from the `specification document path` argument: any document that states specifications, e.g., a requirements document, design docs, or an ADR.
 If it is omitted or names no file, use `AskUserQuestion` to ask the user for it.
-If it names a test design document — a file whose frontmatter lists `test-basis:` — do not measure it: its test cases are derived from the specifications, so measuring against it checks the tests only against the test design, and misses the specifications the test design left out.
+If it names a test design document — a file whose frontmatter holds `prompt:` and whose sections list `### Test basis` — do not measure it: its test cases are derived from the specifications, so measuring against it checks the tests only against the test design, and misses the specifications the test design left out.
 Tell the user so, name the test bases it lists as the documents to pass instead, and stop.
 
 In this skill, the terms mean:

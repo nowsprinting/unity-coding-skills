@@ -29,15 +29,15 @@ If the user's request is to investigate or fix a bug rather than implement a new
 
 Take the input from the `specification and/or test design` argument combined with the conversation, if any; when the argument is omitted, take it from the conversation alone:
 
-- **Specification** — the specification to implement: written directly, file paths, or the URLs of issues in an issue tracker, in any combination.
-  If no specification can be found, use `AskUserQuestion` to ask the user before proceeding.
+- **Specification** — the specification to implement, what the user gives as the specification: written directly, file paths, or the URLs of issues in an issue tracker, in any combination.
+  If neither a specification nor a test design document can be found, use `AskUserQuestion` to ask the user before proceeding.
 - **Test design document** (optional) — the test cases of each **test target** (the unit a test design is made for, e.g., the screen transitions, a screen, a prefab, or a class), as the `design-tests` skill outputs it, one file per specification file.
-  Also take as the specification the files and issues the `test-basis` frontmatter of each lists: the production code implements every specification, including those no test case covers.
-- **Reference** (optional) — what the user gives to read besides the specification.
-  Read it only to settle what the specification leaves open; derive no implementation target and no test case from it.
+  Given without a specification, its test cases are the specification: its test targets are the implementation targets, and the production code implements only what the test cases state; do not read the test bases it lists.
 - **Instruction** (optional):
   - Which part of a given document is the specification
   - The test techniques to apply or to suppress, e.g., error guessing, or their test selection criteria, e.g., 1-switch coverage
+
+Whatever else you read — a document the specification links to, another document of the project, or one the user tells you to read besides the specification — only settles what the specification leaves open: derive no implementation target and no test case from a specification stated there.
 
 For an issue URL, fetch its body and comments (e.g., `gh issue view <URL> --comments` for GitHub Issues) and treat them as text written directly: the comments often revise the body, and a subagent may lack the credentials to fetch them.
 
@@ -82,7 +82,6 @@ Instruct the subagent to read `${CLAUDE_SKILL_DIR}/resources/phase-workflow.md` 
 Give it:
 
 - The phase's implementation targets, each with its assigned specifications, and which of them are external specifications
-- The test bases of each implementation target: the input files and issue URLs that state its assigned specifications or its test cases, not every input, so that the tests of a specification do not list the specifications of other phases; add every reference the user gave to each, whether or not it was consulted
 - The implementation targets of the earlier phases, already implemented
 - The input — the path of each file, or the full text when written directly, fetched from an issue, or taken from the conversation
 - The user's instructions on the test techniques, if any

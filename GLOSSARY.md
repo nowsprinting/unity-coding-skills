@@ -53,12 +53,8 @@ The analysis of the specification under test that identifies what to test: the t
 _Avoid_: Preprocessing
 
 **Specification under test**:
-The specification that test analysis and test design design tests for: the specification the user gives, or the part of it an instruction selects. Test targets and test cases derive from it alone. Toward the user, just "specification".
+The specification that test analysis and test design design tests for: what the user gives as the specification, or the part of it an instruction selects. Test targets and test cases derive from it alone; any other document read only settles what it leaves open. Toward the user, just "specification".
 _Avoid_: Target specification, input specification
-
-**Reference**:
-What the user gives test analysis and test design to read besides the specification under test. It only settles what the specification under test leaves open; no test target or test case derives from it.
-_Avoid_: Reference material, test basis
 
 **Assigned specification**:
 A specification under test that test analysis assigned to a test target; the test target's test cases derive from it.
@@ -98,8 +94,8 @@ A test whose subject is the master data records of a master data class, verifyin
 _Avoid_: Unit test (for the data of master data records)
 
 **Test basis**:
-A file or an issue that states the specification under test, or is a reference given with it, that test code or a test design document was written from, listed on it to find it by. It may be outdated or incomplete, so nothing trusts it beyond searching. Text written directly or taken from the conversation is no test basis. A test design document is no test basis, but test code lists it with them for searching.
-_Avoid_: Source, reference (a document only consulted), origin, trace link
+A file or an issue that test code or a test design was written from, listed on the test code or in the test design document to find it by: one that states the specification under test, or one read that settled what it leaves open. It may be outdated or incomplete, so nothing trusts it beyond searching. Text written directly or taken from the conversation is no test basis. A test design document is no test basis, but test code lists it with them for searching.
+_Avoid_: Source, reference, origin, trace link
 
 **Coverage item**:
 In the ISTQB CT-MBT sense, one item that modeling the specifications with a test technique yields and a test case exercises: an equivalence partition, a decision table rule, or a state transition.

@@ -129,7 +129,7 @@ design-tests
 The `specification` can state external specifications and design docs, for a new feature or a specification change.
 The `test design` is a test design document (e.g., the output of `/design-tests`).
 They are given as file paths, issue URLs, or written directly; when omitted, they are read from the conversation.
-Given a test design document, it also reads the files and issues listed in its `test-basis` frontmatter, so the test design document alone is enough.
+Given a test design document alone, it implements only what the test cases state.
 
 Steps:
 

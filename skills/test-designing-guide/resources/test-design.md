@@ -13,10 +13,9 @@ The output of test analysis for one test target, with the input it passes on:
 - **Test target** with its **assigned specifications** — derive the test cases from them alone.
 - **Contained test targets** (if any), each with its assigned specifications (see [Contained Test Targets](#contained-test-targets)).
 - **Constraints on the master data records** (for a master data class, if any) — the specifications assigned to the test target of its master data records; derive no test case from them (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)).
-- **Reference** (optional) — what the user gives to read besides the specification under test.
 - **Instruction** (optional) — the test techniques to apply or to suppress, and their test selection criteria.
 
-Read a reference, or a document the assigned specifications link to, only to settle what the assigned specifications leave open; derive no test case from it.
+Whatever else you read, e.g., a document the assigned specifications link to or another document of the project, only settles what the assigned specifications leave open; derive no test case from a specification stated there.
 
 ## Reading Code
 
@@ -241,7 +240,7 @@ When the test target has test classes, match the test cases against the test met
 ## Output Format
 
 Output the test cases of a test target as one section named after its test class: `## <ClassName>Test`, or the scene, prefab, screen, or screen transition system name followed by `Test` when the specification names no primary class (see [Test Layers](#test-layers)), or `## <ClassName>Validator` for the master data records of `<ClassName>`.
-Under it, write one section per layer in this order, integration tests first, followed by the target's [Assessment](#assessment); write the layer's heading even when the target has a single layer, and omit the layers with no test cases:
+Under it, write one section per layer in this order, integration tests first, followed by the target's [test bases](#test-basis) and [Assessment](#assessment); write the layer's heading even when the target has a single layer, and omit the layers with no test cases:
 
 - **Integration tests** (including visual verification tests and manual tests): `### Integration test cases` — one layer, split within the section by the means of verification: assertions (`#### Assertion-based tests`), image analysis (`#### Visual verification tests`), and a human (`#### Manual tests`)
   - Manual tests have no test methods and use a table of test cases with a "Test perspectives / Verification method" column instead of "Verification"
@@ -285,6 +284,23 @@ Read the output format template for the layer and follow it exactly (templates a
 | Integration tests (including visual verification tests and manual tests) | `integration-tests-format.md` | `integration-tests-format-ja.md` |
 
 When no template exists for the project language, use the default one as the structural reference and write the line naming the test technique, `<Condition>`, `<Expected>`, and the prose columns in the project language.
+
+## Test Basis
+
+List the **test bases** of the test target: the files and issues that state its assigned specifications, and those you or the caller read that settled what they leave open.
+Leave out a document that settled nothing, and text written directly or taken from the conversation.
+Write a file as its path from the root of the repository you work in (the superproject, when the file lies in a submodule), and an issue as its URL.
+
+**Output format**:
+
+```markdown
+### Test basis
+
+- docs/inventory.md
+- https://github.com/owner/repo/issues/42
+```
+
+Omit the section when the test target has no test basis.
 
 ## Assessment
 
