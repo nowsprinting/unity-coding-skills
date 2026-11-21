@@ -80,7 +80,6 @@ Giving them only to `/implement` skips that review: it designs the unit tests in
 ```
 
 You can state the `specification` in any document—a requirements document, design docs, or an ADR—given as file paths, issue URLs, or written directly; if omitted, it is read from the conversation.
-For each file path, the output goes to a Markdown file with a `-tests` suffix next to it; otherwise, to the conversation.
 
 It designs tests that match the subject of each specification: integration tests (including the UI) for a scene or prefab, and unit tests for a class or an asset.
 

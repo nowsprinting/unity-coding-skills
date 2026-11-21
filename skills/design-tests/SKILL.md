@@ -36,7 +36,7 @@ Note which specifications are external specifications (as `test-designing-guide`
 
 ## Rules
 
-- Modify no files in the repository other than the output files (Step 5) and the documents Step 6 writes the resolutions into.
+- Modify no files in the repository other than an output file the user or the caller asks for and the documents Step 5 writes the resolutions into.
   Record a gap or a contradiction in the specification that stays unresolved in the target's Assessment instead of editing the input documents.
 
 ## Workflow
@@ -71,31 +71,7 @@ Do not regroup the test cases by test level.
 Review the assembled test cases against the input: every specification it states, except those Step 1 left out, must be covered by the test cases of the target it was assigned to.
 When one is not covered, run Step 2 again for that target.
 
-### Step 5: Write the Output
-
-Choose the destination in this order:
-
-1. The user or the caller specified a destination → write there.
-2. The specification under test includes files → write one Markdown file for each of them, next to it and named after it with a `-tests` suffix (e.g., `docs/inventory.md` → `docs/inventory-tests.md`), holding the sections of the test targets whose assigned specifications that file states.
-   When several files state the assigned specifications of one test target, put its section only in the file of the one that states the most of them: a section written to two files would have its test cases implemented twice.
-   Output in the conversation the sections of the test targets whose assigned specifications no file states, e.g., those fetched from an issue.
-   When a file of that name already exists, ask the user via `AskUserQuestion` whether to overwrite it or to write to a file name they specify.
-3. Otherwise (the specification was written directly in the argument, fetched from issues, or taken from the conversation) → output in the conversation.
-
-Write the output verbatim per Step 3, keeping its order within each file; when writing a file, add only a frontmatter holding the prompt, and a top-level heading above it naming the specification file it is written for, or the input when the destination was specified.
-The prompt is the user's message that invoked this skill, verbatim, as a YAML block scalar; when you cannot see it, e.g., a caller's instruction invoked the skill, write the `specification` argument instead:
-
-```markdown
----
-prompt: |
-  /design-tests docs/inventory.md
-  Design only the "Sorting" section, with 1-switch coverage.
----
-
-# Test design of docs/inventory.md
-```
-
-### Step 6: Feed Back the Answers to the Specification
+### Step 5: Feed Back the Answers to the Specification
 
 When Step 2 resolved the Issues of a `❌FAIL` target — by the user's answer, or by a source the user instructed you to consult — write each resolution into the document that states the specification it settles, so that the specification agrees with the test design document:
 

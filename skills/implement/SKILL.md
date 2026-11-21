@@ -38,7 +38,7 @@ Take the input from the `specification and/or test design` argument combined wit
 
 - **Specification** — the specification to implement, what the user gives as the specification: written directly, file paths, or the URLs of issues in an issue tracker, in any combination.
   If neither a specification nor a test design document can be found, use `AskUserQuestion` to ask the user before proceeding.
-- **Test design document** (optional) — the test cases of each test target, as the `design-tests` skill outputs it, one file per specification file.
+- **Test design document** (optional) — the test cases of each test target, as the `design-tests` skill outputs it.
   Given without a specification, its test cases are the specification: its test targets are the implementation targets, and the production code implements only what the test cases state; do not read the test bases it lists.
 - **Instruction** (optional):
   - Which part of a given document is the specification
