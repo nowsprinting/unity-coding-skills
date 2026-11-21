@@ -80,6 +80,7 @@ Giving them only to `/implement` skips that review: it designs the unit tests in
 ```
 
 You can state the `specification` in any document—a requirements document, design docs, or an ADR—given as file paths, issue URLs, or written directly; if omitted, it is read from the conversation.
+Tell it where to write the results in your instruction, e.g., "Write the results to docs/spec-tests.md" or "Write the results to Claude Sheets".
 
 It designs tests that match the subject of each specification: integration tests (including the UI) for a scene or prefab, and unit tests for a class or an asset.
 
@@ -126,7 +127,7 @@ design-tests
 ```
 
 The `specification` can state external specifications and design docs, for a new feature or a specification change.
-The `test design` is a test design document (e.g., the output of `/design-tests`).
+The `test design` is a test design document (e.g., the output of `/design-tests`), given as a file path or a spreadsheet URL.
 They are given as file paths, issue URLs, or written directly; when omitted, they are read from the conversation.
 Given a test design document alone, it implements only what the test cases state.
 

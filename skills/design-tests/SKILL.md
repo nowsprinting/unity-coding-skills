@@ -36,7 +36,7 @@ Note which specifications are external specifications (as `test-designing-guide`
 
 ## Rules
 
-- Modify no files in the repository other than an output file the user or the caller asks for and the documents Step 5 writes the resolutions into.
+- Modify no files in the repository other than an output file the user or the caller asks for and the documents Step 6 writes the resolutions into.
   Record a gap or a contradiction in the specification that stays unresolved in the target's Assessment instead of editing the input documents.
 
 ## Workflow
@@ -71,7 +71,25 @@ Do not regroup the test cases by test level.
 Review the assembled test cases against the input: every specification it states, except those Step 1 left out, must be covered by the test cases of the target it was assigned to.
 When one is not covered, run Step 2 again for that target.
 
-### Step 5: Feed Back the Answers to the Specification
+### Step 5: Output
+
+#### Write the Output to a Spreadsheet
+
+When the user or the caller asks for the output in a spreadsheet, write the test design document as one spreadsheet:
+
+- One sheet per test target, named after its test class, holding all its test cases in a single table, in the order of its Step 3 section, with the columns "Test level", "Test technique, etc.", "Test method name", "Parameters", "Verification", and "Tags":
+  - "Test level" — `Integration` or `Unit`; `-` for a validator, which belongs to no test level
+  - "Test technique, etc." — the line above the test case's table, naming the technique and its test selection criteria; for a table without that line, what takes the technique's place: `Visual verification`, `Manual`, or `Validator`
+  - "Test method name" and "Parameters" — the two parts of the "Test Case" column; a manual test case has neither, so it goes in "Test method name"
+  - "Verification" — also holds the "Image analysis by saved screenshot" and "Test perspectives / Verification method" columns
+
+  Write the Notes below the table, one note per row.
+- One "Test basis" sheet gathering the test bases of all test targets, one row per test basis, with a column for the test class
+- One "Assessment" sheet with one row per issue across all test targets: test class, issue, affected specification, and proposed remedy
+
+Leave the Test basis and Assessment sections out of the per-target sheets.
+
+### Step 6: Feed Back the Answers to the Specification
 
 When Step 2 resolved the Issues of a `❌FAIL` target — by the user's answer, or by a source the user instructed you to consult — write each resolution into the document that states the specification it settles, so that the specification agrees with the test design document:
 

@@ -38,7 +38,7 @@ Take the input from the `specification and/or test design` argument combined wit
 
 - **Specification** — the specification to implement, what the user gives as the specification: written directly, file paths, or the URLs of issues in an issue tracker, in any combination.
   If neither a specification nor a test design document can be found, use `AskUserQuestion` to ask the user before proceeding.
-- **Test design document** (optional) — the test cases of each test target, as the `design-tests` skill outputs it.
+- **Test design document** (optional) — the test cases of each test target, as the `design-tests` skill outputs it: a file, or the URL of a spreadsheet.
   Given without a specification, its test cases are the specification: its test targets are the implementation targets, and the production code implements only what the test cases state; do not read the test bases it lists.
 - **Instruction** (optional):
   - Which part of a given document is the specification
@@ -47,6 +47,12 @@ Take the input from the `specification and/or test design` argument combined wit
 Whatever else you read — a document the specification links to, another document of the project, or one the user tells you to read besides the specification — only settles what the specification leaves open: derive no implementation target and no test case from a specification stated there.
 
 For an issue URL, fetch its body and comments (e.g., `gh issue view <URL> --comments` for GitHub Issues) and treat them as text written directly: the comments often revise the body, and a subagent may lack the credentials to fetch them.
+
+For a spreadsheet URL, read the spreadsheet yourself and treat it as a test design document written directly, since a subagent may lack the access to read it:
+
+- Each sheet named after a test class holds the test cases of that test target in one table, with its Notes in the rows below; the "Test method name" and "Parameters" columns together are the test case, and the "Test level" and "Test technique, etc." columns tell the section it belongs to: the test level (`-` for a validator), and the test technique, or `Visual verification`, `Manual`, or `Validator` in its place.
+- The rows of the "Test basis" sheet with that test class are the test bases of the test target.
+- The rows of the "Assessment" sheet with that test class are the Issues of its Assessment; a test target with no row there has no Issue.
 
 **TBD items:** If the specification explicitly contains the text "TBD" for any item, treat that item as non-existent — do not design, test, or implement it.
 Only ask the user via `AskUserQuestion` if the TBD item is a prerequisite that cannot be deferred without blocking the implementation.
@@ -84,7 +90,7 @@ Give it:
 
 - The phase's implementation targets, each with its assigned specifications, and which of them are external specifications
 - The implementation targets of the earlier phases, already implemented
-- The input — the path of each file, or the full text when written directly, fetched from an issue, or taken from the conversation
+- The input — the path of each file, or the full text when written directly, fetched from an issue, or taken from the conversation, and the full text with its URL when read from a spreadsheet
 - The user's instructions on the test techniques, if any
 - The absolute path of the notes file (see [Implementation Notes](#implementation-notes))
 
