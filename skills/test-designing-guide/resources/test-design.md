@@ -20,7 +20,7 @@ The output of test analysis for one test target, with the input it passes on:
 - **Constraints on the master data records** (for a master data class, if any) — the specifications assigned to the test target of its master data records; derive no test case from them (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)).
 - **Instruction** (optional) — the test techniques to apply or to suppress, and their test selection criteria.
 
-Whatever else you read, e.g., a document the assigned specifications link to or another document of the project, only settles what the assigned specifications leave open; derive no test case from a specification stated there.
+Whatever else you read, e.g., a passage the caller quotes as one the assigned specifications depend on, a document they link to, or another document of the project, only settles what the assigned specifications leave open; derive no test case from a specification stated there: test analysis may have assigned it to another test target or left it out.
 
 ## Reading Code
 

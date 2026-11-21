@@ -28,7 +28,6 @@ Take the input from the `specification` argument combined with the conversation,
   - Which part of a given document is the specification under test
   - The test techniques to apply or to suppress, e.g., error guessing, or their test selection criteria, e.g., 1-switch coverage
 
-Whatever else you read — a document the specification links to, another document of the project, or one the user tells you to read besides the specification — only settles what the specification leaves open, e.g., the definition of a term it uses: extract no test target and derive no test case from a specification stated there.
 For an issue URL, fetch its body and comments (e.g., `gh issue view <URL> --comments` for GitHub Issues) and treat them as text written directly: the comments often revise the body, and a subagent may lack the credentials to fetch them.
 
 The input may state the specification in any document: a requirements document, design docs, or an ADR.
@@ -52,12 +51,11 @@ Design each test target in its own general-purpose subagent, launched in paralle
 Instruct each subagent to load the `test-designing-guide` skill — do not rely on automatic skill triggering — and apply its test design resource, `resources/test-design.md`, in full.
 
 Give each subagent the test target with its assigned specifications, which of them are external specifications, the test targets it contains with their assigned specifications if any, the constraints on its master data records if Step 1 recorded any with it, whether the user states the specification changed since the existing tests were written, and the user's instructions on the test techniques and their test selection criteria if any, and have it return its output verbatim.
-Quote each specification verbatim with its source, e.g., the file path and heading or the issue URL, together with the passages it depends on, e.g., the definitions of the terms it uses, whether they lie in the specification or in another document you read (see Input).
-Instruct the subagent to derive test cases from its assigned specifications alone, and none from a specification stated in a quoted dependency passage or in anything else it reads: what it reads there may be a specification Step 1 assigned to another target or left out, and only settles what the assigned specifications leave open.
+Quote each specification verbatim with its source, e.g., the file path and heading or the issue URL, together with the passages it depends on, e.g., the definitions of the terms it uses, whether they lie in the specification or in another document you read.
 Also have it write the modeling result to `<scratchpad>/modeling-results/<test class>.md`, named after the `##` heading of its output, e.g., `FooTest.md`, where `<scratchpad>` is the scratchpad directory listed in your system prompt (write its absolute path literally in the instruction): a subagent's context is gone once it returns, and you need the modeling result to show it when the user asks to see it, without holding every target's modeling result in your context.
 A subagent cannot ask the user, so it records every question as an issue in the Assessment.
 
-When a target's Assessment is `❌FAIL` — e.g., a contradictory specification, or an ambiguous or unverifiable acceptance test — ask the user via `AskUserQuestion`, presenting the Issues that make it FAIL, then design that target again with the answer.
+When a target's Assessment is `❌FAIL`, ask the user via `AskUserQuestion`, presenting the Issues that make it FAIL, then design that target again with the answer.
 When the user cannot resolve them — they require revising the specification — stop and report the Issues and modeling result to the user; revising the specification is up to the user or the caller.
 Proceed with an `⚠️WARN` target as it is: its Issues stay in its Assessment, which the output carries for the user or the caller to act on.
 

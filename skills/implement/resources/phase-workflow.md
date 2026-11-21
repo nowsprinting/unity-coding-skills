@@ -37,10 +37,8 @@ Design the test cases before reading any method body of production code: a test 
    Give it those implementation targets, each with its specifications quoted verbatim, which of them are external specifications, and the user's instructions on the test techniques, if any.
    Instruct it to load the `test-designing-guide` skill — do not rely on automatic skill triggering — and:
    1. Analyze the specifications per the guide's test analysis resource, taking each implementation target as a test target
-   2. Design the test cases of each test target per the guide's test design resource: Test Levels, Contained Test Targets, Test Techniques, Test Case Naming, Parameterized Tests, Verification Column, and Existing Tests.
-      Mark acceptance tests per the Acceptance Tests section of each test technique's resource, and apply the user's instructions on the test techniques, if any
-   3. Assess each test target (Assessment), without the modeling result
-   4. Return the test cases, the Assessment, and the specifications the analysis left out with their reasons, verbatim
+   2. Design the test cases of each test target per the guide's test design resource in full, without the modeling result of its Assessment, applying the user's instructions on the test techniques, if any
+   3. Return the output of each test target, and the specifications the analysis left out with their reasons, verbatim
 
    When the `Agent` tool is unavailable, e.g., at the subagent depth limit, do what you would instruct the subagent yourself.
 3. Design the classes the implementation targets need beyond those the specification fixes — their signatures, dependencies, and file and assembly — and design the test cases of each class per the guide's test design resource, loading the `test-designing-guide` skill yourself
@@ -49,7 +47,7 @@ When a test design gives a test target whose Assessment is `❌FAIL`, return `ST
 
 For the test cases you design in item 3, skip the modeling result and the Assessment, and hold the test cases in your context only; instead, settle each problem they would surface:
 
-- A contradiction in the specification, or an acceptance test that is ambiguous or unverifiable → return `STATUS: QUESTION` before writing any code
+- A problem that meets a FAIL criterion of the Assessment → return `STATUS: QUESTION` before writing any code
 - A test case you would mark unverifiable under a class you designed → revise the class so that the test can arrange the input and observe the result
 - Any other undefined, ambiguous, or unverifiable test case → keep it marked, and write no test code for it
 
