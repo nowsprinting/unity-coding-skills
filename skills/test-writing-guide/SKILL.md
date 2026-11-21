@@ -15,6 +15,10 @@ Guide for writing test code for Unity projects.
 
 Test code is code: load the `code-writing-guide` skill too, which holds the Unity rules that apply to every code file (checking Play Mode before editing, never creating `.meta` files, etc.).
 
+Terms:
+
+- **Test basis** — a file or an issue that the test code is written from: one that states its specification, or one read that settled what the specification leaves open; text written directly or taken from the conversation is no test basis.
+
 ## Rules
 
 ### Test Design Tags
@@ -25,7 +29,6 @@ Test code is code: load the `code-writing-guide` skill too, which holds the Unit
 
 ### Test Basis
 
-A **test basis** is a file or an issue that the test code is written from: one that states its specification, or one read that settled what the specification leaves open; text written directly or taken from the conversation is no test basis.
 A test design document is no test basis, but list it with them: the lines are for searching.
 List the test bases at the top of each test file you write or modify, below its header comment if any, one `// Test-basis:` line each:
 

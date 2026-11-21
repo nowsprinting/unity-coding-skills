@@ -21,6 +21,13 @@ Out of scope:
 - A test design document with an assessment of each test target — see the `design-tests` skill
 - Fixing a bug — see the `fix-bug` skill
 
+Terms:
+
+- **Specification** — the observable behavior at the boundary of a unit (a scene, prefab, class, or asset); it covers both kinds below.
+- **External specification** — the specification at the outermost boundary of the product, as the player or the API user observes it.
+- **Design docs** — the specification inside the product, at any level: the smaller units a unit divides into (modules, scenes, prefabs, classes), how they depend on one another, method signatures, and the file and assembly (`.asmdef`) of each class; they cover the production code and assets, not the test design.
+- **Test target** — the unit a test design is made for, e.g., the screen transitions, a screen, a prefab, or a class.
+
 ## Task Type Check
 
 If the user's request is to investigate or fix a bug rather than implement a new feature, change a specification, or refactor, stop and guide the user to invoke the `/fix-bug` skill instead.
@@ -31,7 +38,7 @@ Take the input from the `specification and/or test design` argument combined wit
 
 - **Specification** — the specification to implement, what the user gives as the specification: written directly, file paths, or the URLs of issues in an issue tracker, in any combination.
   If neither a specification nor a test design document can be found, use `AskUserQuestion` to ask the user before proceeding.
-- **Test design document** (optional) — the test cases of each **test target** (the unit a test design is made for, e.g., the screen transitions, a screen, a prefab, or a class), as the `design-tests` skill outputs it, one file per specification file.
+- **Test design document** (optional) — the test cases of each test target, as the `design-tests` skill outputs it, one file per specification file.
   Given without a specification, its test cases are the specification: its test targets are the implementation targets, and the production code implements only what the test cases state; do not read the test bases it lists.
 - **Instruction** (optional):
   - Which part of a given document is the specification
@@ -40,12 +47,6 @@ Take the input from the `specification and/or test design` argument combined wit
 Whatever else you read — a document the specification links to, another document of the project, or one the user tells you to read besides the specification — only settles what the specification leaves open: derive no implementation target and no test case from a specification stated there.
 
 For an issue URL, fetch its body and comments (e.g., `gh issue view <URL> --comments` for GitHub Issues) and treat them as text written directly: the comments often revise the body, and a subagent may lack the credentials to fetch them.
-
-In this skill, the terms mean:
-
-- **Specification** — the observable behavior at the boundary of a unit (a scene, prefab, class, or asset); it covers both kinds below.
-  The **external specification** is the one at the outermost boundary of the product, as the player or the API user observes it.
-  The **design docs** are the one inside the product, at any level: the smaller units a unit divides into (modules, scenes, prefabs, classes), how they depend on one another, method signatures, and the file and assembly (`.asmdef`) of each class; they cover the production code and assets, not the test design.
 
 **TBD items:** If the specification explicitly contains the text "TBD" for any item, treat that item as non-existent — do not design, test, or implement it.
 Only ask the user via `AskUserQuestion` if the TBD item is a prerequisite that cannot be deferred without blocking the implementation.

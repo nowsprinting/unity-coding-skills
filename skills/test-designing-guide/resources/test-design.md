@@ -6,6 +6,11 @@ Out of scope:
 
 - Writing test code — see the `test-writing-guide` skill
 
+Terms:
+
+- **Master data class** — a class that holds master data, e.g., a subclass of `ScriptableObject`.
+- **Master data record** — one instance of a master data class authored in the project, e.g., one asset.
+
 ## Input
 
 The output of test analysis for one test target, with the input it passes on:
@@ -28,8 +33,6 @@ Read only the following code, and no method bodies of production code:
   Arrange and observe through `public` members wherever they suffice; use an `internal` class or method only when no `public` means exists.
 
 ## Test Levels
-
-A **master data class** is a class that holds master data, e.g., a subclass of `ScriptableObject`; a **master data record** is one instance of it authored in the project, e.g., one asset.
 
 First, tell a validator from the rest by the subject:
 

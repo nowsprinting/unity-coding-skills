@@ -1,11 +1,15 @@
 # Validators
 
 Covers deriving the test cases of a validator from the specifications that constrain the data of the master data records of a master data class.
-A **master data class** is a class that holds master data, e.g., a subclass of `ScriptableObject`; a **master data record** is one instance of it authored in the project, e.g., one asset.
 
 Out of scope:
 
 - Specifications of the master data class's methods — design them as unit tests of the class, a separate test target (see [Test Levels](test-design.md#test-levels))
+
+Terms:
+
+- **Master data class** — a class that holds master data, e.g., a subclass of `ScriptableObject`.
+- **Master data record** — one instance of a master data class authored in the project, e.g., one asset.
 
 ## Properties
 

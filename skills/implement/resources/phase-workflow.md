@@ -5,6 +5,11 @@ Implements the implementation targets of one phase test-first: designs their mis
 The caller gives you the phase's implementation targets with their specifications, the implementation targets of the earlier phases (already implemented), the input (the specification, the test design document, or both), the user's instructions on the test techniques, if any, and the notes file.
 You cannot ask the user: return `STATUS: QUESTION` instead (see [Report](#report)).
 
+Terms:
+
+- **Master data class** — a class that holds master data, e.g., a subclass of `ScriptableObject`.
+- **Master data record** — one instance of a master data class authored in the project, e.g., one asset.
+
 ## Notes
 
 As soon as one of the following occurs, append a line to the notes file the caller gives, in the form `<category>: <note>` — your context is gone once you return:
@@ -55,7 +60,7 @@ Step 1 is complete when every implementation target of the phase and every class
 1. Load the `code-writing-guide` and `test-writing-guide` skills — test code is code, so both guides apply; do not rely on automatic skill triggering
 2. Write the skeleton of the production code: types and method signatures only — must compile, need not work yet.
    **New methods: empty body only** (no logic, no exceptions; value-returning methods must return a literal default: `0`, `false`, or `null`); **modify: signature only, body unchanged**; **delete: remove the entire method**.
-   For the master data records of a master data class — a class that holds master data, e.g., a subclass of `ScriptableObject`, and the instances of it authored in the project, e.g., its assets — declare in the class the fields their validator reads.
+   For the master data records of a master data class, declare in the class the fields their validator reads.
    Place each file at the path and in the assembly the design docs state
 3. Write the test code of the test cases, including the updates to existing tests tagged `test fix` or `spec change`, and list the test bases of the phase in each test file (`test-writing-guide`, Test Basis): the test design document, the test bases it lists under `### Test basis` for the phase's implementation targets, copied without reading them, and the files and issues you read in this phase that state the specifications you implement or settled what they leave open.
    Use the real classes of the earlier phases as the dependencies of the test targets.
