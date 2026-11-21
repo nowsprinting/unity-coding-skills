@@ -102,7 +102,7 @@ public async Task ClickStartButton_LoadsGameScene() { ... }
 - `[TakeScreenshot]` works with sync `[Test]`, async `[Test]`, and `[UnityTest]` — no need to make the method async just to use it.
 - Saved to `<Application.persistentDataPath>/TestHelper/Screenshots/<TestName>.png` by default.
   The absolute path is recorded in the NUnit test result as the `Screenshot` property — read it from there instead of composing the path by hand (the file name is sanitized, and gets a `_1`, `_2` … suffix when one test saves several).
-- Do not override the resolution or the output directory — let the test run at whatever the environment provides (see `run-tests` skill → Visual Verification).
+- Do not override the resolution or the output directory — let the test run at whatever the environment provides: command line arguments may specify them, e.g., in a CI environment.
 
 > [!WARNING]\
 > When combining `[TakeScreenshot]` with `[CreateScene]`:
