@@ -31,7 +31,7 @@ A fixture is `fixtures/<name>/` with `spec.md` (the specification under test) an
 
 Every file in the directory except `rubric.md`, `instruction.md`, and `prompt.md` is copied into the run's workspace.
 
-1. **`spec.md` is always the specification under test.** The test layer follows the subject of `spec.md`, as the skill's Test Layers rule says:
+1. **`spec.md` is always the specification under test.** The test level follows the subject of `spec.md`, as the skill's Test Levels rule says:
    - `spec.md` describing a screen → integration tests
    - `spec.md` design docs (class API) → unit tests
 2. **Linked documents**: `spec.md` may link to other files in the directory (`[報酬テーブル](docs/rewards.md)`). They are read only to settle what `spec.md` leaves open, never as a source of test targets, e.g., design docs linked from an external specification settle whether an input can be arranged or an output observed, and add no unit tests.

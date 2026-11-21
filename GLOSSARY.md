@@ -61,7 +61,7 @@ A specification under test that test analysis assigned to a test target; the tes
 _Avoid_: Test condition (the ISTQB term also covers what no specification states), spec of test target
 
 **Test design**:
-The test cases derived from a specification, each assigned to a test layer.
+The test cases derived from a specification, each a unit test, an integration test, or a validator.
 _Avoid_: Design (unqualified)
 
 **Test design document**:
@@ -72,15 +72,19 @@ _Avoid_: Test specification
 The observable behavior a test case predicts from the specification, compared with the actual result the test target produces; an assertion, image analysis, or a human checks it.
 _Avoid_: Expected outcome, expected behavior; expected value (the value an assertion compares, in test code)
 
+**Test level**:
+The group of tests a specification's subject decides, in the ISTQB sense narrowed to two: unit tests for a class or an asset, and integration tests for a scene or a prefab. The means of verification splits no test level: visual verification tests and manual tests are integration tests, not system tests. A validator belongs to no test level, and an acceptance test is no test level either: it is a test case selected within one.
+_Avoid_: Test layer, level (unqualified), system test, acceptance testing (as a test level)
+
 **Acceptance test**:
 A test that verifies a normal outcome, not an error, that an external specification explicitly states, selected per test technique: e.g., a valid equivalence partition, or a state-to-state reachability.
-_Avoid_: Same-layer witness
+_Avoid_: Same-test-level witness
 
 **Integration test**:
 A test whose subject is a scene or a prefab, verifying the behavior that emerges from its components and referenced assets. External specifications of a game usually land here.
 
 **Unit test**:
-A test whose subject is a class or an asset, verified through its API or content. An external specification given as an API is tested at this layer.
+A test whose subject is a class or an asset, verified through its API or content, including the behavior Unity's lifecycle or UI events drive in a component.
 
 **Test target**:
 The unit a test design is made for, designed as a whole: e.g., the screen transitions, a screen, a prefab, or a class. It names a subject in the product, not a passage of the specification, and a method is no test target of its own. A master data class and its master data records are two test targets: the class's API (unit tests) and the data of its master data records (a validator).

@@ -82,7 +82,7 @@ Giving them only to `/implement` skips that review: it designs the unit tests in
 You can state the `specification` in any document—a requirements document, design docs, or an ADR—given as file paths, issue URLs, or written directly; if omitted, it is read from the conversation.
 For each file path, the output goes to a Markdown file with a `-tests` suffix next to it; otherwise, to the conversation.
 
-It designs tests that match the passed specification layer: integration tests (including the UI) from the external specifications, and unit tests from the design docs.
+It designs tests that match the subject of each specification: integration tests (including the UI) for a scene or prefab, and unit tests for a class or an asset.
 
 Test cases are designed to verify that the implementation conforms to the specifications(easy to review!), not that they uncover implementation flaws.
 They come from modeling the specifications with equivalence partitioning, boundary value analysis, decision table testing, combinatorial testing, and state transition testing(0-switch coverage), selected per test target.

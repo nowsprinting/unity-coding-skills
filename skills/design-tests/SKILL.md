@@ -4,7 +4,7 @@ description: >-
   Designs tests from a specification, whatever document states it — a
   requirements document, design docs, or an ADR:
   extracts the test targets, then creates test cases for each target at the
-  test layer of its subject — e.g., integration tests for a scene or prefab,
+  test level of its subject — e.g., integration tests for a scene or prefab,
   unit tests for a class's API.
   Use this skill whenever the specification is settled and the next step is to
   design the tests, whether the input is written directly in the argument,
@@ -51,7 +51,7 @@ The targets are designed in parallel in Step 2, so a specification assigned to t
 Design each test target in its own general-purpose subagent, launched in parallel, so the working material of one target stays out of the others' context.
 Instruct each subagent to load the `test-designing-guide` skill — do not rely on automatic skill triggering — and apply its test design resource:
 
-1. Determine the layer of each of the target's specifications (Test Layers)
+1. Determine the test level of each of the target's specifications (Test Levels)
 2. Model its specifications with test techniques, and derive test cases from the results (Test Techniques)
 3. Name the test cases (Test Case Naming) and write their Verification column (Verification Column)
 4. Re-check every parameterized row against the one-partition-per-method rule (`resources/equivalence-partitioning.md`, Deriving test methods from equivalence partitions): if substituting any listed value would change the expected result, split the row
@@ -73,7 +73,7 @@ Proceed with an `⚠️WARN` target as it is: its Issues stay in its Assessment,
 ### Step 3: Assemble the Test Cases
 
 Arrange the outputs of Step 2, each a `## <test class>` section, in the order of Step 1.
-Do not regroup the test cases by layer.
+Do not regroup the test cases by test level.
 
 ### Step 4: Review the Coverage
 

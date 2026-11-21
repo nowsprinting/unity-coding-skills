@@ -27,17 +27,21 @@ Read only the following code, and no method bodies of production code:
   Take the inputs to model from the specification, not from the parameters of a signature.
   Arrange and observe through `public` members wherever they suffice; use an `internal` class or method only when no `public` means exists.
 
-## Test Layers
+## Test Levels
 
-A specification's layer follows its subject: a class, or the content of an asset other than a master data record (asset file validation, cross-asset consistency), is a unit test; the data of the master data records of a master data class a validator; a scene or a prefab an integration test.
 A **master data class** is a class that holds master data, e.g., a subclass of `ScriptableObject`; a **master data record** is one instance of it authored in the project, e.g., one asset.
+
+First, tell a validator from the rest by the subject:
+
+- **Validators** — for specifications that constrain the data of master data records, e.g., "an attack card's attack is greater than 0", verified on the master data records authored in the project; a validator belongs to no test level.
+  Specifications of the master data class's methods are unit tests of the class, a separate test target.
+
+Any other specification's test level follows its subject: a class, or the content of an asset other than a master data record (asset file validation, cross-asset consistency), is at the unit test level; a scene or a prefab at the integration test level.
 The external specification of a game usually describes a scene or a screen, so it lands in integration tests; when the external specification is an API itself (e.g., a package), it lands in unit tests only, with no integration tests.
 
 - **Unit tests** — for specifications whose subject is a **class or an asset**, written as an **API contract**: a class or method's inputs, return values, state changes, raised events, or calls to its dependencies.
   This includes behavior driven by Unity's lifecycle (Awake, Start, Update, etc.) or UI events when the specification defines it per component.
   When the specification defines a class's collaboration with its dependencies, keep test density low and focus on those interactions.
-- **Validators** — for specifications that constrain the data of master data records, e.g., "an attack card's attack is greater than 0", verified on the master data records authored in the project.
-  Specifications of the master data class's methods are unit tests of the class, a separate test target.
 - **Integration tests** — for specifications whose subject is a **scene or prefab** (or a screen the player sees): UI operations, on-screen display, scene transitions, and behavior emerging from components and the assets they reference.
   - Add the integration test method to the test class of the **primary class** when the specification names one; OR
   - Create a new dedicated test class named after the scene, prefab, screen, or screen transition system otherwise.
@@ -227,7 +231,7 @@ Design a test case even when it cannot be verified as specified, and mark it ins
   End the method name with `_AMBIGUOUS` in place of `<Expected>`, and write `**ambiguous**` followed by the reason in the Verification column.
   - Example: `GetAttack_AttackUpWithMultiplyingBuff_AMBIGUOUS` | **ambiguous** whether "attack +2" applies before or after the multiplying buff
   - In integration tests, a sensory outcome that neither an assertion nor image analysis can verify, e.g., "defeating an enemy feels satisfying", is not ambiguous: design it as a [manual test](integration-testing.md#manual-tests), where a human judges it and the Verification column may stay subjective.
-    Unit tests have no such escalation: an ambiguous specification at the unit test layer is always ambiguous.
+    Unit tests have no such escalation: an ambiguous specification at the unit test level is always ambiguous.
 
 ## Existing Tests
 
@@ -239,10 +243,10 @@ When the test target has test classes, match the test cases against the test met
 
 ## Output Format
 
-Output the test cases of a test target as one section named after its test class: `## <ClassName>Test`, or the scene, prefab, screen, or screen transition system name followed by `Test` when the specification names no primary class (see [Test Layers](#test-layers)), or `## <ClassName>Validator` for the master data records of `<ClassName>`.
-Under it, write one section per layer in this order, integration tests first, followed by the target's [test bases](#test-basis) and [Assessment](#assessment); write the layer's heading even when the target has a single layer, and omit the layers with no test cases:
+Output the test cases of a test target as one section named after its test class: `## <ClassName>Test`, or the scene, prefab, screen, or screen transition system name followed by `Test` when the specification names no primary class (see [Test Levels](#test-levels)), or `## <ClassName>Validator` for the master data records of `<ClassName>`.
+Under it, write one section per test level and one for validators, in this order, integration tests first, followed by the target's [test bases](#test-basis) and [Assessment](#assessment); write the section's heading even when the target has a single section, and omit the sections with no test cases:
 
-- **Integration tests** (including visual verification tests and manual tests): `### Integration test cases` — one layer, split within the section by the means of verification: assertions (`#### Assertion-based tests`), image analysis (`#### Visual verification tests`), and a human (`#### Manual tests`)
+- **Integration tests** (including visual verification tests and manual tests): `### Integration test cases` — one test level, split within the section by the means of verification: assertions (`#### Assertion-based tests`), image analysis (`#### Visual verification tests`), and a human (`#### Manual tests`)
   - Manual tests have no test methods and use a table of test cases with a "Test perspectives / Verification method" column instead of "Verification"
   - Test perspectives — *what* behavioral aspects, conditions, or interactions are verified for this target.
     not a test technique name
@@ -269,15 +273,15 @@ Separate multiple tags with `, ` in the order of the list below, e.g., `acceptan
 A test case without `existing`, `test fix`, or `spec change` is a new test.
 Write the tags in English whatever the project language.
 
-**Notes** — a bullet list after the last test case table of a layer's section (in integration tests, of its assertion-based tests), not after each technique's table, written in the project language in this order; omit a bullet that does not apply, and the Notes when no bullet remains:
+**Notes** — a bullet list after the last test case table of a section (in integration tests, of its assertion-based tests), not after each technique's table, written in the project language in this order; omit a bullet that does not apply, and the Notes when no bullet remains:
 
 1. For validators, the selection scope (see [Validators](validators.md#selection-scope))
 2. That no test code is generated from the test cases marked unverifiable, undefined, or ambiguous, when the table has any
 3. Any other supplementary remark on the test cases
 
-Read the output format template for the layer and follow it exactly (templates are in [`../assets/`](../assets/)); each template starts with the `##` heading of the test class, so write that heading once when the target has several layers:
+Read the output format template for the section and follow it exactly (templates are in [`../assets/`](../assets/)); each template starts with the `##` heading of the test class, so write that heading once when the target has several sections:
 
-| Layer                                                                    | Default                       | Japanese                         |
+| Section                                                                  | Default                       | Japanese                         |
 |--------------------------------------------------------------------------|-------------------------------|----------------------------------|
 | Unit tests                                                               | `unit-tests-format.md`        | `unit-tests-format-ja.md`        |
 | Validators                                                               | `validators-format.md`        | `validators-format-ja.md`        |

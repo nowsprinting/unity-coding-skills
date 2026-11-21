@@ -3,7 +3,7 @@ name: test-designing-guide
 description: >-
   Test analysis and test design knowledge for Unity projects: extracting test
   targets from specifications and leaving out the specifications that need no
-  test case; test layers, test techniques for modeling specifications
+  test case; test levels, test techniques for modeling specifications
   (equivalence partitioning, boundary value analysis, state transitions,
   decision tables, combinatorial testing, error guessing) and their test
   selection criteria, test case naming, test case notation and output formats,

@@ -90,7 +90,7 @@ These serve two purposes:
 - Placement anchor — add the reproduction test nearby
 - Style reference — follow the same test conventions
 
-**When the bug condition involves on-screen display or a user-facing UI operation**, search for **integration tests with UI operations or visual verification tests** — the reproduction test must be at that layer, so the placement anchor and style reference must be too.
+**When the bug condition involves on-screen display or a user-facing UI operation**, search for **integration tests with UI operations or visual verification tests** — the reproduction test must be at that test level, so the placement anchor and style reference must be too.
 
 Use Explore agents to locate relevant test files and test cases.
 
@@ -136,11 +136,11 @@ With the reproduction confirmed, investigate the root cause:
 
 1. Trace through the code path triggered by the reproduction test
 2. Identify the specific line(s) or logic responsible for the bug
-3. Write a unit-level reproduction test that calls the suspected code directly (per `test-writing-guide`; load it and `code-writing-guide` if Step 2 was skipped — do not rely on automatic skill triggering), and run it with `/run-tests` to verify it **fails** — this confirms the suspected cause before changing the production code, and pins the defect at the unit layer where the Step 2 test cannot locate it.
+3. Write a reproduction test at the unit test level that calls the suspected code directly (per `test-writing-guide`; load it and `code-writing-guide` if Step 2 was skipped — do not rely on automatic skill triggering), and run it with `/run-tests` to verify it **fails** — this confirms the suspected cause before changing the production code, and pins the defect at the unit test level where the Step 2 test cannot locate it.
    Take its expected result from the specification of the called code — the documentation from Step 1, or its XML documentation comment — not from the code traced in items 1-2: an expected result derived from the implementation passes whatever the implementation does.
    If it passes, the suspect is wrong: delete the test, record it under **Ruled out**, and return to item 1.
    Skip this item when the reproduction test from Steps 2-3 is already a unit test that calls the code identified in item 2, or when the cause lies outside code a unit test can call (e.g., scene/prefab wiring or asset settings)
-4. Commit the unit-level reproduction test, if item 3 wrote one, for the same reason as Step 4
+4. Commit the reproduction test of item 3, if it wrote one, for the same reason as Step 4
 5. Formulate a fix
 
 ### Step 6: Regression Test Coverage

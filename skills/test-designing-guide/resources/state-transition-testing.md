@@ -48,4 +48,4 @@ A dialog that only completes or cancels an operation of the screen that opens it
 A dialog with transitions of its own, e.g., one with tabs or sub-dialogs, is a state, like a screen.
 A modal dialog or a popup that is a state leaves the screen that opens it visible behind it: unless the specification states that it blocks operations on the UI behind it, the operations of that screen, e.g., its buttons, are events in the modal dialog's state too.
 A cell of such an event that the specification leaves empty is a gap like any other, so design its test case as undefined (see [Unverifiable, Undefined, and Ambiguous Test Cases](test-design.md#unverifiable-undefined-and-ambiguous-test-cases)).
-For the test class name, see [Test Layers](test-design.md#test-layers).
+For the test class name, see [Test Levels](test-design.md#test-levels).

@@ -5,7 +5,7 @@ A **master data class** is a class that holds master data, e.g., a subclass of `
 
 Out of scope:
 
-- Specifications of the master data class's methods — design them as unit tests of the class, a separate test target (see [Test Layers](test-design.md#test-layers))
+- Specifications of the master data class's methods — design them as unit tests of the class, a separate test target (see [Test Levels](test-design.md#test-levels))
 
 ## Properties
 
