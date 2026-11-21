@@ -36,5 +36,5 @@ Mark as an acceptance test (see [Output Format](test-design.md#output-format)) t
 
 ## Gaps and Contradictions
 
-A combination no rule covers is a gap, and two rules giving different outcomes for the same combination are a contradiction; design the test case of a gap as undefined whatever the test selection criterion, no test case for a contradiction, and include the table as the modeling result (see [Test Techniques](test-design.md#test-techniques)).
-A combination the specification explicitly states as undefined is not a gap: design no test case for it (see [Unverifiable, Undefined, and Ambiguous Test Cases](test-design.md#unverifiable-undefined-and-ambiguous-test-cases)).
+A combination no rule covers is a gap, and two rules giving different outcomes for the same combination are a contradiction (see [Test Techniques](test-design.md#test-techniques)); a gap gets its test case whatever the test selection criterion.
+Include the table as the modeling result.

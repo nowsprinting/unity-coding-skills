@@ -6,11 +6,6 @@ Out of scope:
 
 - Specifications of the master data class's methods — design them as unit tests of the class, a separate test target (see [Test Levels](test-design.md#test-levels))
 
-Terms:
-
-- **Master data class** — a class that holds master data, e.g., a subclass of `ScriptableObject`.
-- **Master data record** — one instance of a master data class authored in the project, e.g., one asset.
-
 ## Properties
 
 A validator verifies a **property**: a predicate on one master data record, e.g., "an attack card's attack is greater than 0".

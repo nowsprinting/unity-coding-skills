@@ -5,8 +5,7 @@ Apply when the specification defines the behavior of the target as a finite-stat
 ## State Transition Table
 
 Model the FSM as a table of every state against every event; each cell holds the destination state, or that the event is not accepted in that state.
-A cell the specification leaves empty is a gap, and a cell with two destinations a contradiction; design the test case of a gap as undefined and no test case for a contradiction (see [Test Techniques](test-design.md#test-techniques)).
-A cell the specification explicitly states as undefined is not a gap: design no test case for it (see [Unverifiable, Undefined, and Ambiguous Test Cases](test-design.md#unverifiable-undefined-and-ambiguous-test-cases)).
+A cell the specification leaves empty is a gap, and a cell with two destinations a contradiction (see [Test Techniques](test-design.md#test-techniques)).
 
 As the modeling result, draw a state transition diagram in Mermaid (`stateDiagram-v2`) instead of the table, and point out each gap and contradiction on it with a note.
 
@@ -47,5 +46,5 @@ Model the screen transitions as an FSM, with screens as states and player operat
 A dialog that only completes or cancels an operation of the screen that opens it, or only returns to that screen, e.g., a confirmation or notice dialog, is part of that screen, not a state of its own, and its behavior belongs to that screen (see [Contained Test Targets](test-analysis.md#contained-test-targets)).
 A dialog with transitions of its own, e.g., one with tabs or sub-dialogs, is a state, like a screen.
 A modal dialog or a popup that is a state leaves the screen that opens it visible behind it: unless the specification states that it blocks operations on the UI behind it, the operations of that screen, e.g., its buttons, are events in the modal dialog's state too.
-A cell of such an event that the specification leaves empty is a gap like any other, so design its test case as undefined (see [Unverifiable, Undefined, and Ambiguous Test Cases](test-design.md#unverifiable-undefined-and-ambiguous-test-cases)).
+A cell of such an event that the specification leaves empty is a gap like any other (see [Unverifiable, Undefined, and Ambiguous Test Cases](test-design.md#unverifiable-undefined-and-ambiguous-test-cases)).
 For the test class name, see [Test Levels](test-design.md#test-levels).

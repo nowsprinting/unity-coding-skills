@@ -10,8 +10,7 @@ Test each equivalence partition with one representative, chosen in this order:
 3. A prime number within it, when its range lacks a bound
 4. Any one value within it, e.g., for a non-numeric equivalence partition, or a range without a prime number
 
-When the specification defines no behavior for an equivalence partition, valid or invalid, it is a gap in the specification: do not guess or invent the behavior, but design its test case as undefined and include the equivalence partition table as the modeling result (see [Test Techniques](test-design.md#test-techniques)).
-An equivalence partition the specification explicitly states as undefined is not a gap: design no test case for it (see [Unverifiable, Undefined, and Ambiguous Test Cases](test-design.md#unverifiable-undefined-and-ambiguous-test-cases)).
+An equivalence partition the specification defines no behavior for, valid or invalid, is a gap in the specification (see [Test Techniques](test-design.md#test-techniques)); include the equivalence partition table as the modeling result.
 
 Add an equivalence partition beyond every upper and lower limit, even when the specification states only the range within them — e.g., `HP < 0`, `HP > MaxHP`, `EXP > Next` (the experience needed for the next level).
 Such a value often arises from a calculation rather than a direct input: damage exceeding the remaining HP, experience gained beyond the next level.
@@ -38,8 +37,7 @@ If the expected result changes with the input, the inputs belong to **different*
 
 For each input variable:
 1. Partition the input domain into equivalence partitions the specification says produce the **same** outcome.
-2. Emit **one method per equivalence partition**, named `..._<Partition>_<ThatPartitionsOutcome>`.
-   The `<Expected>` segment is a concrete state/value (`IsInteractable`, `IsNotInteractable`), never a condition word (`Matches…`, `…WhenNonEmpty`, `DependingOn…`).
+2. Emit **one method per equivalence partition**, named `..._<Partition>_<ThatPartitionsOutcome>` (see [Test Case Naming](test-design.md#test-case-naming)).
 3. Within one equivalence partition, consolidate its representative and its boundary values into **one parameterized** method — they share the outcome (see [Parameterized Tests](test-design.md#parameterized-tests)).
 
 **Worked example** — `drawPileButton.interactable` driven by the draw pile count:
