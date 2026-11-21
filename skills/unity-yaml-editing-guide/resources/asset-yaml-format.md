@@ -10,19 +10,6 @@ Unity must be set to **Force Text** serialization mode for `.asset` files to be 
 - To confirm: open `ProjectSettings/EditorSettings.asset` and check `m_SerializationMode: 2` (Force Text).
 - If a file does **not** start with `%YAML 1.1`, the project is in Binary or Mixed mode — stop and ask the user to switch to Force Text before proceeding.
 
-## Allowlist
-
-Only the following asset types are safe to hand-edit.
-All others carry binary-derived or complex internal structure and must be opened in the Unity Editor.
-
-| Class name | Class ID | File extension | Notes |
-|---|---|---|---|
-| `MonoBehaviour` / ScriptableObject | 114 | `.asset` | User-defined data assets |
-| `Material` | 21 | `.mat` | Shader property overrides |
-
-**Do not hand-edit** (non-exhaustive): `AnimationClip` (74), `AnimatorController` (91), `Texture2D` (28), `Mesh` (43), `AudioClip` (83), `LightingDataAsset` (1120).
-`PhysicsMaterial` (134) and `PhysicsMaterial2D` (272) are excluded due to Unity version naming discrepancies — request user confirmation before adding them to the allowlist.
-
 ## File structure overview
 
 Every Unity text-serialized asset file has this shape:
@@ -38,7 +25,7 @@ Every Unity text-serialized asset file has this shape:
 
 - **Lines 1–2** (`%YAML 1.1` and `%TAG`) are mandatory and must appear exactly as shown — Unity refuses to load the file if they differ.
 - **Document marker** `--- !u!<classID> &<fileID>`:
-  - `!u!<classID>` — Unity class type tag (see Allowlist table above).
+  - `!u!<classID>` — Unity class type tag: 114 for ScriptableObject, 21 for Material.
   - `&<fileID>` — local YAML anchor, an integer unique within the file.
     Internal references use this number.
   - For a single-root ScriptableObject `.asset`: always `--- !u!114 &11400000`.
@@ -218,13 +205,6 @@ Every hand-edit will be normalized:
 - Float scalars may be reformatted.
 - List entries in `m_SavedProperties` are sorted alphabetically.
 - Any comments (`#`) are silently dropped.
-
-**Recommended workflow after hand-editing:**
-
-1. Save the file.
-2. Focus the Unity Editor (or call `AssetDatabase.Refresh()` via `run_method_in_unity`).
-3. Unity re-imports the asset and normalizes the file.
-4. Run `git diff` to review what Unity changed — confirm the intent of the edit was preserved and no unintended data was dropped.
 
 Unity is tolerant of **omitted** user fields (it supplies defaults), but dropping `m_Script` or corrupting `m_EditorClassIdentifier` detaches the asset from its script, causing a "Missing Script" display in the Inspector.
 
