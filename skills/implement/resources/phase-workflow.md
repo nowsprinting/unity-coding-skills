@@ -79,7 +79,7 @@ Step 1 is complete when every implementation target of the phase and every class
 
 1. Implement the production code of every specification of the implementation targets, including those without test cases: no test fails when one of them is missing.
    When the input is a test design document without a specification, the test cases are the specification: implement only what they state, and for a test case marked unverifiable, undefined, or ambiguous, implement the behavior you judge to fit, noting it as `Design decisions`.
-   For the master data records of a `ScriptableObject` subclass whose concrete values the specification states, e.g., in a master data table, also create their asset files
+   For the master data records of a `ScriptableObject` subclass whose concrete values the specification states, e.g., in a master data table, also create their asset files: load the `unity-yaml-editing-guide` skill — do not rely on automatic skill triggering
 2. Run tests with `/run-tests` and confirm **all pass**
 3. Commit the production code to git (including any unavoidable changes to the test code)
 
