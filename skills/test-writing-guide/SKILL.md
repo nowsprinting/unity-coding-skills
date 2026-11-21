@@ -17,7 +17,7 @@ Test code is code: load the `code-writing-guide` skill too, which holds the Unit
 
 Terms:
 
-- **Test basis** — a file or an issue that the test code is written from: one that states its specification, or one read that settled what the specification leaves open; text written directly or taken from the conversation is no test basis.
+- **Test basis** — a file or a URL, e.g., of an issue or a wiki page, that the test code is written from: one that states its specification, or one read that settled what the specification leaves open; text written directly or taken from the conversation is no test basis.
 
 ## Rules
 
@@ -42,7 +42,7 @@ using NUnit.Framework;
 
 The file is the unit: `/measure-spec-coverage` finds a file by these lines and reads every test class in it, so one file needs no rule on which of its classes is the test class.
 
-- Write a file as its path from the root of the repository you work in (the superproject, when the file lies in a submodule), and an issue as its URL
+- Write a file as its path from the root of the repository you work in (the superproject, when the file lies in a submodule), and anything read from a URL as that URL
 - For a test design document, list the test bases under its `### Test basis` headings instead of the document itself: a test design document is no test basis
 - Leave out a file that will not outlive the session, e.g., one in the scratchpad directory: a line naming a vanished file finds nothing
 - Add only the test bases not yet listed, and keep the existing lines even when they look outdated: `/measure-spec-coverage` uses them only to find the tests of a specification, and reads the tests themselves to judge what they cover

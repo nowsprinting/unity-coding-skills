@@ -26,7 +26,7 @@ In this skill, the terms mean:
 
 - **Specification** — the observable behavior at the boundary of a part (system, module, scene, prefab, class, or asset).
   It covers both kinds: the external specification and the design docs.
-  It is the content wherever it is stated: a file, an issue, or what the user says in the conversation.
+  It is the content wherever it is stated: a file, a URL (e.g., an issue or a wiki page), or what the user says in the conversation.
 - **External specification** — the specification at the outermost boundary of the product, as the player or the API user observes it.
 - **Design docs** — the specification inside the product, at any level, e.g., a class's method signatures and their contracts.
 

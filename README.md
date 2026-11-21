@@ -76,10 +76,10 @@ Giving them only to `/implement` skips that review: it designs the unit tests in
 ### Design tests from specifications
 
 ```bash
-/design-tests [specification, file paths, or issue URLs]
+/design-tests [specification, file paths, or URLs]
 ```
 
-You can state the `specification` in any document—a requirements document, design docs, or an ADR—given as file paths, issue URLs, or written directly; if omitted, it is read from the conversation.
+You can state the `specification` in any document—a requirements document, design docs, or an ADR—given as file paths, URLs (e.g., an issue, a wiki page, or a Google Docs document), or written directly; if omitted, it is read from the conversation.
 Tell it where to write the results in your instruction, e.g., "Write the results to docs/spec-tests.md" or "Write the results to Claude Sheets".
 
 It designs tests that match the subject of each specification: integration tests (including the UI) for a scene or prefab, and unit tests for a class or an asset.
@@ -123,12 +123,12 @@ design-tests
 ### Implement features test-first
 
 ```bash
-/implement [specification and/or test design, file paths, or issue URLs]
+/implement [specification and/or test design, file paths, or URLs]
 ```
 
 The `specification` can state external specifications and design docs, for a new feature or a specification change.
 The `test design` is a test design document (e.g., the output of `/design-tests`), given as a file path or a spreadsheet URL.
-They are given as file paths, issue URLs, or written directly; when omitted, they are read from the conversation.
+They are given as file paths, URLs (e.g., an issue, a wiki page, or a Google Docs document), or written directly; when omitted, they are read from the conversation.
 Given a test design document alone, it implements only what the test cases state.
 
 Steps:
@@ -236,10 +236,10 @@ If you specify an analyzer name, it will be installed.
 ### Measure specification coverage
 
 ```bash
-/measure-spec-coverage <specification document path>
+/measure-spec-coverage <specification document path or URL>
 ```
 
-It measures how much of the specification document at the `specification document path` the test code covers, and lists the coverage items left unchecked:
+It measures how much of the specification document at the `specification document path or URL` the test code covers, and lists the coverage items left unchecked:
 
 1. Models the specification with test techniques (equivalence partitioning, decision table testing, and state transition testing) into coverage items.
    It leaves out boundary value analysis, which adds conditions the specification does not state.

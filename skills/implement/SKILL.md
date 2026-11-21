@@ -6,9 +6,9 @@ description: >-
   cases, then writes failing tests and the production code that passes them.
   Use this skill whenever the user asks to implement or add a feature, or to
   change an existing specification, whether the input is a requirements
-  document, an external specification, design docs, a test design document, an
-  issue URL, or the current conversation.
-argument-hint: "[specification and/or test design, file paths, or issue URLs]"
+  document, an external specification, design docs, a test design document, a
+  URL, or the current conversation.
+argument-hint: "[specification and/or test design, file paths, or URLs]"
 license: Unlicense
 metadata:
   author: Koji Hasegawa
@@ -36,7 +36,7 @@ If the user's request is to investigate or fix a bug rather than implement a new
 
 Take the input from the `specification and/or test design` argument combined with the conversation, if any; when the argument is omitted, take it from the conversation alone:
 
-- **Specification** — the specification to implement, what the user gives as the specification: written directly, file paths, or the URLs of issues in an issue tracker, in any combination.
+- **Specification** — the specification to implement, what the user gives as the specification: written directly, file paths, or URLs (e.g., an issue, a wiki page, or a Google Docs document), in any combination.
   If neither a specification nor a test design document can be found, use `AskUserQuestion` to ask the user before proceeding.
 - **Test design document** (optional) — the test cases of each test target, as the `design-tests` skill outputs it: a file, or the URL of a spreadsheet.
   Given without a specification, its test cases are the specification: its test targets are the implementation targets, and the production code implements only what the test cases state; do not read the test bases it lists.
@@ -46,7 +46,9 @@ Take the input from the `specification and/or test design` argument combined wit
 
 Whatever else you read — a document the specification links to, another document of the project, or one the user tells you to read besides the specification — only settles what the specification leaves open: derive no implementation target and no test case from a specification stated there.
 
-For an issue URL, fetch its body and comments (e.g., `gh issue view <URL> --comments` for GitHub Issues) and treat them as text written directly: the comments often revise the body, and a subagent may lack the credentials to fetch them.
+Read a URL of the specification yourself and treat what you read as text written directly, since a subagent may lack the credentials to read it.
+Read it with the access the user set up, e.g., an MCP server or a CLI of the service (`gh issue view <URL> --comments` for GitHub Issues).
+For an issue, read its comments as well as its body: the comments often revise the body.
 
 For a spreadsheet URL, read the spreadsheet yourself and treat it as a test design document written directly, since a subagent may lack the access to read it:
 
@@ -90,7 +92,7 @@ Give it:
 
 - The phase's implementation targets, each with its assigned specifications, and which of them are external specifications
 - The implementation targets of the earlier phases, already implemented
-- The input — the path of each file, or the full text when written directly, fetched from an issue, or taken from the conversation, and the full text with its URL when read from a spreadsheet
+- The input — the path of each file, or the full text when written directly or taken from the conversation, and the full text with its URL when read from a URL, e.g., an issue, a document, or a spreadsheet
 - The user's instructions on the test techniques, if any
 - The absolute path of the notes file (see [Implementation Notes](#implementation-notes))
 

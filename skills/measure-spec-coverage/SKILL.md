@@ -5,7 +5,7 @@ description: >-
   into coverage items, then checks off each coverage item a test verifies, finding the tests by the `// Test-basis:`
   comments in test files.
   Use this skill when the user asks how well a specification is tested, or which of its behaviors no test verifies.
-argument-hint: "<specification document path>"
+argument-hint: "<specification document path or URL>"
 license: Unlicense
 metadata:
   author: Koji Hasegawa
@@ -16,17 +16,21 @@ The test analysis and test design knowledge lives in the `test-designing-guide` 
 
 ## Input
 
-Take the specification document from the `specification document path` argument: any document that states specifications, e.g., a requirements document, design docs, or an ADR.
-If it is omitted or names no file, use `AskUserQuestion` to ask the user for it.
-If it names a test design document — a file whose `## <test class>` sections hold `### Test basis`, as the `design-tests` skill outputs it — do not measure it: its test cases are derived from the specifications, so measuring against it checks the tests only against the test design, and misses the specifications the test design left out.
+Take the specification document from the `specification document path or URL` argument: any document that states specifications, e.g., a requirements document, design docs, or an ADR, as a file path or a URL (e.g., an issue, a wiki page, or a Google Docs document).
+If it is omitted or names neither a file nor a URL, use `AskUserQuestion` to ask the user for it.
+If it names a test design document — a document whose `## <test class>` sections hold `### Test basis`, as the `design-tests` skill outputs it — do not measure it: its test cases are derived from the specifications, so measuring against it checks the tests only against the test design, and misses the specifications the test design left out.
 Tell the user so, name the test bases it lists as the documents to pass instead, and stop.
+
+Read a URL yourself and treat what you read as the specification document, since a subagent may lack the credentials to read it.
+Read it with the access the user set up, e.g., an MCP server or a CLI of the service (`gh issue view <URL> --comments` for GitHub Issues).
+For an issue, read its comments as well as its body: the comments often revise the body.
 
 In this skill, the terms mean:
 
 - **Coverage item** — in the ISTQB CT-MBT sense, one item of the specification model that a test case exercises: an equivalence partition, a decision table rule, or a state transition.
   The coverage items are the denominator of the coverage.
   Boundary values are not coverage items: equivalence partitioning, decision table testing, and state transition testing model only the conditions the specification states, and a combination or a transition they find missing is a gap in the specification, whereas boundary value analysis adds conditions the specification does not state, so counting them would charge the tests for conditions no specification asks for.
-- **Test basis** — a file or an issue that the tests of a test file were written from, listed at the top of the file as a `// Test-basis: <path or URL>` line.
+- **Test basis** — a file or a URL that the tests of a test file were written from, listed at the top of the file as a `// Test-basis: <path or URL>` line.
   The test bases may be outdated or incomplete: use them only to find tests, never to judge what a test covers.
 
 ## Rules
@@ -45,7 +49,7 @@ Counting a specification in two targets would count its coverage items twice, an
 ### Step 2: Measure Each Test Target
 
 Measure each test target in its own general-purpose subagent, launched in parallel, so that the model and the test code of one target stay out of the others' context.
-Before launching them, list the test files that name the specification document with `${CLAUDE_SKILL_DIR}/scripts/find_test_files.sh <specification document path>`: it prints the path of each `.cs` file with a `// Test-basis:` line naming the document, one per line, searching each repository level from the document's own repository up to its superprojects, and exits with code 3 when none has one.
+Before launching them, list the test files that name the specification document with `${CLAUDE_SKILL_DIR}/scripts/find_test_files.sh <specification document path or URL>`: it prints the path of each `.cs` file with a `// Test-basis:` line naming the document, one per line, searching each repository level from the document's own repository, or for a URL from the current directory's repository, up to its superprojects, and exits with code 3 when none has one.
 On exit code 3, proceed with an empty list: a project whose tests predate the `// Test-basis:` lines still has tests, and item 4 below finds them by name.
 Give each subagent the test target with its assigned specifications, the constraints on its master data records if the test analysis recorded any with it, the list of test files, and the definitions of coverage item and test basis above, and instruct it to:
 

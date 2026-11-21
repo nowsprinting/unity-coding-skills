@@ -295,9 +295,9 @@ Write the line naming the test technique, the placeholders other than the method
 
 ## Test Basis
 
-List the **test bases** of the test target as a bullet list: the files and issues that state its assigned specifications, and those you or the caller read that settled what they leave open.
+List the **test bases** of the test target as a bullet list: the files and URLs that state its assigned specifications, and those you or the caller read that settled what they leave open.
 Leave out a document that settled nothing, and text written directly or taken from the conversation.
-Write a file as its path from the root of the repository you work in (the superproject, when the file lies in a submodule), and an issue as its URL.
+Write a file as its path from the root of the repository you work in (the superproject, when the file lies in a submodule), and anything read from a URL as that URL.
 
 **Example**:
 
