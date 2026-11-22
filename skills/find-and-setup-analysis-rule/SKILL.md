@@ -29,8 +29,12 @@ Leave every rule at its default severity unless the user specifies one; set a sp
 
 ### Step 1: Find an Analysis Rule
 
-The options are listed in order of preference: an analyzer diagnoses in every IDE and in Unity's compilation, while an IDE inspection or plugin diagnoses in that IDE only.
-Look into them in whatever order fits the pattern; when several have an analysis rule that flags the code to flag, choose the earliest listed.
+Choose the option whose diagnostic meets the user's need, by where each option diagnoses:
+
+- A Roslyn analyzer diagnoses in every IDE and in Unity's compilation, that is, before the code runs: at `error` severity it stops code that would, e.g., freeze at run time, before a test runs it (see [Severity](#severity))
+- An IDE inspection or plugin diagnoses in that IDE only; an IDE inspection also diagnoses when `/resolve-diagnostics` runs: that skill collects the diagnostics from Rider, at the severities `.editorconfig` sets
+
+Look into the options in whatever order fits the pattern; when several have an analysis rule that flags the code to flag and meet the need equally, choose the earliest listed.
 
 #### Analysis Rules to Apply First
 
