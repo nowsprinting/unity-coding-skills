@@ -57,16 +57,6 @@ public void OneTimeSetUp() => LoadAssetAttribute.LoadAssets(this);
 | Set a custom resolution             | `[GameViewResolution(400, 200, "WQVGA")]` — wait one frame to apply if not using `[CreateScene]`/`[LoadScene]` |
 | Show or hide Gizmos                 | `[GizmosShowOnGameView(true)]` on the test method only                                                         |
 
-**When to apply `[FocusGameView]`**: Apply it at method scope on any test that includes UI-operation tests (using `GameObjectFinder`, click/drag operators, etc.).
-This avoids unintended GameView focus loss.
-Do not apply it assembly-wide or to classes that test pure logic without UI interaction.
-
-```csharp
-[Test]
-[FocusGameView]
-public async Task ClickStartButton_LoadsGameScene() { ... }
-```
-
 **CI resolution**: To fix the GameView resolution in CI, pass test-helper CLI arguments in Unity's startup parameters rather than hardcoding it in test code:
 
 ```
@@ -103,6 +93,12 @@ public async Task ClickStartButton_LoadsGameScene() { ... }
 - Saved to `<Application.persistentDataPath>/TestHelper/Screenshots/<TestName>.png` by default.
   The absolute path is recorded in the NUnit test result as the `Screenshot` property — read it from there instead of composing the path by hand (the file name is sanitized, and gets a `_1`, `_2` … suffix when one test saves several).
 - Do not override the resolution or the output directory — let the test run at whatever the environment provides: command line arguments may specify them, e.g., in a CI environment.
+- To verify a `Button`'s selectable state (normal, highlighted, pressed, selected, disabled) by image analysis, change the state, wait for the `fadeDuration` of the `Button`'s Color Tint transition, then capture: the tint cross-fades to the state's color over that duration.
+
+```csharp
+await Task.Delay(TimeSpan.FromSeconds(button.colors.fadeDuration)); // real time — the Color Tint fade ignores Time.timeScale
+await ScreenshotHelper.TakeScreenshotAsync();
+```
 
 > [!WARNING]\
 > When combining `[TakeScreenshot]` with `[CreateScene]`:

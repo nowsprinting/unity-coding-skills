@@ -548,6 +548,10 @@ If a test written as `[Test]` + `async` method errors out (compile error, `async
 Check the resolved version of `com.unity.test-framework` in `Packages/packages-lock.json`; if it is older than **v1.4.6**, ask the user to upgrade it.
 Check the installed version of UTF Analyzers — `com.nowsprinting.test-framework.analyzers` in `Packages/packages-lock.json` (UPM) or `UTFAnalyzers` in `Assets/packages.config` (NuGetForUnity); if it is older than **v1.4.0**, ask the user to upgrade it.
 
+### A test that operates UI or uses device input fails
+
+When a test that operates UI, or uses device input of the Input Manager or the Input System, fails, apply `[FocusGameView]` (see `test-helper.md` → Game View) to the test method and run it again.
+
 ### `[Repeat]` or `[Retry]` test times out unexpectedly
 
 `[Timeout(ms)]` covers the **total** execution time across all iterations, not per iteration.
