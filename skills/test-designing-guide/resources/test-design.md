@@ -123,6 +123,15 @@ If no language is specified, default to English.
     **Exceptions**: a test case of combinatorial testing names the absence of effect, e.g., `InputsOtherThanStrengthDoNotAffectDamage` (see [Combinatorial testing](combinatorial-testing.md#naming)); an undefined or ambiguous test case uses `UNDEFINED` or `AMBIGUOUS` (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); a consolidated layout assertion test may use the generic `LayoutIsCorrect` (see [Integration testing](integration-testing.md#perspectives), UI layout).
     Words like `Matches…`, `OnlyWhen…`, `DependingOn…`, `BasedOn…` in the name — or "only when / only if / depending on" in the verification description — signal that the outcome varies with input, meaning two partitions were merged into one method — split into one method per outcome (see [Deriving test methods from equivalence partitions](equivalence-partitioning.md#deriving-test-methods-from-equivalence-partitions)).
   - Write `<Expected>` in active voice: `ReturnsTrue`, `ThrowsArgumentException`, `ReducesHpBy3`, etc. For an exception, include its type: `ThrowsArgumentException`, not just `ThrowsException`.
+- Use only characters valid in a C# identifier, since the name becomes a test method name.
+  The C# specification allows, by Unicode general category:
+  - Letters (`L*`) and letter numbers (`Nl`), e.g., `A`, `a`, kana, kanji, `ー`, `々`
+  - Decimal digits (`Nd`), except as the first character
+  - Connector punctuation (`Pc`), e.g., `_`
+  - Combining marks (`Mn`, `Mc`) and format characters (`Cf`), except as the first character
+
+  Other punctuation and symbols are invalid, e.g., `.`, `・`, `、`, `。`, `-`, `+`, `%`, `→`, `「」`, `()`, and spaces; write what a symbol means in words instead, e.g., `HpAndMp` (`HPとMP`) for `HP・MP`, `Hp1Point5Times` (`HPが1点5倍`) for `HP1.5倍`.
+  Do not substitute `_` for a symbol, since `_` separates the name's segments.
 - Do not create sequential IDs in test case names
 - Verify one condition per test.
   **Exception (multi-property)**: when multiple properties of the state resulting from a transition must all be correct simultaneously, a single test may assert all of them together.
