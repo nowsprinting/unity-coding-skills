@@ -78,13 +78,13 @@ Step 1 is complete when every implementation target of the phase and every class
 1. Implement the production code of every specification of the implementation targets, including those without test cases: no test fails when one of them is missing.
    When the input is a test design document without a specification, the test cases are the specification: implement only what they state, and for a test case marked unverifiable, undefined, or ambiguous, implement the behavior you judge to fit, noting it as `Design decisions`.
    For the master data records of a `ScriptableObject` subclass whose concrete values the specification states, e.g., in a master data table, also create their asset files: load the `unity-yaml-editing-guide` skill — do not rely on automatic skill triggering
-2. Run tests with `/run-tests` and confirm **all pass**
+2. Run the test classes of the phase's implementation targets with `/run-tests` and confirm **all pass**
 3. Commit the production code to git (including any unavoidable changes to the test code)
 
 ## Step 4: Refactoring
 
 1. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
-2. Run tests with `/run-tests` and confirm **all pass**
+2. Run the test classes of the phase's implementation targets with `/run-tests` and confirm **all pass**
 3. Run `/resolve-diagnostics` with the files added or modified in Steps 2-3 — compute the list **after** `/simplify` finishes, so its edits are covered too
 4. Commit all remaining changes to git
 
@@ -102,4 +102,4 @@ Then:
 
 - For `STATUS: QUESTION`: each issue with the affected specification and a proposed remedy
 - For `STATUS: BLOCKED`: the tests that passed unexpectedly and why they were not judged legitimate, or the blocker
-- For `STATUS: DONE`: the classes added or modified, and the commits
+- For `STATUS: DONE`: the classes added or modified, the test assemblies that hold the tests added or modified, each with its test mode, and the commits

@@ -38,6 +38,8 @@ Before running tests, complete the following steps in order:
    Skip this step when running an already-known assembly.
 
 Then use the `run_unity_tests` tool to run the tests in the Unity Editor.
+Pass `groupNames` or `testNames` to select only the tests under verification — the test classes or methods affected by the change.
+Run a whole assembly only when the user or the skill that called this one asks for the whole suite or a regression run.
 
 Test execution can take several minutes.
 Do not re-run while a test is in progress — always wait for it to complete or time out.

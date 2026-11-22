@@ -121,6 +121,9 @@ If reproduction has been attempted **3 times** without success, return to **Step
 
 ### Step 4: Confirm Reproduction with User
 
+> **Skip this step** if Step 2 was skipped (existing test failure): the test that failed in Step 3 is the reproduction evidence, and no reproduction test was written to commit.
+> Proceed directly to Step 5.
+
 **Present the reproduction evidence to the user** via `AskUserQuestion` before proceeding.
 Include:
 - Reproduction test: file path and method name
@@ -168,7 +171,7 @@ Before applying the fix, cover the adjacent behavior the fix could disturb:
 ### Step 8: Refactoring
 
 1. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
-2. Re-run tests using `/run-tests` command to confirm they still pass
+2. Run the whole test assemblies that hold the tests added and modified in this iteration with `/run-tests`, as a regression run, and confirm they still pass
 3. Run `/resolve-diagnostics` with the files added or modified in this iteration — compute the list **after** `/simplify` finishes, so its edits are covered too
 4. Commit all remaining changes to git
 

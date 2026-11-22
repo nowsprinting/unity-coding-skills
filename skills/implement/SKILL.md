@@ -103,9 +103,24 @@ Act on the `STATUS:` line the subagent returns:
   When the user cannot resolve them, stop and report them
 - `STATUS: BLOCKED` → stop, and report the blocker to the user
 
-### Step 3: Report the Implementation Notes
+### Step 3: Run the Regression Tests
 
-After the last phase, or when Step 2 stops:
+After the last phase returns `STATUS: DONE`, run the whole test assemblies the phases reported with `/run-tests`, as a regression run.
+A phase runs only the test classes of its implementation targets, so this run is the one that finds an existing test the implementation broke.
+When a test fails, run a new general-purpose subagent that loads the `fix-bug` skill — do not rely on automatic skill triggering — and fixes the failures as an existing test failure, rather than fixing them yourself: the fix would bring the code of the phases into your context.
+Give it the failing tests with their failure messages, and the input of this run as the documents that state the specification.
+Instruct it to depart from the skill as follows, since it cannot reach the user:
+
+- Keep its notes in `<scratchpad>/regression-fix-notes` (write its absolute path literally) in place of the notes file the skill names, which holds the notes of the phases
+- Return in its reply what Steps 9-11 tell the user
+- Stop and return the question when any other step needs the user's answer
+
+Ask the user a question it returns via `AskUserQuestion`, and send the answer to the same subagent with `SendMessage`.
+
+### Step 4: Report the Implementation Notes
+
+After Step 3, or when Step 2 stops:
+
 
 1. `Read` `<scratchpad>/implementation-notes` if it exists
 2. Report the notes to the user in chat under an `## Implementation Notes` heading — one bold sub-heading per category, each followed by a bullet list.
@@ -113,3 +128,4 @@ After the last phase, or when Step 2 stops:
    Write `- None` for any category with nothing recorded, and add any last-minute Open questions before finalizing.
    If the file was never created, report every category as "None"
 3. Delete the temporary notes file if it exists
+4. Relay the reply of the fix subagent, if Step 3 ran one
