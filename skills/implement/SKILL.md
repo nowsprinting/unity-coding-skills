@@ -34,17 +34,17 @@ If the user's request is to investigate or fix a bug rather than implement a new
 
 ## Input
 
-Take the input from the `specification and/or test design` argument combined with the conversation, if any; when the argument is omitted, take it from the conversation alone:
+Take the input from the `specification and/or test design` argument combined with the conversation, if any; when the argument is omitted, take it from the conversation alone.
+The input is a specification, a test design document, or both; if the conversation gives neither, stop and tell the user to give one:
 
 - **Specification** — the specification to implement, what the user gives as the specification: written directly, file paths, or URLs (e.g., an issue, a wiki page, or a Google Docs document), in any combination.
-  If neither a specification nor a test design document can be found, use `AskUserQuestion` to ask the user before proceeding.
-- **Test design document** (optional) — the test cases of each test target, as the `design-tests` skill outputs it: a file, or the URL of a spreadsheet.
-  Given without a specification, its test cases are the specification: its test targets are the implementation targets, and the production code implements only what the test cases state; do not read the test bases it lists.
+- **Test design document** — the test cases of each test target, as the `design-tests` skill outputs it: a file, or the URL of a spreadsheet.
+  Given without a specification, its test cases are the specification, and its test targets are the implementation targets.
 - **Instruction** (optional):
   - Which part of a given document is the specification
   - The test techniques to apply or to suppress, e.g., error guessing, or their test selection criteria, e.g., 1-switch coverage
 
-Whatever else you read — a document the specification links to, another document of the project, or one the user tells you to read besides the specification — only settles what the specification leaves open: derive no implementation target and no test case from a specification stated there.
+Whatever else you read — a document the specification links to, a test basis the test design document lists, another document of the project, or one the user tells you to read besides the specification — only settles what the specification leaves open: derive no implementation target and no test case from a specification stated there.
 
 Read a URL of the specification yourself and treat what you read as text written directly, since a subagent may lack the credentials to read it.
 Read it with the access the user set up, e.g., an MCP server or a CLI of the service (`gh issue view <URL> --comments` for GitHub Issues).

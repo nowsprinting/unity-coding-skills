@@ -98,7 +98,7 @@ A test whose subject is the master data records of a master data class, verifyin
 _Avoid_: Unit test (for the data of master data records)
 
 **Test basis**:
-A file or a URL that test code or a test design was written from, listed on the test code or in the test design document to find it by: one that states the specification under test, or one read that settled what it leaves open. It may be outdated or incomplete, so nothing trusts it beyond searching. Text written directly or taken from the conversation is no test basis.
+A file or a URL that test code or a test design was written from, listed on the test code or in the test design document to find it by: one that states the specification under test, or one read that settled what it leaves open. It may be outdated or incomplete. Text written directly or taken from the conversation is no test basis.
 _Avoid_: Source, reference, origin, trace link
 
 **Coverage item**:
