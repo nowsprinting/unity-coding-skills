@@ -42,8 +42,8 @@ Pass `groupNames` or `testNames` to select only the tests under verification —
 Run a whole assembly only when the user or the skill that called this one asks for the whole suite or a regression run.
 
 Test execution can take several minutes.
-Do not re-run while a test is in progress — always wait for it to complete or time out.
-If a timeout occurs, narrow down the tests using filter settings and re-run.
+Do not re-run while a test is in progress — always wait for it to complete.
+When the call times out, the run may still be in progress in the Unity Editor, so follow `${CLAUDE_SKILL_DIR}/resources/troubleshooting-run-unity-tests.md` before running again.
 
 ### Unsaved Scene Dialog (macOS)
 
@@ -141,6 +141,6 @@ When consulting, clarify:
 
 Read the appropriate resource file based on the situation:
 
-- Any Unity MCP tool (`run_unity_tests`, `unity_play_control`, `get_unity_compilation_result`) is not available or fails with a connection error: Read `${CLAUDE_SKILL_DIR}/resources/troubleshooting-run-unity-tests.md`
+- Any Unity MCP tool (`run_unity_tests`, `unity_play_control`, `get_unity_compilation_result`) is not available or fails with a connection error, or `run_unity_tests` times out: Read `${CLAUDE_SKILL_DIR}/resources/troubleshooting-run-unity-tests.md`
 - A test fails due to an assertion, constraint, or comparer in the `TestHelper` namespace (excluding `TestHelper.UI`): Read `${CLAUDE_SKILL_DIR}/resources/troubleshooting-test-helper.md`
 - A test fails due to an exception thrown from the `TestHelper.UI` namespace: Read `${CLAUDE_SKILL_DIR}/resources/troubleshooting-test-helper-ui.md`

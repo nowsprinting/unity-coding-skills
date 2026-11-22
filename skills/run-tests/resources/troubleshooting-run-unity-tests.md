@@ -17,14 +17,14 @@ If the `run_unity_tests` tool is not available, consider the following causes:
 
 ## When Tool Response Does Not Return
 
-`run_unity_tests` does not return until the test run completes or times out (default: 300 seconds).
+`run_unity_tests` does not return until the test run completes or times out.
 **Do not call the tool again while waiting — duplicate calls launch a second test run on top of the first.**
 
 If the response takes longer than expected, check:
 
 1. Unity Editor is still running and connected to Rider.
 2. The test run is visible in the **Unity Test Runner** window (play button active or spinner present).
-3. If neither is visible, the connection may have been lost — wait for the timeout response, then retry once.
+3. If neither is visible, the connection may have been lost — wait for the call to end, then follow the section of [Triage by Tool Response](#triage-by-tool-response) that matches how it ended.
 
 ## Triage by Tool Response
 
@@ -55,18 +55,48 @@ Possible causes:
 - **Editor not running**: Use the `execute_run_configuration` tool to launch the `Start Unity` configuration, then retry.
 - **Wrong project open**: Verify the Editor has the correct project loaded.
 
+### No tool response — Claude Code timeout
+
+The call ends with either of the following messages in place of a tool response:
+
+- `MCP server "rider" tool "run_unity_tests" timed out after Ns`
+- `The operation timed out.`
+
+Claude Code gave up waiting for the response, while the run continues in the Unity Editor.
+**Wait for the run to complete before calling `run_unity_tests` again** — a second call launches another run on top of it.
+
+**Step 1 — Wait until the run completes.**
+
+Start a command with the Bash tool's `run_in_background: true` that polls until either of the following signals appears:
+
+- `Editor.log` contains marker 5 of the [lifecycle marker sequence](#tests-launched-but-timed-out) after the last marker 1.
+- `TestResults.xml` under `Application.persistentDataPath` has a modification time later than the `run_unity_tests` call (resolve the directory with `${CLAUDE_SKILL_DIR}/scripts/get_persistent_data_path.sh <unity-project-root>`).
+
+Which signals a run emits depends on the project: the markers need an `IPrebuildSetup` / `IPostBuildCleanup` class, and `TestResults.xml` a package that writes it (both come with `com.unity.test-framework.performance`).
+When the run emits neither, or neither appears within 10 minutes, ask the user whether the **Unity Test Runner** window shows the run finished and whether the Unity Editor UI is responding to input.
+An unresponsive Editor is a freeze — see [Editor freeze](#possible-cause-editor-freeze) for causes and the recovery in [Timeout](#success-false--timeout).
+
+**Step 2 — Read the results and prevent a recurrence.**
+
+No tool response carries the results of this run.
+Read them from `TestResults.xml`; when the project writes none, run the tests again after the user lengthened the timeout, or with a narrower selection.
+
+The timeout recurs on every run of the same scope in a project with many tests, so ask the user to increase `MCP_TOOL_TIMEOUT` in the environment of Claude Code, which is in milliseconds (e.g., `MCP_TOOL_TIMEOUT=600000` for 10 minutes).
+While it is unset, Claude Code times out each request to an HTTP or SSE MCP server after 60 seconds; a value above 60000 raises that per-request limit too (see [Environment variables](https://code.claude.com/docs/en/env-vars)).
+
 ### `success: false` — Timeout
 
 `errorMessage`: `"Test execution timed out after N seconds."`
 
-This fires the same way whether the Unity Editor is still running normally or has frozen completely — the MCP tool's own timeout (default 300s / `MCP_TOOL_TIMEOUT`) is on a channel independent of the Editor.
+This is the plugin's own timeout (`MCP_TOOL_TIMEOUT`, read from the environment of the Rider process), and the plugin aborts the run when it fires.
+It is on a channel independent of the Editor, so it fires the same way whether the Unity Editor was still running normally or has frozen completely.
 Distinguishing the two determines whether retrying can help at all.
 
 **Step 1 — Determine whether the Editor actually froze.**
 
-- Inspect `idea.log` for `UnitTestLaunch created` and `RunUnitTestLaunch.Start called` (confirming the run started), then check `Editor.log` for the lifecycle marker sequence described in [Tests launched but timed out](#tests-launched-but-timed-out).
-  - Markers 1–3 present but marker 5 absent → the Editor froze — see [Editor freeze](#possible-cause-editor-freeze) for causes.
-  - Marker 5 present → the run completed; this was not a freeze — go to Step 2.
+- Inspect `idea.log` for `UnitTestLaunch created` and `RunUnitTestLaunch.Start called` (confirming the run started), then check `Editor.log` for the lifecycle marker sequence described in [Tests launched but timed out](#tests-launched-but-timed-out), reading from the last marker 1.
+  - Marker 1 present (followed by markers 2–3 in a Play Mode run) but marker 5 absent → the Editor froze — see [Editor freeze](#possible-cause-editor-freeze) for causes.
+  - Marker 5 present → the run ended; this was not a freeze — go to Step 2.
   - No marker at all → the run never started; the "Scene(s) Have Been Modified" dialog may be blocking it — see "Unsaved Scene Dialog (macOS)" in `SKILL.md`, or ask the user to close the dialog.
 - If still unclear, ask the user whether the Unity Editor UI is responding to input at all.
   A genuinely unresponsive Editor confirms a freeze.
@@ -77,8 +107,7 @@ Report the freeze to the user and ask them to force-quit and relaunch the Unity 
 **Step 2 — If not frozen, reduce scope or increase the timeout.**
 
 - **Narrow the test selection**: Add `assemblyNames`, `testNames`, or `categoryNames` filters to run fewer tests per call.
-- **Tests with a long `[Timeout]` attribute**: NUnit's default per-test timeout is 180,000 ms (3 minutes).
-  If tests intentionally take longer, ask the user to increase `MCP_TOOL_TIMEOUT` (e.g., `MCP_TOOL_TIMEOUT=600`).
+- **The project has many tests, or tests with a long `[Timeout]` attribute** (NUnit's default per-test timeout is 180,000 ms): ask the user to increase `MCP_TOOL_TIMEOUT`, which is in milliseconds (e.g., `MCP_TOOL_TIMEOUT=600000` for 10 minutes).
 
 ### `success: false` — Domain reload reconnection failure
 
@@ -95,7 +124,8 @@ If reconnection fails repeatedly, restart the Unity Editor.
 `errorMessage`: `"Test execution was cancelled due to protocol disconnection or Kotlin coroutine cancellation."`
 
 The MCP client (Claude Code) disconnected, or Rider itself shut down.
-Confirm both Rider and the MCP connection are healthy, then retry.
+The run may still be in progress in the Unity Editor, so wait for it to complete as in Step 1 of [Claude Code timeout](#no-tool-response--claude-code-timeout).
+Then confirm both Rider and the MCP connection are healthy, and retry.
 
 ### `success: true` — Zero test results
 
@@ -175,7 +205,7 @@ RunUnitTestLaunch.Start called
 ```
 but `RunResult received` never appears, and the tool eventually returns:
 ```
-Test execution timed out after 300 seconds.
+Test execution timed out after N seconds.
 ```
 
 For recovery steps, see [Timeout](#success-false--timeout).
@@ -216,7 +246,7 @@ Check `Editor.log` for the test-framework lifecycle marker sequence:
 | `Saving results to: ...TestResults.xml`               | Result file saved (only in projects that write one) |
 | `Executing IPostBuildCleanup for: ...TestRunBuilder.` | Runner cleanup complete                             |
 
-If markers 1–3 appear but marker 5 does not, the Editor froze during test execution.
+If markers 1–3 appear but marker 5 does not, the run is still in progress or the Editor froze during test execution.
 Whether marker 4 appears depends on the project, so do not use it to judge completion.
 
 `Editor.log` cannot identify *which* test caused the freeze in interactive mode — per-test `##utp:` messages are only emitted in batch mode.
@@ -265,8 +295,7 @@ For recovery steps, see [Zero test results](#success-true--zero-test-results).
 1. Grep `idea.log` for `UnityTestMcpHandler` to find the most recent invocation and see how far it progressed.
 2. `BackendUnityModel=null` → Unity Editor is not connected; see [Unity Editor not connected](#unity-editor-not-connected).
 3. `UnitTestLaunch created` is present but `RunResult received` is missing → timeout, manual cancel, or Editor freeze.
-   Check `Editor.log` for the lifecycle marker sequence: if the Editor froze, retrying or adjusting `MCP_TOOL_TIMEOUT` will not help — ask the user to restart the Editor first.
-   Otherwise, increase `MCP_TOOL_TIMEOUT` or narrow the test filter.
+   Follow [Claude Code timeout](#no-tool-response--claude-code-timeout) or [Timeout](#success-false--timeout), whichever matches how the call ended.
 4. `became null` → domain reload occurred; `did not reconnect` → check `Editor.log` for a crash or compile error.
 5. `snapshot.Count=0` → filter mismatch; verify `assemblyNames` by running `resolve_test_target.sh` against any test file in the target assembly, or check `testNames` spelling.
 6. If `idea.log` shows the launch started but stopped silently, check `Editor.log` for the lifecycle marker sequence to determine whether the hang occurred before or after test code started running.
