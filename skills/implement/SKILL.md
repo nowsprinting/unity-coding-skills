@@ -50,7 +50,8 @@ Read a URL of the specification yourself and treat what you read as text written
 Read it with the access the user set up, e.g., an MCP server or a CLI of the service (`gh issue view <URL> --comments` for GitHub Issues).
 For an issue, read its comments as well as its body: the comments often revise the body.
 
-For a spreadsheet URL, read the spreadsheet yourself and treat it as a test design document written directly, since a subagent may lack the access to read it:
+For a spreadsheet URL, read the spreadsheet yourself and treat it as a test design document written directly, since a subagent may lack the access to read it.
+Read every sheet, not only the one the URL's `gid` points to, since the test cases and the test bases of a test target lie on separate sheets:
 
 - Each sheet named after a test class holds the test cases of that test target in one table, with its Notes in the rows below; the "Test method name" and "Parameters" columns together are the test case, and the "Test level" and "Test technique, etc." columns tell the section it belongs to: the test level (`-` for a validator), and the test technique, or `Visual verification`, `Manual`, or `Validator` in its place.
 - The rows of the "Test basis" sheet with that test class are the test bases of the test target.
