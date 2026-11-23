@@ -171,9 +171,10 @@ Before applying the fix, cover the adjacent behavior the fix could disturb:
 ### Step 8: Refactoring
 
 1. Run the Claude Code built-in `/simplify` skill (`Skill({skill: "simplify"})` — not a plugin skill) to apply quality improvements to the modified code
-2. Run the whole test assemblies that hold the tests added and modified in this iteration with `/run-tests`, as a regression run, and confirm they still pass
+2. Run the test classes that hold the tests added and modified in this iteration with `/run-tests` and confirm **all pass**
 3. Run `/resolve-diagnostics` with the files added or modified in this iteration — compute the list **after** `/simplify` finishes, so its edits are covered too
-4. Commit all remaining changes to git
+4. Run the whole test assemblies that hold the tests added and modified in this iteration with `/run-tests`, as a regression run, and confirm **all pass** — the runs above cover only the test classes this iteration touched, so this run is the one that finds an existing test the fix broke
+5. Commit all remaining changes to git
 
 ### Step 9: Feed Back the Fix to the Specification
 
