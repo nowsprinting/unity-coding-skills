@@ -35,6 +35,8 @@ A [Claude Code](https://claude.ai/code) plugin for Unity development that enable
 
 ## Usage
 
+Recommended process flow diagram:
+
 ```mermaid
 flowchart LR
     D1["D1. Specifications"]
@@ -75,36 +77,45 @@ Giving them only to `/implement` skips that review: it designs the unit tests in
 
 ### Design tests from specifications
 
-```bash
-/design-tests [specification, file paths, or URLs]
+```
+/design-tests docs/spec/inventory.md, docs/design/inventory/*.md
+Write the results to a file named after the specification file with `-tests`
 ```
 
-You can state the `specification` in any document—a requirements document, design docs, or an ADR—given as file paths, URLs (e.g., an issue, a wiki page, or a Google Docs document), or written directly; if omitted, it is read from the conversation.
-Tell it where to write the results in your instruction, e.g., "Write the results to docs/spec-tests.md" or "Write the results to Claude Sheets".
+It designs high-quality test cases, no more and no fewer than the specification needs, which curbs the coding agent's habit of writing too many tests.
 
-It designs tests that match the subject of each specification: integration tests (including the UI) for a scene or prefab, and unit tests for a class or an asset.
+Give it the specification in any document—a requirements document, design docs, or an ADR—as file paths, URLs (e.g., an issue, a wiki page, or a Google Docs document), or written directly; if omitted, it is read from the conversation.
+You can tell it where to write the results in your instruction: files or a spreadsheet, e.g., "Write the results to Claude Sheets".
 
-Test cases are designed to verify that the implementation conforms to the specifications(easy to review!), not that they uncover implementation flaws.
-They come from modeling the specifications with equivalence partitioning, boundary value analysis, decision table testing, combinatorial testing, and state transition testing(0-switch coverage), selected per test target.
+The test cases are derived from the specification, never from the implementation (black-box testing): they verify that the implementation conforms to the specification, so you can review them against it.
+
+The test level follows the subject of each specification: integration tests (including the UI tests) for a scene or prefab, and unit tests for a class or an asset.
+Given the external specification and the design docs that state the structure, it excludes from the integration tests the test cases covered by the unit tests.
+
+It models the specifications with the test techniques that fit each test target, and selects the test cases by these test selection criteria by default:
+
+| Test technique           | Unit tests                          | Integration tests                          |
+|--------------------------|-------------------------------------|--------------------------------------------|
+| Equivalence partitioning | Boundary value coverage             | Equivalence partition coverage             |
+| Decision table testing   | Every rule, Boundary value coverage | Every rule, Equivalence partition coverage |
+| Combinatorial testing    | All combinations                    | Pairwise                                   |
+| State transition testing | 0-switch coverage                   | 0-switch coverage                          |
+| Error guessing           | Off by default                      | Off by default                             |
 
 **Options**
 
-Ask for the following in your instruction:
+```
+/design-tests @docs/hud.md, without boundary value analysis
+/design-tests @docs/screen-transitions.md, with 1-switch coverage
+/design-tests @docs/title-screen.md, and add test cases with error guessing
+```
 
-- **Without a technique** — leaves out one of the techniques above except equivalence partitioning, e.g.,
-  ```
-  /design-tests @docs/hud.md, without boundary value analysis
-  ```
-- **Test selection criterion** — changes which items of a technique's model become test cases: equivalence partition coverage (no boundary values) for equivalence partitioning and the conditions of decision tables; every condition or every action, instead of every rule, for decision tables; and state coverage or N-switch coverage, instead of 0-switch coverage, for state transitions. e.g.,
-  ```
-  /design-tests @docs/screen-transitions.md, with 1-switch coverage
-  ```
-- **Error guessing** — adds test cases from failure patterns common in game development, not from the specification, e.g.,
-  ```
-  /design-tests @docs/title-screen.md, and add test cases with error guessing
-  ```
+**Assessment**
 
 Modeling the specifications also assesses them: the gaps and contradictions it finds go into the Assessment of each test target, and it asks you when the Assessment fails, then writes the resolutions back into the specification.
+
+Some test cases may be marked as "undefined," "ambiguous," or "unverifiable."
+If you are fine with letting the agent decide how to implement them, you can ignore them: no test code is generated from them, since the specification gives them no expected result a test can check.
 
 Dependencies:
 
@@ -120,14 +131,20 @@ design-tests
 > [!NOTE]\
 > Combinatorial testing here varies, in combination, the inputs an equivalence partitioning or decision table test case gives neutral values to, and checks that its result stays the same, e.g., the other ability scores and equipment slots when damage depends on strength and the weapon.
 
+> [!NOTE]\
+> Error guessing is off by default because a guessed failure pattern is worth little as test code that runs continuously.
+> Giving the agent the perspectives and having it review the code should suit it better.
+
 ### Implement features test-first
 
 ```bash
 /implement [specification and/or test design, file paths, or URLs]
 ```
 
-The `specification` can state external specifications and design docs, for a new feature or a specification change.
-The `test design` is a test design document (e.g., the output of `/design-tests`), given as a file path or a spreadsheet URL.
+It carries a feature from the specification to refactored code on its own: it writes the tests first, so passing them all defines done, and it asks you only when it finds a problem only you can settle.
+
+The "specification" can state external specifications and design docs, for a new feature or a specification change.
+The "test design" is an output of `/design-tests`.
 They are given as file paths, URLs (e.g., an issue, a wiki page, or a Google Docs document), or written directly; when omitted, they are read from the conversation.
 Given a test design document alone, it implements only what the test cases state.
 
@@ -158,15 +175,19 @@ implement
 > To defer an item, write "TBD" on it in the specification; it is neither tested nor implemented.
 > It asks you only when the TBD item blocks the implementation.
 
+> [!NOTE]\
+> For traceability, it lists the test bases, the documents the tests were written from, in `// Test-basis:` comments at the top of each test code file.
+> [`/measure-spec-coverage`](#measure-specification-coverage) finds the tests by them.
+
 ### Fix bugs through reproduction tests
 
 ```bash
 /fix-bug [incident, failing test name, or issue URLs]
 ```
 
-The `incident` can specify a bug report or the failed test name, given as issue URLs or written directly; when omitted, it is read from the conversation.
+It fixes the bug you reported, not a guess at it: before the fix, it writes a test that reproduces the bug, runs it to confirm it fails, and shows you the test and its failure message; it starts the fix only after you confirm the reproduction.
 
-Before fixing the bug, it writes a test that reproduces it, runs it to confirm it fails, and shows you the test and its failure message; it starts the fix only after you confirm the reproduction.
+The "incident" can specify a bug report or the failed test name, given as issue URLs or written directly; when omitted, it is read from the conversation.
 
 Dependencies:
 
@@ -185,13 +206,57 @@ fix-bug
 > [!NOTE]\
 > Depending on the incident, the root cause may be identified before writing a reproduction test. Under adjustment.
 
+## Support skills
+
+### Find and set up an analysis rule for a coding pattern
+
+```bash
+/find-and-setup-analysis-rule [pattern or analyzer-name]
+```
+
+Identify the code analysis rule (such as an IDE inspection or Roslyn analyzer) that detects the specified coding pattern, and configure it within your project with a severity level of `warning` or higher.
+
+If you specify an analyzer name, it will be installed.
+
+### Measure specification coverage
+
+```bash
+/measure-spec-coverage <specification document path or URL>
+```
+
+It measures how much of the specification document at the specification document the test code covers, and lists the coverage items left unchecked:
+
+1. Models the specification with test techniques (equivalence partitioning, decision table testing, and state transition testing) into coverage items.
+   It leaves out boundary value analysis, which adds conditions the specification does not state.
+2. Checks off each coverage item the test code covers, in two passes:
+   1. Reads the test code files whose `// Test-basis:` comments name the specification document, and checks off each coverage item their tests cover.
+      `/implement` and `/fix-bug` write these comments at the top of each test code file, listing the specification docs and design docs the tests were written from.
+   2. Searches the test classes named after each test target, e.g., `InventoryTest`, and checks off each coverage item still unchecked that their tests cover.
+      This finds the tests written without comments.
+
+> [!IMPORTANT]\
+> It models the specification on every run to count the coverage items, so the results vary between runs.
+> Compare the unchecked coverage items between runs, not the percentages.
+
+> [!IMPORTANT]\
+> Tests written with version 1 of this plugin, or without this plugin, have no `// Test-basis:` comments.
+> It still measures them, finding them by class name alone, but less accurately.
+
+Dependencies:
+
+```text
+measure-spec-coverage
+└── test-designing-guide
+```
+
 ### Resolve diagnostics
 
 ```bash
 /resolve-diagnostics <file paths>
 ```
 
-It targets the diagnostics from the compiler, Roslyn analyzers, and IDE inspections at `warning` or higher severity in the files at the `file paths`.
+It brings the files at the file paths up to the quality bar your analysis rules set: every diagnostic from the compiler, Roslyn analyzers, and IDE inspections at `warning` or higher severity is fixed, or suppressed with its reason reported to you.
+It then reformats the files to the solution's code style, and runs the tests to confirm they still pass when it changed the code.
 
 Dependencies:
 
@@ -201,13 +266,29 @@ resolve-diagnostics
 └── run-tests
 ```
 
+### Edit scenes and prefabs
+
+```bash
+/edit-scene <instruction>
+```
+
+It creates or modifies scene and prefab files through the Unity Editor API, in a temporary editor script, instead of hand-editing YAML: the file structure stays intact, and uGUI components get the same defaults as when created from the Editor's menu.
+It names each GameObject the player operates so that its hierarchy path is unique, and tests can find it.
+
 ### Run tests
 
 ```bash
 /run-tests [filter]
 ```
 
-It runs the tests in the Unity Editor or on the player.
+It lets the coding agent verify its own work: it runs only the tests under verification in the Unity Editor or on the standalone player.
+For visual verification tests, it judges the result by analyzing the screenshots it saves.
+
+To run on the standalone player, say so in the prompt, e.g.,
+
+```bash
+/run-tests on the standalone player, with IL2CPP and managed stripping level High
+```
 
 > [!NOTE]\
 > On macOS, it closes the "Scene(s) Have Been Modified" dialog automatically using `osascript`.
@@ -215,50 +296,6 @@ It runs the tests in the Unity Editor or on the player.
 > If the test run has not started 20 seconds after it is requested, the dialog is closed with "Don't Save"; set the `UNITY_RUN_TESTS_DISCARD_SCENE_CHANGES_DELAY_SECONDS` environment variable to change the delay.
 > Detecting whether the dialog blocks a test run depends on the logs the `com.unity.test-framework.performance` package outputs.
 > If the package is not installed, the focus shifts to the Unity Editor, even if no dialog appears.
-
-### Edit scenes and prefabs
-
-```bash
-/edit-scene <instruction>
-```
-
-It creates or modifies scene and prefab files through a temporary editor script instead of hand-editing YAML.
-
-### Find and set up an analysis rule for a coding pattern
-
-```bash
-/find-and-setup-analysis-rule [pattern or analyzer-name]
-```
-
-It searches for a code analysis rule (an IDE inspection or a Roslyn analyzer) that flags the coding pattern and sets it up in the project at `warning` or higher severity.
-If you specify an analyzer name, it will be installed.
-
-### Measure specification coverage
-
-```bash
-/measure-spec-coverage <specification document path or URL>
-```
-
-It measures how much of the specification document at the `specification document path or URL` the test code covers, and lists the coverage items left unchecked:
-
-1. Models the specification with test techniques (equivalence partitioning, decision table testing, and state transition testing) into coverage items.
-   It leaves out boundary value analysis, which adds conditions the specification does not state.
-2. Checks off each coverage item the test code covers, in two passes:
-   1. Reads the test code files whose `// Test-basis:` comments name the specification document, and checks off each coverage item their tests cover.
-      `/implement` and `/fix-bug` write these comments at the top of each test code file, listing the specification docs and design docs the tests were written from.
-   2. Searches the test classes named after each test target, e.g., `InventoryTest`, and checks off each coverage item still unchecked that their tests cover.
-      This finds the tests written without the comments, e.g., before you installed this plugin.
-
-> [!IMPORTANT]\
-> It models the specification on every run to count the coverage items, so the results vary between runs.
-> Compare the unchecked coverage items between runs, not the percentages.
-
-Dependencies:
-
-```text
-measure-spec-coverage
-└── test-designing-guide
-```
 
 ## Installation
 
@@ -311,7 +348,15 @@ Once configured in Rider, the built-in MCP Server and extension plugin work in o
 > When Rider is earlier than 2026.2 and you are using other JetBrains IDEs simultaneously with Rider, port numbers are assigned in the order they are launched.
 > For example, if you launch Rider after IDEA, the port number for Rider will be `64343`.
 
-### 2. Install UTF Analyzers (strongly recommended)
+### 2. Untracking temporary files via `.gitignore`
+
+Some skills place temporary editor script files under `Assets/UnityCodingSkills/`. Adding the following pattern to your project's `.gitignore` is recommended:
+
+```gitignore
+Assets/UnityCodingSkills*
+```
+
+### 3. Install UTF Analyzers (strongly recommended)
 
 [UTF Analyzers](https://github.com/nowsprinting/test-framework.analyzers) diagnose Unity Test Framework API usages that freeze the Unity Editor (e.g., `Assert.ThrowsAsync`, `async` delegates in `Throws` constraints, `DelayedConstraint`) before tests run.
 Install either the [UPM package](https://openupm.com/packages/com.nowsprinting.test-framework.analyzers/) via OpenUPM or the [NuGet package](https://www.nuget.org/packages/UTFAnalyzers) via NuGetForUnity.
@@ -322,7 +367,7 @@ Install either the [UPM package](https://openupm.com/packages/com.nowsprinting.t
 > - Unity Test Framework v1.4.6 (dependency)
 > - [NUnit.Analyzers](https://www.nuget.org/packages/NUnit.Analyzers) v3.9.0 (bundled)
 
-### 3. Enforcing coding rules via analyzers and inspections
+### 4. Enforcing coding rules via analyzers and inspections
 
 Some skills resolve Roslyn analyzer and IDE inspection diagnostics at `warning` or higher severity during the refactoring phase.
 Therefore, any coding rule you want coding agents to respect must be set to `warning` or higher severity in `.editorconfig` or `.globalconfig`.
@@ -357,14 +402,6 @@ To keep method complexity under control, install one of the following Rider plug
 > [!WARNING]\
 > In Rider 2026.2.1, there is an issue where the `get_file_problems` and `lint_files` tools fail to correctly return diagnostic messages from plugins.
 > see: [RIDER-142275](https://youtrack.jetbrains.com/issue/RIDER-142275)
-
-### 4. Untracking temporary files via `.gitignore`
-
-Some skills place temporary editor script files under `Assets/UnityCodingSkills/`. Adding the following pattern to your project's `.gitignore` is recommended:
-
-```gitignore
-Assets/UnityCodingSkills*
-```
 
 ## Contributing
 
