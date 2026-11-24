@@ -286,7 +286,8 @@ The following maps the test-designing-guide notation to NUnit attributes:
 
 A `## <ClassName>Validator` section in the test design runs each test method on the project's assets of that `ScriptableObject` class.
 Implement validators as Edit Mode tests under `Tests/Editor/`: `AssetDatabase`, which finds and loads the assets, is Editor-only.
-The test design gives no parameter notation: read the assets to select from the method name's `<Condition>` segment — e.g., `AttackCard_AttackIsGreaterThanZero` selects the attack cards, i.e., the `Card` assets whose `Type` is `Attack` — and a method name without `<Condition>` covers every asset of the class.
+The test design leaves out the first parameter, the asset under validation: read the assets to select from the method name's `<Condition>` segment — e.g., `AttackCard_AttackIsGreaterThanZero` selects the attack cards, i.e., the `Card` assets whose `Type` is `Attack` — and a method name without `<Condition>` covers every asset of the class.
+The parameters the test design does give follow the asset, e.g., `stats` of `AttackCard_DamageIsGreaterThanZero (stats: {Base, Upgraded})`: give each `TestCaseData` one combination of an asset and their values, and name it after both.
 Supply the assets with `[TestCaseSource]`, naming each `TestCaseData` after its asset file, and load each asset in the test:
 
 ```csharp
@@ -314,7 +315,6 @@ public void AttackCard_AttackIsGreaterThanZero(string path)
 When multiple test methods in a class share the same scene setup, create a test scene file and load it with `[LoadScene]` instead of repeating the setup in each test.
 Scene files are typically 1:1 with the test class, so name the file after the test class (e.g., `CharacterControllerTest.unity`).
 Place it under `Tests/Scenes/`.
-Use the `edit-scene` skill to create the scene file.
 
 ## Lifecycle Hooks
 

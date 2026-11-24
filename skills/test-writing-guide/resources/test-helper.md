@@ -80,6 +80,7 @@ public void OneTimeSetUp() => LoadAssetAttribute.LoadAssets(this);
 | Change `Time.timeScale` during the test | `[TimeScale(2.0f)]` on the test method only |
 
 - Put `[TimeScale]` on tests that wait for animations to finish, so the animations play faster and the test runs in less time.
+- For test methods that depend on animation timing or other timing-sensitive conditions that may cause instability on slow CPUs, apply `[Category("IgnoreCI")]`.
 
 ### Screenshots and video (Play Mode only — do not use in Edit Mode)
 

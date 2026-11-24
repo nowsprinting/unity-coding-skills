@@ -48,7 +48,6 @@ Record the test targets each target contains.
 ## TBD Items
 
 Treat an item the specification explicitly marks "TBD" as non-existent: assign it to no test target, since it is not decided yet.
-Unlike the specifications below, the implementation does not fulfill it either.
 
 ## Specifications Without Test Cases
 

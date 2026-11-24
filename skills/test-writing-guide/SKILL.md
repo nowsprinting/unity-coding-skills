@@ -52,8 +52,6 @@ The file is the unit: `/measure-spec-coverage` finds a file by these lines and r
 
 - For a test case tagged `acceptance` in the test design, apply `[Category("Acceptance")]` to the test method.
 - When implementing tests designed as integration tests, apply `[Category("Integration")]` to the test method.
-- When implementing tests designed as visual verification tests, apply `[Category("VisualVerification")]` to the test method.
-- For test methods that depend on animation timing or other timing-sensitive conditions that may cause instability on slow CPUs, apply `[Category("IgnoreCI")]`.
 
 ### Neutral Values
 

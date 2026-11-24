@@ -140,7 +140,7 @@ With the reproduction confirmed, investigate the root cause:
 1. Trace through the code path triggered by the reproduction test
 2. Identify the specific line(s) or logic responsible for the bug
 3. Write a reproduction test at the unit test level that calls the suspected code directly (per `test-writing-guide`; load it and `code-writing-guide` if Step 2 was skipped — do not rely on automatic skill triggering), and run it with `/run-tests` to verify it **fails** — this confirms the suspected cause before changing the production code, and pins the defect at the unit test level where the Step 2 test cannot locate it.
-   Take its expected result from the specification of the called code — the documentation from Step 1, or its XML documentation comment — not from the code traced in items 1-2: an expected result derived from the implementation passes whatever the implementation does.
+   Take its expected result from the specification of the called code — the documentation from Step 1 — not from the code traced in items 1-2: an expected result derived from the implementation passes whatever the implementation does; nor from its XML documentation comment, as `test-designing-guide`'s test design resource rules for the expected results.
    If it passes, the suspect is wrong: delete the test, record it under **Ruled out**, and return to item 1.
    Skip this item when the reproduction test from Steps 2-3 is already a unit test that calls the code identified in item 2, or when the cause lies outside code a unit test can call (e.g., scene/prefab wiring or asset settings)
 4. Commit the reproduction test of item 3, if it wrote one, for the same reason as Step 4
@@ -155,8 +155,7 @@ Before applying the fix, cover the adjacent behavior the fix could disturb:
    Quote each specification verbatim with its source, e.g., the file path and heading or the URL, together with the passages it depends on, e.g., the definitions of the terms it uses, and instruct the subagent not to read the source documents or follow the links in the quoted passages: a subagent reading a whole document would fill its context with the specifications of parts the fix does not change.
    Designing in a subagent keeps the method bodies you read in Step 5 out of the test design: a test case derived from the implementation passes whatever the implementation does.
    A changed member without a specification gets no regression test: record it as an unclear specification instead of deriving one from the code
-2. Write the test code of the test cases not tagged `existing` (per `test-writing-guide`, which changes the existing test of a test case tagged `test fix` instead of adding one) and run them — they must **pass** (they test existing correct behavior, not the bug itself).
-   Write no test code for a test case marked unverifiable, undefined, or ambiguous
+2. Write the test code of the test cases (per `test-writing-guide`) and run them — they must **pass** (they test existing correct behavior, not the bug itself).
 
 ### Step 7: Apply Fix & Verify
 
