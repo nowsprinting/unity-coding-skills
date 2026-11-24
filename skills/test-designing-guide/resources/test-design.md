@@ -30,6 +30,8 @@ Read only the following code, and no method bodies of production code:
 - **Existing tests** — when the test target has test classes, the signatures of their test methods, with the attributes that give a parameterized test its arguments, to tag the test cases they already implement (see [Existing Tests](#existing-tests))
 - **Production code** — for unit tests and validators, the signatures and XML documentation comments of the test target's members, to judge whether a test case can arrange its inputs and observe the actual result (see [Unverifiable, Undefined, and Ambiguous Test Cases](#unverifiable-undefined-and-ambiguous-test-cases)); for a class the input's design docs introduce, read the signatures they fix instead.
   Take the inputs to model from the specification, not from the parameters of a signature.
+  Take the expected results from the specification too, not from an XML documentation comment: where the specification states none, the test case is undefined even when a comment states one.
+  Where it states one in part, e.g., that a method throws without the exception type, the expected result is that part alone.
   Arrange and observe through `public` members wherever they suffice; use an `internal` class or method only when no `public` means exists.
 
 ## Test Levels
@@ -306,6 +308,7 @@ Write the line naming the test technique, the placeholders other than the method
 
 List the **test bases** of the test target as a bullet list: the files and URLs that state its assigned specifications, and those you or the caller read that settled what they leave open.
 Leave out a document that settled nothing, and text written directly or taken from the conversation.
+Leave out production code too, even when its XML documentation comments settled what the assigned specifications leave open.
 Write a file as its path from the root of the repository you work in (the superproject, when the file lies in a submodule), and anything read from a URL as that URL.
 
 **Example**:
@@ -352,6 +355,7 @@ Record every issue found while designing instead of guessing.
 For `⚠️WARN` or `❌FAIL`, add `#### Issues` with the affected specification and a proposed remedy of each issue.
 For an unverifiable test case, propose a design that makes it verifiable, e.g., a dependency through which the test target reads the input, and when the test target reads it, so that a test stub can replace it before then; for one whose events pass through a coarse-grained state, propose stating the path through that state, or testing the transitions on each side of it separately.
 For an undefined test case of an operation on the UI behind a modal dialog, propose stating that the modal dialog blocks those operations, or the destination of each.
+For an expected result the specification does not state, or states only in part, while an XML documentation comment states it, propose stating it in the specification, quoting the comment.
 For a combinatorial explosion, propose breaking the test down into tests at a more detailed level.
 For `❌FAIL`, also add `#### Modeling result` — the model that revealed the issues, e.g., the equivalence partition table, the decision table, the state transition diagram — so the user can see where the specification breaks:
 

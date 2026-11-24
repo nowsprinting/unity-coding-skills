@@ -44,6 +44,7 @@ The file is the unit: `/measure-spec-coverage` finds a file by these lines and r
 
 - Write a file as its path from the root of the repository you work in (the superproject, when the file lies in a submodule), and anything read from a URL as that URL
 - For a test design document, list the test bases under its `### Test basis` headings instead of the document itself: a test design document is no test basis
+- Leave out production code, even when its XML documentation comments state the specification or settled what it leaves open
 - Leave out a file that will not outlive the session, e.g., one in the scratchpad directory: a line naming a vanished file finds nothing
 - Add only the test bases not yet listed, and keep the existing lines even when they look outdated: `/measure-spec-coverage` uses them only to find the tests of a specification, and reads the tests themselves to judge what they cover
 
