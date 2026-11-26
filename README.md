@@ -83,6 +83,7 @@ Write the results to a file named after the specification file with `-tests`
 ```
 
 It designs high-quality test cases, no more and no fewer than the specification needs, which curbs the coding agent's habit of writing too many tests.
+For reference, a game demo project whose tests include integration tests with UI operations had a code-to-test ratio of 1:2.9.
 
 Give it the specification in any document—a requirements document, design docs, or an ADR—as file paths, URLs (e.g., an issue, a wiki page, or a Google Docs document), or written directly; if omitted, it is read from the conversation.
 You can tell it where to write the results in your instruction: files or a spreadsheet, e.g., "Write the results to Claude Sheets".
