@@ -27,9 +27,8 @@ For an issue, read its comments as well as its body: the comments often revise t
 
 In this skill, the terms mean:
 
-- **Coverage item** — in the ISTQB CT-MBT sense, one item of the specification model that a test case exercises: an equivalence partition, a decision table rule, or a state transition.
-  The coverage items are the denominator of the coverage.
-  Boundary values are not coverage items: equivalence partitioning, decision table testing, and state transition testing model only the conditions the specification states, and a combination or a transition they find missing is a gap in the specification, whereas boundary value analysis adds conditions the specification does not state, so counting them would charge the tests for conditions no specification asks for.
+- **Coverage item** — in the ISTQB CT-MBT sense, one item that modeling the specifications with a test technique yields and a test case exercises: an equivalence partition, a decision table rule, or a state transition.
+  Leave out boundary values, which add conditions the specification does not state.
 - **Test basis** — a file or a URL that the tests of a test file were written from, listed at the top of the file as a `// Test-basis: <path or URL>` line.
   The test bases may be outdated or incomplete: use them only to find tests, never to judge what a test covers.
 

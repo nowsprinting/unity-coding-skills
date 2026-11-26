@@ -102,7 +102,7 @@ A file or a URL that test code or a test design was written from, listed on the 
 _Avoid_: Source, reference, origin, trace link
 
 **Coverage item**:
-In the ISTQB CT-MBT sense, one item that modeling the specifications with a test technique yields and a test case exercises: an equivalence partition, a decision table rule, or a state transition.
+In the ISTQB CT-MBT sense (v1.1, 3.1), one item that modeling the specifications with a test technique yields and a test case exercises, e.g., an equivalence partition, a boundary value, a decision table rule, or a state transition. Specification coverage leaves out boundary values, which add conditions the specification does not state.
 _Avoid_: Element
 
 **Test selection criterion**:
