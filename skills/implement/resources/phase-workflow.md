@@ -104,4 +104,4 @@ Then:
 
 - For `STATUS: QUESTION`: each issue with the affected specification and a proposed remedy
 - For `STATUS: BLOCKED`: the tests that passed unexpectedly and why they were not judged legitimate, or the blocker
-- For `STATUS: DONE`: the classes added or modified, the test assemblies that hold the tests added or modified, each with its test mode, and the commits
+- For `STATUS: DONE`: the classes added or modified, and the commits
